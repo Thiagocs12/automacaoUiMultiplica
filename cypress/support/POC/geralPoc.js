@@ -30,7 +30,7 @@ Cypress.Commands.add('acessarProspectNaTela', (acao) => {
 
 //Busca o prospect na tela de monitor
 Cypress.Commands.add('buscarProspectMonitor', (cnpj, tela, acao = null) => {  
-  cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')
+  //cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')
   cy.contains(tela).click()
   cy.get('[name="cnpj"]').type(cnpj)
   cy.contains('Buscar').click()

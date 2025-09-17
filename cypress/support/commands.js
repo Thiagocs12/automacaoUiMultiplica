@@ -30,10 +30,12 @@ Cypress.Commands.add('loginKeycloakError', (usuario, senha) => {
 
 // Comando customizado para acessar algum menu aplicação
 Cypress.Commands.add('menu', (modulo, area, entidade) => {
-  cy.contains(modulo).click()
-  cy.contains(area).click()
-  cy.contains('Home').trigger('mouseover')
-  cy.contains(entidade).click()
+  cy.contains(modulo).click();
+  cy.contains(area).click();
+  cy.contains('Home').trigger('mouseover');
+  if (area !== 'Compliance') {
+    cy.contains(entidade).click();
+  }
 });
 
 // Avança a esteira aberta na tela

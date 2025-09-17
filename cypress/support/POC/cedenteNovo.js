@@ -22,3 +22,16 @@ Cypress.Commands.add('aprovarProspect', (aprovador) => {
   cy.acessarProspectNaTela('Analisar Prospect')
   cy.avancarEsteira('TESTE AUTOMACAO - APROVAR PROSPECT '+ aprovador)
 })
+
+//Preenche o formulário de aprovação do compliance
+Cypress.Commands.add('preencherCompliance', (parecer) => {
+  cy.get('.css-1jtiwjl > :nth-child(1) > .MuiBox-root > .MuiButtonBase-root').click()//#botão ações compliance
+  cy.get('.MuiPaper-root > .MuiBox-root > :nth-child(1)').click()//#botão de ação analisar compliance
+  cy.get('#mui-component-select-situacao').click()
+  cy.contains('APROVADO').click()
+  cy.get('#mui-component-select-analista').click()
+  cy.contains('ANALISTA AUTOMAÇÃO').click()
+  cy.get('[name="parecer"]').type(parecer)
+  cy.get('[name="observacao"]').type(parecer)
+  cy.contains('Salvar').click()
+})

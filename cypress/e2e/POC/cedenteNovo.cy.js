@@ -22,7 +22,7 @@ describe('Criação de uma POC para um cedente novo na casa', () => {
         cy.loginKeycloak(user.usuario, user.senha)
     })
     //skip
-    //it.only('encontrar coisas na tela', () => {
+    //it('encontrar coisas na tela', () => {
     //    cy.viewport(1920, 1080)
     //    cy.visit('/')
     //})
@@ -41,6 +41,7 @@ describe('Criação de uma POC para um cedente novo na casa', () => {
     })
 
     it('Preencho os dados necessários para prosseguir com a poc', () => {
+        cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')        
         cy.buscarProspectMonitor(empresa.cnpj, 'Monitor', 'Cadastrar Prospect')
         cy.wait(200)
         cy.preencherPleitoLimiteGlobal('50000000')
@@ -52,11 +53,13 @@ describe('Criação de uma POC para um cedente novo na casa', () => {
         })
 
     it('Avançar a POC para KYC', () => {
+        cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')        
         cy.buscarProspectMonitor(empresa.cnpj, 'Monitor', 'Cadastrar Prospect')
         cy.avancarEsteira('TESTE AUTOMACAO - AVANÇAR ETAPA PARA KYC')
     })
 
     it('Avançar a POC para Aprovação Prospect', () => {
+        cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')        
         cy.buscarProspectMonitor(empresa.cnpj, 'KYC', 'Responder KYC')
         for (const kyc of empresa.kyc) {
             cy.contains(kyc).click()
@@ -66,9 +69,17 @@ describe('Criação de uma POC para um cedente novo na casa', () => {
     })
 
     it('Aprovar o Prospect', () => {
+        cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')        
         cy.buscarProspectMonitor(empresa.cnpj, 'Monitor')
         cy.aprovarProspect('PLATAFORMA')
         cy.aprovarProspect('SUPERINTENDENCIA')
         cy.aprovarProspect('DIRETORIA COMERCIAL')
+    })
+
+    it('Aprovação do compliance', () => {
+        cy.menu('Beyond BackOffice', 'Compliance', 'Prospect')
+        cy.buscarProspectMonitor(empresa.cnpj, 'Compliance')
+        cy.preencherCompliance('TESTE AUTOMACAO - APROVAÇÃO COMPLIANCE')
+        cy.avancarEsteira('TESTE AUTOMACAO - APROVAÇÃO PARA JURIDICO COMPLIANCE')
     })
 })
