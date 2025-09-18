@@ -15,7 +15,8 @@
 
 // Import commands.js using ES2015 syntax:
 import './commands'
-import './POC'
+import './poc'
+import './helpers'
 import './querysSql'
 import "cypress-real-events";
 

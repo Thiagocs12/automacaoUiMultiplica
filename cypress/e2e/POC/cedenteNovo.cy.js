@@ -24,7 +24,7 @@ describe('Criação de uma POC para um cedente novo na casa', () => {
     //skip
     //it('encontrar coisas na tela', () => {
     //    cy.viewport(1920, 1080)
-    //    cy.visit('/')
+    //    cy.goTo('backoffice', '/')
     //})
 
     it('Criar uma poc para um cedente novo na casa', () => {

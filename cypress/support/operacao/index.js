@@ -1,7 +1,7 @@
-const cedenteNovo = require('./cedenteNovo');
-const geralPoc = require('./geralPoc');
+const operacaoDuplicata = require('./operacaoDuplicata');
+const geralOperacao = require('./geralOperacao');
 
 module.exports = {
-  cedenteNovo,
-  geralPoc
+  operacaoDuplicata,
+  geralOperacao
 };

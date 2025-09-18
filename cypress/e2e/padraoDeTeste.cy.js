@@ -5,7 +5,7 @@ const user = {
 
 describe('Validação de Login', () => {
     beforeEach(() => {
-        cy.visit('/')
+        cy.goTo('backoffice', '/')
     })
 
     it('Deve fazer login com sucesso com usuário e senha válidos', () => {
