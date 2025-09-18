@@ -4,7 +4,7 @@ const kcOrigin = Cypress.env('BASE_URL_KEYCLOAK');
 // Comando customizado para login bem-sucedido via Keycloak
 Cypress.Commands.add('loginKeycloak', (usuario, senha) => {
   // Garante que está na aplicação antes de trocar de domínio
-  cy.visit('/');
+  cy.goTo('backoffice', '/')
   // Executa o fluxo de login no domínio do Keycloak
   cy.origin(kcOrigin, { args: { usuario, senha } }, ({ usuario, senha }) => {
       cy.get('#username').clear().type(usuario);
@@ -18,7 +18,7 @@ Cypress.Commands.add('loginKeycloak', (usuario, senha) => {
 
 // Comando customizado para login com erro via Keycloak
 Cypress.Commands.add('loginKeycloakError', (usuario, senha) => {
-  cy.visit('/');
+  cy.goTo('backoffice', '/')
   cy.origin(kcOrigin, { args: { usuario, senha } }, ({ usuario, senha }) => {
       cy.get('#username').clear().type(usuario);
       cy.get('#password').clear().type(senha, { log: false });
@@ -49,3 +49,13 @@ Cypress.Commands.add('avancarEsteira', (parecer) => {
   cy.contains('Confirmar').click()
 })
 
+const { urlFor } = require('./helpers');
+
+Cypress.Commands.add('goTo', (app, path = '/') => {
+  cy.visit(urlFor(app, path));
+});
+
+// Dica: este comando **rende** uma string (via yield), então use com .then(...)
+Cypress.Commands.add('urlFor', (app, path = '/') => {
+  return urlFor(app, path);
+})
