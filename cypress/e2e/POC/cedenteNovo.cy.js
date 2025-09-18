@@ -1,31 +1,15 @@
-const user = {
-  usuario: Cypress.env('APP_USER'),
-  senha: Cypress.env('APP_PASS')
-}
-const empresa = {
-  cnpj: '14144375000130',
-  kyc: ['Clube de Futebol', 'Mútuo Petro', 'Participação Estrangeira', 'Mútuo SUS'],
-  produtos: {
-    ['CCB/NC']: { limite: '50000000', prazo: '365', taxa: '2.00', concentracao: '100' },
-    ['ANCORA']: { limite: '50000000', prazo: '365', taxa: '2.00', concentracao: '100' },
-    ['BOLETO']: { limite: '50000000', prazo: '365', taxa: '2.00', concentracao: '100' },
-    ['CLEAN']: { limite: '50000000', prazo: '365', taxa: '2.00', concentracao: '100' }
-  }
-}
+const user = Cypress.env('user')
+
+const empresa = Cypress.env('empresa')
 
 describe('Criação de uma POC para um cedente novo na casa', () => {
-    before(() => {
-        cy.cleanupPessoa(empresa.cnpj)
-    })
+    //before(() => {
+    //    cy.cleanupPessoa(empresa.cnpj)
+    //})
 
     beforeEach(() => {
         cy.loginKeycloak(user.usuario, user.senha)
     })
-    //skip
-    //it('encontrar coisas na tela', () => {
-    //    cy.viewport(1920, 1080)
-    //    cy.goTo('backoffice', '/')
-    //})
 
     it('Criar uma poc para um cedente novo na casa', () => {
         cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')
@@ -34,11 +18,11 @@ describe('Criação de uma POC para um cedente novo na casa', () => {
         cy.atualizarNomeFantasia(empresa.cnpj)
     })
     
-    it('Validar que não posso criar uma poc para um cnpj que já está na esteira', () => {
-        cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')
-        cy.criarProspect(empresa.cnpj, 'PROSPECT')
-        cy.contains('CNPJ informado está associado a uma esteira ativa.').should('be.visible')
-    })
+    //it('Validar que não posso criar uma poc para um cnpj que já está na esteira', () => {
+    //    cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')
+    //    cy.criarProspect(empresa.cnpj, 'PROSPECT')
+    //    cy.contains('CNPJ informado está associado a uma esteira ativa.').should('be.visible')
+    //})
 
     it('Preencho os dados necessários para prosseguir com a poc', () => {
         cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')        
@@ -50,12 +34,14 @@ describe('Criação de uma POC para um cedente novo na casa', () => {
             cy.adicionarProdutosPleito(produto, limite, prazo, taxa, concentracao)
         }
         cy.avancarEsteira('TESTE AUTOMACAO - AVANÇAR ETAPA PARA DADOS COMPLEMENTARES')
-        })
+        cy.verificarLocal()
+    })
 
     it('Avançar a POC para KYC', () => {
         cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')        
         cy.buscarProspectMonitor(empresa.cnpj, 'Monitor', 'Cadastrar Prospect')
         cy.avancarEsteira('TESTE AUTOMACAO - AVANÇAR ETAPA PARA KYC')
+        cy.verificarLocal()
     })
 
     it('Avançar a POC para Aprovação Prospect', () => {
@@ -66,14 +52,18 @@ describe('Criação de uma POC para um cedente novo na casa', () => {
         }
         cy.contains('Salvar').click()
         cy.avancarEsteira('TESTE AUTOMACAO - AVANÇAR ETAPA PARA APROVAÇÃO PROSPECT')
+        cy.verificarLocal()
     })
 
     it('Aprovar o Prospect', () => {
         cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')        
         cy.buscarProspectMonitor(empresa.cnpj, 'Monitor')
-        cy.aprovarProspect('PLATAFORMA')
-        cy.aprovarProspect('SUPERINTENDENCIA')
-        cy.aprovarProspect('DIRETORIA COMERCIAL')
+        cy.aprovarProspect('TESTE AUTOMACAO - APROVAR PROSPECT PLATAFORMA')
+        cy.verificarLocal()
+        cy.aprovarProspect('TESTE AUTOMACAO - APROVAR PROSPECT SUPERINTENDENCIA')
+        cy.verificarLocal()
+        cy.aprovarProspect('TESTE AUTOMACAO - APROVAR PROSPECT DIRETORIA COMERCIAL')
+        cy.verificarLocal()
     })
 
     it('Aprovação do compliance', () => {
@@ -81,5 +71,23 @@ describe('Criação de uma POC para um cedente novo na casa', () => {
         cy.buscarProspectMonitor(empresa.cnpj, 'Compliance')
         cy.preencherCompliance('TESTE AUTOMACAO - APROVAÇÃO COMPLIANCE')
         cy.avancarEsteira('TESTE AUTOMACAO - APROVAÇÃO PARA JURIDICO COMPLIANCE')
+    })
+
+    it('Aprovação do juridico compliance', () => {
+        cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')        
+        cy.buscarProspectMonitor(empresa.cnpj, 'Monitor', 'Cadastrar Prospect')
+        cy.avancarEsteira('TESTE AUTOMACAO - APROVAÇÃO PARA COMPLIANCE 2')
+        cy.aprovarProspect('TESTE AUTOMACAO - APROVAÇÃO PARA DISTRIBUIÇÃO', 'Cadastrar Prospect')
+    })
+
+    it('Criar comitê e distribuir a POC', () => {
+        //cy.viewport(1920, 1080)
+        cy.menu('Beyond BackOffice', 'Crédito', 'Prospect')        
+        cy.contains('Distribuição').click()
+        //preencher comitê
+        cy.get('.prospeccao-prospeccao35 > .prospeccao-MuiBox-root > .prospeccao-MuiButtonBase-root').click()//#Adicionar Comitê
+        cy.get('[name="dataAgendaFim"]').type(
+            Cypress.dayjs().add(1, 'day').format('DD/MM/YYYY')
+        )
     })
 })

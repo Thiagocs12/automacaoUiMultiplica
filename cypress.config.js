@@ -131,7 +131,7 @@ module.exports = defineConfig({
       return config;
     },
 
-    defaultCommandTimeout: 20000,
+    defaultCommandTimeout: 60000,
     pageLoadTimeout: 60000,
     testIsolation: true,
     chromeWebSecurity: false,

@@ -20,6 +20,23 @@ import './helpers'
 import './querysSql'
 import "cypress-real-events";
 
+Cypress.env('user', {
+  usuario: Cypress.env('APP_USER'),
+  senha:   Cypress.env('APP_PASS'),
+})
+
+Cypress.env('empresa', {
+  cnpj: '14144375000130',
+  razaoSocial: 'MG POLIMEROS INDUSTRIA E COMERCIO LTDA',
+  kyc: ['Clube de Futebol', 'Mútuo Petro', 'Participação Estrangeira', 'Mútuo SUS'],
+  produtos: {
+    ['CCB/NC']: { limite: '50000000', prazo: '365', taxa: '2.00', concentracao: '100' },
+    ['ANCORA']: { limite: '50000000', prazo: '365', taxa: '2.00', concentracao: '100' },
+    ['BOLETO']: { limite: '50000000', prazo: '365', taxa: '2.00', concentracao: '100' },
+    ['CLEAN']: { limite: '50000000', prazo: '365', taxa: '2.00', concentracao: '100' }
+  }
+})
+
 // Ignora esse erro específico para o teste não falhar
 Cypress.on('uncaught:exception', (err) => {
   if (

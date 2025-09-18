@@ -1,10 +1,11 @@
 // Define a origem do Keycloak a partir das variáveis de ambiente
 const kcOrigin = Cypress.env('BASE_URL_KEYCLOAK');
+const getApps = Cypress.env('apps');
 
 // Comando customizado para login bem-sucedido via Keycloak
-Cypress.Commands.add('loginKeycloak', (usuario, senha) => {
+Cypress.Commands.add('loginKeycloak', (usuario, senha, plataforma = 'backoffice') => {
   // Garante que está na aplicação antes de trocar de domínio
-  cy.goTo('backoffice', '/')
+  cy.goTo(plataforma, '/')
   // Executa o fluxo de login no domínio do Keycloak
   cy.origin(kcOrigin, { args: { usuario, senha } }, ({ usuario, senha }) => {
       cy.get('#username').clear().type(usuario);
@@ -13,12 +14,13 @@ Cypress.Commands.add('loginKeycloak', (usuario, senha) => {
     }
   );
   // Verifica se retornou para o domínio da aplicação
-  cy.location('origin', { timeout: 60000 }).should('eq', Cypress.config('baseUrl'));
+  const expectedOrigin = new URL(getApps[plataforma]).origin;
+  cy.location('origin', { timeout: 60000 }).should('eq', expectedOrigin);
 });
 
 // Comando customizado para login com erro via Keycloak
-Cypress.Commands.add('loginKeycloakError', (usuario, senha) => {
-  cy.goTo('backoffice', '/')
+Cypress.Commands.add('loginKeycloakError', (usuario, senha, plataforma = 'backoffice') => {
+  cy.goTo(plataforma, '/')
   cy.origin(kcOrigin, { args: { usuario, senha } }, ({ usuario, senha }) => {
       cy.get('#username').clear().type(usuario);
       cy.get('#password').clear().type(senha, { log: false });
@@ -49,6 +51,7 @@ Cypress.Commands.add('avancarEsteira', (parecer) => {
   cy.contains('Confirmar').click()
 })
 
+const cypress = require('cypress');
 const { urlFor } = require('./helpers');
 
 Cypress.Commands.add('goTo', (app, path = '/') => {
@@ -58,4 +61,8 @@ Cypress.Commands.add('goTo', (app, path = '/') => {
 // Dica: este comando **rende** uma string (via yield), então use com .then(...)
 Cypress.Commands.add('urlFor', (app, path = '/') => {
   return urlFor(app, path);
+})
+
+Cypress.Commands.add('virificarLocal', (local =  'Buscar') => {
+  cy.contains(local).should('be.visible')
 })

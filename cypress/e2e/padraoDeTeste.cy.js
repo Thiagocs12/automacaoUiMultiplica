@@ -1,7 +1,4 @@
-const user = {
-  usuario: Cypress.env('APP_USER'),
-  senha: Cypress.env('APP_PASS')
-}
+const user = Cypress.env('user');
 
 describe('Validação de Login', () => {
     beforeEach(() => {
@@ -9,7 +6,6 @@ describe('Validação de Login', () => {
     })
 
     it('Deve fazer login com sucesso com usuário e senha válidos', () => {
-        console.log('USER:', user)
         cy.loginKeycloak(user.usuario, user.senha)
         cy.get('[data-testid="SearchIcon"]').should('be.visible')
     })
