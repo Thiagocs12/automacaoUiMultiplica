@@ -64,3 +64,15 @@ Cypress.on('uncaught:exception', (err) => {
     return false; // não falha o teste por este erro
   }
 });
+
+// Silencia apenas o erro do ResizeObserver
+Cypress.on('uncaught:exception', (err) => {
+  const msg = err?.message || ''
+  if (
+    msg.includes('ResizeObserver loop completed with undelivered notifications') ||
+    msg.includes('ResizeObserver loop limit exceeded')
+  ) {
+    return false // impede que o teste falhe
+  }
+  // deixe outros erros quebrarem o teste
+})

@@ -9,6 +9,7 @@ Cypress.Commands.add('criarProspect', (cnpj, tipoProspect) => {
   cy.get('.prospeccao-MuiInputBase-root').type('Gerente Automa')//#campo gerente Criação da POC
   cy.get('[role="option"]').contains('GERENTE AUTOMAÇÃO').click();
   cy.realPress('Tab')
+  cy.wait(500)
   cy.contains('Salvar').click()
 });
 
@@ -28,12 +29,19 @@ Cypress.Commands.add('acessarProspectNaTela', (acao) => {
   cy.contains(acao).click()
 })
 
-//Busca o prospect na tela de monitor
+// Busca o prospect na tela de monitor
 Cypress.Commands.add('buscarProspectMonitor', (cnpj, tela, acao = null) => {  
-  //cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')
+  // cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')
   cy.contains(tela).click()
   cy.get('[name="cnpj"]').type(cnpj)
   cy.contains('Buscar').click()
+
   if (acao !== null && acao !== undefined) {
-    cy.acessarProspectNaTela(acao)
-  }})
+    if (acao === 'Realizar POC') {
+      cy.get('.MuiTableCell-alignCenter > .MuiButtonBase-root').click()
+      cy.acessarProspectNaTela(acao)
+    } else {
+      cy.acessarProspectNaTela(acao)
+    }
+  }
+})

@@ -109,3 +109,72 @@ Cypress.Commands.add('atualizarNomeFantasia', (cnpjCpf) => {
     params: { cnpjCpf }
   })
 })
+
+// ---------------------------------------------
+// Comando: cy.obterIdProposta(cnpjCpf)
+// ---------------------------------------------
+Cypress.Commands.add('obterIdProposta', (cnpjCpf) => {
+  const doc = String(cnpjCpf).replace(/\D/g, ''); // só números
+
+  return cy.task('db:exec', {
+    sql: `
+      SELECT TOP (1) c.idProposta AS id
+      FROM MC_CAD_PESSOA a 
+      JOIN MC_PRT_PROSPECT b ON a.id = b.idPessoa
+      JOIN MC_POC_PROSPECT c ON b.id = c.idProspect
+      WHERE a.cnpjCpf = @cnpjCpf
+      ORDER BY c.idProposta DESC;
+    `,
+    params: { cnpjCpf: doc }
+  }).then((result) => {
+    // suporta tanto result.recordset quanto já vir um array
+    const first =
+      Array.isArray(result) ? result[0] :
+      Array.isArray(result?.recordset) ? result.recordset[0] :
+      undefined;
+
+    const id = first?.id ?? first?.idProposta; // se esquecer do alias
+    if (id == null) {
+      throw new Error(`Nenhuma proposta encontrada para ${doc}. Retorno: ${JSON.stringify(result)}`);
+    }
+    return String(id); // string é mais segura para seletor data-*
+  });
+});
+
+// cypress/support/commands.js
+Cypress.Commands.add('votarComiteFavoravelPorCnpj', (cnpjCpf) => {
+  const sql = `
+    SET XACT_ABORT ON;
+    BEGIN TRY
+      BEGIN TRAN;
+
+      UPDATE v
+        SET v.voto = N'FAVORAVEL',
+            v.situacaoVoto = N'CONCLUIDO'
+      FROM MC_POC_COMITE_VOTACAO v
+      WHERE v.idComiteProposta IN (
+        SELECT d.id
+        FROM MC_CAD_PESSOA a
+        JOIN MC_PRT_PROSPECT b ON b.idPessoa = a.id
+        CROSS APPLY (
+          SELECT TOP (1) c.idProposta
+          FROM MC_POC_PROSPECT c
+          WHERE c.idProspect = b.id
+          ORDER BY c.idProposta DESC
+        ) ult
+        JOIN MC_POC_COMITE d ON d.idProposta = ult.idProposta
+        WHERE a.cnpjCpf = @cnpjCpf
+      );
+
+      SELECT rows = @@ROWCOUNT;
+
+      COMMIT;
+    END TRY
+    BEGIN CATCH
+      IF XACT_STATE() <> 0 ROLLBACK;
+      THROW; -- erro simples, sem mensagem custom
+    END CATCH;
+  `;
+  return cy.task('db:exec', { sql, params: { cnpjCpf } });
+});
+
