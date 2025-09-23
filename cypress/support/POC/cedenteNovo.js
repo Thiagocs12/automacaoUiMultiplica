@@ -39,9 +39,10 @@ Cypress.Commands.add('preencherCompliance', (parecer) => {
 Cypress.Commands.add('distribuirProposta', (cnpj) => {
   cy.obterIdProposta(cnpj).then((idProposta) => {
     const handleSel = `[data-rbd-drag-handle-draggable-id="${idProposta}"]`;
+    const destinoSel = '.prospeccao-prospeccao4 > :nth-child(2) > .prospeccao-MuiPaper-root';
     cy.distribuirPropostaComite(
       handleSel,
-      '.prospeccao-prospeccao4 > :nth-child(2) > .prospeccao-MuiPaper-root'
+      cy.get(destinoSel, { timeout: 60000 }).should('be.visible')
     );
   });
   cy.get('.MuiSelect-select').click();

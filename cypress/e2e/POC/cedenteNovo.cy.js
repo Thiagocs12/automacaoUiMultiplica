@@ -17,13 +17,13 @@ describe('Criação de uma POC para um cedente novo na casa', () => {
         cy.atualizarNomeFantasia(empresa.cnpj);
     });
 
-    //it('Validar que não posso criar uma poc para um cnpj que já está na esteira', () => {
-    //    cy.menu('Beyond BackOffice', 'Comercial', 'Prospect');
-    //    cy.criarProspect(empresa.cnpj, 'PROSPECT');
-    //    cy.contains('CNPJ informado está associado a uma esteira ativa.').should('be.visible');
-    //})
+    it('Validar que não posso criar uma poc para um cnpj que já está na esteira', () => {
+        cy.menu('Beyond BackOffice', 'Comercial', 'Prospect');
+        cy.criarProspect(empresa.cnpj, 'PROSPECT');
+        cy.contains('CNPJ informado está associado a uma esteira ativa.').should('be.visible');
+    })
 
-    it.only('Prospecção inicial', () => {
+    it('Prospecção inicial', () => {
         cy.menu('Beyond BackOffice', 'Comercial', 'Prospect');
         cy.buscarProspectMonitor(empresa.cnpj, 'Monitor', 'Cadastrar Prospect');
         cy.wait(200);
@@ -97,6 +97,7 @@ describe('Criação de uma POC para um cedente novo na casa', () => {
         cy.menu('Beyond BackOffice', 'Crédito', 'Prospect');
         cy.contains('Distribuição').click();
         cy.distribuirProposta(empresa.cnpj);
+        cy.scrollTo(0, 0);
         cy.verificarLocal('Distribuição Comitê');
     });
 
@@ -104,6 +105,7 @@ describe('Criação de uma POC para um cedente novo na casa', () => {
         cy.menu('Beyond BackOffice', 'Crédito', 'Prospect');
         cy.buscarProspectMonitor(empresa.cnpj, 'Análise Crédito', 'Realizar POC');
         cy.avancarEsteira('TESTE AUTOMACAO - APROVAÇÃO PARA PRÉ COMITÊ');
+        cy.verificarLocal('Análise Crédito');
     })
 
     it('Pré Comitê', () => {
@@ -112,24 +114,19 @@ describe('Criação de uma POC para um cedente novo na casa', () => {
         cy.get('.MuiTableCell-alignCenter > .MuiButtonBase-root').click()
         cy.acessarProspectNaTela('Analisar');
         cy.avancarEsteira('TESTE AUTOMACAO - APROVAÇÃO PARA COMITÊ');
+        cy.verificarLocal();
     })
 
     it('Comitê de Crédito', () => {
         //cy.viewport(1920, 1080)
         cy.menu('Beyond BackOffice', 'Comitê', 'Comitê de Crédito', 'Comitê de Crédito');
         cy.buscarProspectMonitor(empresa.cnpj, 'Comitê de Crédito');
-        cy.wait(500);
-        cy.get(':nth-child(5) > .MuiPaper-root > .MuiTableContainer-root > .MuiTable-root > .MuiTableBody-root > .MuiTableRow-root > .MuiTableCell-alignCenter > .MuiButtonBase-root').click() //# Sbotão + expandir comites
-        cy.acessarProspectNaTela('Votar');
-        cy.wait(3000);
-        cy.contains('Votação').click();
-        cy.contains('Portal Beyond').click();
-        cy.contains('Portal Terceiros').click();
-        cy.contains('Salvar').click();
-        cy.get(':nth-child(3) > .prospeccao-MuiBox-root > .prospeccao-MuiButtonBase-root').click(); //# Botão enviar votação
-        cy.get('input.PrivateSwitchBase-input.css-1m9pwf3').check({ force: true }) //# selecionar todos votantes
-        cy.contains('Enviar').click();
+        cy.aprovarProspectComite();
         cy.votarComiteFavoravelPorCnpj(empresa.cnpj);
-        cy.wait(200000);
+        cy.obterIdProposta(empresa.cnpj).then((idProposta) => {
+            cy.finalizaPocComite(idProposta)
+        })
+        cy.contains('Avançar').click();
+        cy.contains('Confirmar').click();
     })
 });

@@ -141,7 +141,7 @@ Cypress.Commands.add('obterIdProposta', (cnpjCpf) => {
   });
 });
 
-// cypress/support/commands.js
+
 Cypress.Commands.add('votarComiteFavoravelPorCnpj', (cnpjCpf) => {
   const sql = `
     SET XACT_ABORT ON;
@@ -178,3 +178,12 @@ Cypress.Commands.add('votarComiteFavoravelPorCnpj', (cnpjCpf) => {
   return cy.task('db:exec', { sql, params: { cnpjCpf } });
 });
 
+Cypress.Commands.add('finalizaPocComite', (idProposta) => {
+  const sql = `
+    UPDATE beyondhml.dbo.MC_POC_COMITE
+	  SET situacaoVotacao=N'FINALIZADA'
+	  WHERE idProposta=@idProposta;
+
+  `;
+  return cy.task('db:exec', { sql, params: { idProposta } });
+});

@@ -45,3 +45,18 @@ Cypress.Commands.add('buscarProspectMonitor', (cnpj, tela, acao = null) => {
     }
   }
 })
+
+// Aprovação do prospect no comite de crédito
+Cypress.Commands.add('aprovarProspectComite', () => {
+    cy.wait(500);
+    cy.get(':nth-child(5) > .MuiPaper-root > .MuiTableContainer-root > .MuiTable-root > .MuiTableBody-root > .MuiTableRow-root > .MuiTableCell-alignCenter > .MuiButtonBase-root').click() //# Sbotão + expandir comites
+    cy.acessarProspectNaTela('Votar');
+    cy.wait(3000);
+    cy.contains('Votação').click();
+    cy.contains('Portal Beyond').click();
+    cy.contains('Portal Terceiros').click();
+    cy.contains('Salvar').click();
+    cy.get(':nth-child(3) > .prospeccao-MuiBox-root > .prospeccao-MuiButtonBase-root').click(); //# Botão enviar votação
+    cy.get('input.PrivateSwitchBase-input.css-1m9pwf3').check({ force: true }) //# selecionar todos votantes
+    cy.contains('Enviar').click();
+})
