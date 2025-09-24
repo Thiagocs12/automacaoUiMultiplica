@@ -139,6 +139,6 @@ module.exports = defineConfig({
     // viewportHeight: 768,
   },
 
-  video: false,
+  video: true,
   screenshotOnRunFailure: false,
 });

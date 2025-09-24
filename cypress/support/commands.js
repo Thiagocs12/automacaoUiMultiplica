@@ -40,19 +40,22 @@ Cypress.Commands.add('menu', (modulo, area, entidade, home = 'Home') => {
 });
 
 // Avança a esteira aberta na tela
-Cypress.Commands.add('avancarEsteira', (parecer) => {
-    cy.get('[title="Parecer"]').click();
-    cy.get('.prospeccao-MuiGrid-root > .prospeccao-MuiButtonBase-root').click(); //#Botão adicionar parecer
-    cy.wait(500);
-    cy.get('[name="parecer"]').type(parecer);
-    cy.contains('Salvar').click();
-    cy.contains('Confirmar').click();
-    cy.contains('Avançar').click();
-    cy.contains('Confirmar').click();
+Cypress.Commands.add('avancarEsteira', (parecer = null, botao = 'Avançar') => {
+    if (parecer !== null && parecer !== undefined) {
+      cy.get('[title="Parecer"]').click();
+      cy.get('.prospeccao-MuiGrid-root > .prospeccao-MuiButtonBase-root').click(); //#Botão adicionar parecer
+      cy.wait(500);
+      cy.get('[name="parecer"]').type(parecer)
+      cy.contains('Salvar').click();
+      cy.contains('Confirmar').click();
+    };
+    cy.contains(botao).click();
+    if (botao !== 'Administradora') {
+      cy.contains('Confirmar').click();
+    }
 });
 
 Cypress.Commands.add('verificarLocal', (local = 'Buscar') => {
-    //cy.scrollTo(0, 0);
     cy.contains(local).should('be.visible');
     cy.wait(500);
 });
@@ -68,50 +71,43 @@ Cypress.Commands.add('urlFor', (app, path = '/') => {
     return urlFor(app, path);
 });
 
-// Com cypress-real-events instalado
-Cypress.Commands.add('distribuirPropostaComite', (selOrigemHandle, selDestinoQualquer) => {
+Cypress.Commands.add('distribuirPropostaComite', (selOrigemHandle, selDestino) => {
   const center = ($el) => {
     const r = $el[0].getBoundingClientRect();
     return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
   };
 
   const getDroppable = ($el) => {
-    // Sobe na árvore até achar o droppable
     const droppable = $el.closest('[data-rbd-droppable-id]');
     if (droppable && droppable.length) return droppable;
-    // fallback: se o seletor já é o próprio droppable
     return $el.is('[data-rbd-droppable-id]') ? $el : $el;
   };
 
-  // Garante que o destino está visível na tela
-  cy.get(selDestinoQualquer, { timeout: 10000 })
+  // garanta destino visível e guarde como @droppable
+  cy.get(selDestino, { timeout: 60000 })
     .scrollIntoView()
     .should('be.visible')
     .then(($qualquer) => getDroppable($qualquer))
-    .then(($droppable) => {
-      cy.wrap($droppable).as('droppable');
-    });
+    .then(($droppable) => cy.wrap($droppable).as('droppable'));
 
-  // Lifte do drag no HANDLE correto
-  cy.get(selOrigemHandle, { timeout: 10000 })
+  // arraste a partir do handle de origem
+  cy.get(selOrigemHandle, { timeout: 60000 })
     .scrollIntoView()
     .should('be.visible')
     .then(($src) => {
       const start = center($src);
-      // move o mouse até o handle e pressiona (botão esquerdo)
       cy.get('body').realMouseMove(start.x, start.y);
       cy.wrap($src).realMouseDown({ button: 'left' });
-      // pequeno “jitter” para o RBD reconhecer o drag
       cy.get('body').realMouseMove(start.x + 8, start.y + 8, { position: 'topLeft' });
     });
 
-  // Arrasta até o CENTRO do DROPPABLE e solta lá
+  // solte no droppable
   cy.get('@droppable').then(($tgt) => {
     const end = center($tgt);
-    cy.get('body').realMouseMove(end.x, end.y);        // mouse sobre o droppable
-    cy.wrap($tgt).realMouseUp({ button: 'left' });     // solta no droppable (não no body)
+    cy.get('body').realMouseMove(end.x, end.y);
+    cy.wrap($tgt).realMouseUp({ button: 'left' });
   });
 
-  // Validação opcional: o item agora deve estar dentro do droppable
+  // opcional: validação
   // cy.get('@droppable').find(selOrigemHandle).should('exist');
 });

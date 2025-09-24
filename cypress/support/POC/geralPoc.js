@@ -35,7 +35,7 @@ Cypress.Commands.add('buscarProspectMonitor', (cnpj, tela, acao = null) => {
   cy.contains(tela).click()
   cy.get('[name="cnpj"]').type(cnpj)
   cy.contains('Buscar').click()
-
+  cy.wait(1000)
   if (acao !== null && acao !== undefined) {
     if (acao === 'Realizar POC') {
       cy.get('.MuiTableCell-alignCenter > .MuiButtonBase-root').click()

@@ -9,7 +9,7 @@ Cypress.Commands.add('cleanupPessoa', (cnpjCpf) => {
 
       BEGIN TRY
         BEGIN TRAN;
-
+        
         DELETE FROM MC_CAD_PESSOA_ENDERECO WHERE idPessoa IN (SELECT id FROM MC_CAD_PESSOA WHERE cnpjCpf=@cnpjCpf);
         DELETE FROM MC_CED_FILIAL            WHERE idPessoa IN (SELECT id FROM MC_CAD_PESSOA WHERE cnpjCpf=@cnpjCpf);
         DELETE FROM MC_PRT_FILIAL            WHERE idPessoa IN (SELECT id FROM MC_CAD_PESSOA WHERE cnpjCpf=@cnpjCpf);
@@ -19,6 +19,11 @@ Cypress.Commands.add('cleanupPessoa', (cnpjCpf) => {
         DELETE FROM MC_PRT_FILIAL            WHERE idProspect IN (SELECT id FROM MC_PRT_PROSPECT WHERE idPessoa IN (SELECT id FROM MC_CAD_PESSOA WHERE cnpjCpf=@cnpjCpf));
         DELETE FROM MC_PRT_FORNECEDORES      WHERE idProspect IN (SELECT id FROM MC_PRT_PROSPECT WHERE idPessoa IN (SELECT id FROM MC_CAD_PESSOA WHERE cnpjCpf=@cnpjCpf));
         DELETE FROM MC_POC_PROSPECT          WHERE idProspect IN (SELECT id FROM MC_PRT_PROSPECT WHERE idPessoa IN (SELECT id FROM MC_CAD_PESSOA WHERE cnpjCpf=@cnpjCpf));
+
+        UPDATE MC_CED_CEDENTE
+            SET idProspect = null
+        WHERE id in ((SELECT id FROM MC_CED_CEDENTE WHERE idPessoa IN (SELECT id FROM MC_CAD_PESSOA WHERE cnpjCpf=@cnpjCpf)));
+        
         DELETE FROM MC_PRT_PROSPECT          WHERE idPessoa IN (SELECT id FROM MC_CAD_PESSOA WHERE cnpjCpf=@cnpjCpf);
         DELETE FROM MC_MOP_OPERACAO_CONTA_BANCARIA WHERE idPessoaContaBancaria IN (SELECT id FROM MC_CAD_PESSOA_CONTA_BANCARIA WHERE idPessoa IN (SELECT id FROM MC_CAD_PESSOA WHERE cnpjCpf=@cnpjCpf));
         DELETE FROM MC_CAD_PESSOA_CONTA_BANCARIA   WHERE idPessoa IN (SELECT id FROM MC_CAD_PESSOA WHERE cnpjCpf=@cnpjCpf);
@@ -63,6 +68,8 @@ Cypress.Commands.add('cleanupPessoa', (cnpjCpf) => {
         DELETE FROM MC_CED_PRODUTO                WHERE idCedente IN (SELECT id FROM MC_CED_CEDENTE WHERE idPessoa IN (SELECT id FROM MC_CAD_PESSOA WHERE cnpjCpf=@cnpjCpf));
         DELETE FROM MC_CED_PORTAL_CONVENIO        WHERE idCedente IN (SELECT id FROM MC_CED_CEDENTE WHERE idPessoa IN (SELECT id FROM MC_CAD_PESSOA WHERE cnpjCpf=@cnpjCpf));
         DELETE FROM MC_PRT_DADOS_OPERACIONAIS     WHERE idPessoa IN (SELECT id FROM MC_CAD_PESSOA WHERE cnpjCpf=@cnpjCpf);
+        DELETE FROM MC_CED_FILIAL                 WHERE idCedente IN (SELECT id FROM MC_CED_CEDENTE WHERE idPessoa IN (SELECT id FROM MC_CAD_PESSOA WHERE cnpjCpf=@cnpjCpf));
+        DELETE FROM MC_CED_OBSERVACAO             WHERE idCedente IN (SELECT id FROM MC_CED_CEDENTE WHERE idPessoa IN (SELECT id FROM MC_CAD_PESSOA WHERE cnpjCpf=@cnpjCpf));
         DELETE FROM MC_CED_CEDENTE                WHERE idPessoa IN (SELECT id FROM MC_CAD_PESSOA WHERE cnpjCpf=@cnpjCpf);
         DELETE FROM MC_CAD_PESSOA                 WHERE cnpjCpf=@cnpjCpf;
 
@@ -186,4 +193,14 @@ Cypress.Commands.add('finalizaPocComite', (idProposta) => {
 
   `;
   return cy.task('db:exec', { sql, params: { idProposta } });
+});
+
+Cypress.Commands.add('atualizarSituacaoComite', () => {
+  return cy.task('db:exec', {
+    sql: `
+      UPDATE beyondhml.dbo.MC_CAD_COMITE
+      SET idSituacao = 6
+      WHERE id = 376;
+    `
+  });
 });

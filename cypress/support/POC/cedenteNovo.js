@@ -16,6 +16,15 @@ Cypress.Commands.add('adicionarProdutosPleito', (produto, limite, prazo, taxa, c
   cy.get('.css-1bvc4cc > .MuiButton-root').click();
 });
 
+// Adiciona produtos ao pleito pelo grupo
+Cypress.Commands.add('adicionarFundoPleito', (fundo) => {
+  cy.get('#main-menu-body > section > div > main > div > div:nth-child(2) > div:nth-child(1) > div > div:nth-child(6) > div > div:nth-child(1) > button').click()
+  cy.wait(500)
+  cy.get('#main-menu-body > section > div > main > div > div:nth-child(2) > div:nth-child(1) > div > div:nth-child(6) > div > div:nth-child(2) > div > form > div:nth-child(1) > div > div > div > div > div > button:nth-child(2) > span:nth-child(1) > svg').click()
+  cy.contains(fundo).click()
+  cy.get('.prospeccao-MuiGrid-grid-md-4 > div > .prospeccao-MuiButton-contained').click()
+});
+
 // Avança as etapas de aprovação do prospect
 Cypress.Commands.add('aprovarProspect', (parecer, acao = 'Analisar Prospect') => {
   cy.wait(500);
@@ -40,10 +49,7 @@ Cypress.Commands.add('distribuirProposta', (cnpj) => {
   cy.obterIdProposta(cnpj).then((idProposta) => {
     const handleSel = `[data-rbd-drag-handle-draggable-id="${idProposta}"]`;
     const destinoSel = '.prospeccao-prospeccao4 > :nth-child(2) > .prospeccao-MuiPaper-root';
-    cy.distribuirPropostaComite(
-      handleSel,
-      cy.get(destinoSel, { timeout: 60000 }).should('be.visible')
-    );
+    cy.distribuirPropostaComite(handleSel, destinoSel);
   });
   cy.get('.MuiSelect-select').click();
   cy.contains('ANALISTA AUTOMAÇÃO').click();

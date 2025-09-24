@@ -2,9 +2,9 @@ const user = Cypress.env('user');
 const empresa = Cypress.env('empresa');
 
 describe('Criação de uma POC para um cedente novo na casa', () => {
-    //before(() => {
-    //    cy.cleanupPessoa(empresa.cnpj)
-    //})
+    before(() => {
+        cy.cleanupPessoa(empresa.cnpj)
+    })
 
     beforeEach(() => {
         cy.loginKeycloak(user.usuario, user.senha);
@@ -28,6 +28,7 @@ describe('Criação de uma POC para um cedente novo na casa', () => {
         cy.buscarProspectMonitor(empresa.cnpj, 'Monitor', 'Cadastrar Prospect');
         cy.wait(200);
         cy.preencherPleitoLimiteGlobal('50000000');
+        cy.adicionarFundoPleito('MULTIPLICA')
         for (const produto in empresa.produtos) {
             const { limite, prazo, taxa, concentracao } = empresa.produtos[produto];
             cy.adicionarProdutosPleito(produto, limite, prazo, taxa, concentracao);
@@ -94,10 +95,10 @@ describe('Criação de uma POC para um cedente novo na casa', () => {
     });
 
     it('Distribuição', () => {
+        cy.atualizarSituacaoComite()
         cy.menu('Beyond BackOffice', 'Crédito', 'Prospect');
         cy.contains('Distribuição').click();
         cy.distribuirProposta(empresa.cnpj);
-        cy.scrollTo(0, 0);
         cy.verificarLocal('Distribuição Comitê');
     });
 
@@ -113,11 +114,11 @@ describe('Criação de uma POC para um cedente novo na casa', () => {
         cy.buscarProspectMonitor(empresa.cnpj, 'Pré Comitê');
         cy.get('.MuiTableCell-alignCenter > .MuiButtonBase-root').click()
         cy.acessarProspectNaTela('Analisar');
-        cy.avancarEsteira('TESTE AUTOMACAO - APROVAÇÃO PARA COMITÊ');
+        cy.avancarEsteira();
         cy.verificarLocal();
     })
 
-    it('Comitê de Crédito', () => {
+    it('Preencher e votar Comitê de Crédito', () => {
         //cy.viewport(1920, 1080)
         cy.menu('Beyond BackOffice', 'Comitê', 'Comitê de Crédito', 'Comitê de Crédito');
         cy.buscarProspectMonitor(empresa.cnpj, 'Comitê de Crédito');
@@ -126,7 +127,56 @@ describe('Criação de uma POC para um cedente novo na casa', () => {
         cy.obterIdProposta(empresa.cnpj).then((idProposta) => {
             cy.finalizaPocComite(idProposta)
         })
+    })
+
+    it('Comitê de crédito', () => {
+        //cy.viewport(1920, 1080)
+        cy.menu('Beyond BackOffice', 'Comitê', 'Comitê de Crédito', 'Comitê de Crédito');
+        cy.buscarProspectMonitor(empresa.cnpj, 'Comitê de Crédito');
+        cy.wait(500);
+        cy.get(':nth-child(5) > .MuiPaper-root > .MuiTableContainer-root > .MuiTable-root > .MuiTableBody-root > .MuiTableRow-root > .MuiTableCell-alignCenter > .MuiButtonBase-root').click() //# Sbotão + expandir comites
+        cy.acessarProspectNaTela('Votar');
+        cy.wait(2000)
+        cy.contains('Votação').click();
+        cy.get('.MuiPaper-root > .MuiButtonBase-root').click()
+        cy.wait(1000)
         cy.contains('Avançar').click();
+        cy.get('[name="aprovar"] > .prospeccao-MuiButton-label').click();
+        cy.verificarLocal();
+    })
+
+    it('Docs Comerciais', () => {
+        cy.menu('Beyond BackOffice', 'Comercial', 'Prospect');
+        cy.buscarProspectMonitor(empresa.cnpj, 'Monitor', 'Cadastrar Cedente');
+        cy.avancarEsteira('TESTE AUTOMACAO - AVANÇAR ETAPA PARA FORMALIZAÇÃO', 'Formalização');
+        cy.verificarLocal();
+    });
+
+    it('Formalização', () => {
+        cy.menu('Beyond BackOffice', 'Formalização', 'Formalização', 'Monitor');
+        cy.buscarProspectMonitor(empresa.cnpj, 'Formalização', 'Realizar Formalização');
+        cy.wait(500)
+        cy.get('[title="Parecer"]').click();
+        cy.get('.prospeccao-MuiGrid-root > .prospeccao-MuiButtonBase-root').click(); //#Botão adicionar parecer
+        cy.wait(500);
+        cy.get('[name="parecer"]').type('TESTE AUTOMACAO - AVANÇAR ETAPA PARA ADMINISTRADORA')
+        cy.contains('Salvar').click();
         cy.contains('Confirmar').click();
+        cy.get(':nth-child(3) > div > .prospeccao-MuiButtonBase-root > .prospeccao-MuiButton-label').click()
+        cy.get('[name="aprovar"] > .prospeccao-MuiButton-label').click();
+        cy.verificarLocal();
+    });
+
+    it('Administradora', () => {
+        cy.menu('Beyond BackOffice', 'Formalização', 'Administradora', 'Monitor');
+        cy.buscarProspectMonitor(empresa.cnpj, 'Administradora', 'Realizar Administração');
+        cy.get('#main-menu-body div:nth-child(16) > button:nth-child(2)').click();
+        cy.contains('Parâmetros Operação').click()
+        cy.contains('Fundos').click()
+        cy.get('.prospeccao-MuiTableCell-alignCenter > .prospeccao-MuiBox-root > :nth-child(1)').click()
+        cy.contains('Administradora habilitada').click()
+        cy.contains('Gestora habilitada').click()
+        cy.contains('Salvar').click()
+        cy.avancarEsteira('TESTE AUTOMACAO - FINALIZAR A ESTEIRA', 'Finalizar');
     })
 });
