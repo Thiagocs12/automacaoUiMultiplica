@@ -18,6 +18,7 @@ import './commands'
 import './poc'
 import './helpers'
 import './querysSql'
+import './requests'
 import "cypress-real-events";
 
 Cypress.env('user', {
@@ -30,10 +31,10 @@ Cypress.env('empresa', {
   razaoSocial: 'MG POLIMEROS INDUSTRIA E COMERCIO LTDA',
   kyc: ['Clube de Futebol', 'Mútuo Petro', 'Participação Estrangeira', 'Mútuo SUS'],
   produtos: {
-    ['CCB/NC']: { limite: '50000000', prazo: '365', taxa: '2.00', concentracao: '100' },
-    ['ANCORA']: { limite: '50000000', prazo: '365', taxa: '2.00', concentracao: '100' },
-    ['BOLETO']: { limite: '50000000', prazo: '365', taxa: '2.00', concentracao: '100' },
-    ['CLEAN']: { limite: '50000000', prazo: '365', taxa: '2.00', concentracao: '100' }
+    ['CCB/NC']: { limite: '5000000', prazo: '365', taxa: '2.00', concentracao: '100' },
+    ['ANCORA']: { limite: '5000000', prazo: '365', taxa: '2.00', concentracao: '100' },
+    ['BOLETO']: { limite: '5000000', prazo: '365', taxa: '2.00', concentracao: '100' },
+    ['CLEAN']:  { limite: '5000000', prazo: '365', taxa: '2.00', concentracao: '100' }
   }
 })
 

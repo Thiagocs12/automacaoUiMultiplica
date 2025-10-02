@@ -10,6 +10,7 @@ module.exports = defineConfig({
       APP_PASS: process.env.APP_PASS,
       APP_USER: process.env.APP_USER,
       BASE_URL_KEYCLOAK: process.env.BASE_URL_KEYCLOAK,
+      BASE_URL_BACKOFFICE: process.env.BASE_URL_BACKOFFICE,
     },
 
     setupNodeEvents(on, config) {

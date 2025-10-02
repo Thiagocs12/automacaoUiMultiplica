@@ -44,13 +44,13 @@ Cypress.Commands.add('avancarEsteira', (parecer = null, botao = 'Avançar') => {
     if (parecer !== null && parecer !== undefined) {
       cy.get('[title="Parecer"]').click();
       cy.get('.prospeccao-MuiGrid-root > .prospeccao-MuiButtonBase-root').click(); //#Botão adicionar parecer
-      cy.wait(500);
+      cy.wait(1000);
       cy.get('[name="parecer"]').type(parecer)
       cy.contains('Salvar').click();
       cy.contains('Confirmar').click();
     };
-    cy.contains(botao).click();
     if (botao !== 'Administradora') {
+      cy.contains(botao).click();
       cy.contains('Confirmar').click();
     }
 });
@@ -107,7 +107,22 @@ Cypress.Commands.add('distribuirPropostaComite', (selOrigemHandle, selDestino) =
     cy.get('body').realMouseMove(end.x, end.y);
     cy.wrap($tgt).realMouseUp({ button: 'left' });
   });
+});
 
-  // opcional: validação
-  // cy.get('@droppable').find(selOrigemHandle).should('exist');
+Cypress.Commands.add('armazenarKCTokenEmEnv', () => {
+  cy.intercept(
+    { method: 'POST', url: '**/protocol/openid-connect/token' },
+    (req) => {
+      // Deixa a requisição seguir normalmente…
+      req.continue((res) => {
+        const body = typeof res.body === 'string' ? JSON.parse(res.body) : res.body;
+        const token = body?.access_token;
+        if (token) {
+          Cypress.env('token', token); // <- do jeitinho que você quer
+          // opcional: log curto para debug (sem exibir o token)
+          Cypress.log({ name: 'KC Token', message: 'access_token salvo em Cypress.env("token")' });
+        }
+      });
+    }
+  );
 });

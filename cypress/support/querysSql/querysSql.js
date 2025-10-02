@@ -148,6 +148,22 @@ Cypress.Commands.add('obterIdProposta', (cnpjCpf) => {
   });
 });
 
+Cypress.Commands.add('obterIdComite', (idProposta) => {
+  return cy.task('db:exec', {
+    sql: `
+      SELECT TOP (1) id
+      FROM MC_POC_COMITE
+      WHERE idProposta = @idProposta
+      ORDER BY id DESC;
+    `,
+    params: { idProposta }
+  }).then((res) => {
+    const row = (res.recordset || res)[0];
+    return String(row.id);
+  });
+});
+
+
 
 Cypress.Commands.add('votarComiteFavoravelPorCnpj', (cnpjCpf) => {
   const sql = `
