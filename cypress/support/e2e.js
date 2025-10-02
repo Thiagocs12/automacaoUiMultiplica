@@ -18,7 +18,25 @@ import './commands'
 import './poc'
 import './helpers'
 import './querysSql'
+import './requests'
 import "cypress-real-events";
+
+Cypress.env('user', {
+  usuario: Cypress.env('APP_USER'),
+  senha:   Cypress.env('APP_PASS'),
+})
+
+Cypress.env('empresa', {
+  cnpj: '14144375000130',
+  razaoSocial: 'MG POLIMEROS INDUSTRIA E COMERCIO LTDA',
+  kyc: ['Clube de Futebol', 'Mútuo Petro', 'Participação Estrangeira', 'Mútuo SUS'],
+  produtos: {
+    ['CCB/NC']: { limite: '5000000', prazo: '365', taxa: '2.00', concentracao: '100' },
+    ['ANCORA']: { limite: '5000000', prazo: '365', taxa: '2.00', concentracao: '100' },
+    ['BOLETO']: { limite: '5000000', prazo: '365', taxa: '2.00', concentracao: '100' },
+    ['CLEAN']:  { limite: '5000000', prazo: '365', taxa: '2.00', concentracao: '100' }
+  }
+})
 
 // Ignora esse erro específico para o teste não falhar
 Cypress.on('uncaught:exception', (err) => {
@@ -47,3 +65,15 @@ Cypress.on('uncaught:exception', (err) => {
     return false; // não falha o teste por este erro
   }
 });
+
+// Silencia apenas o erro do ResizeObserver
+Cypress.on('uncaught:exception', (err) => {
+  const msg = err?.message || ''
+  if (
+    msg.includes('ResizeObserver loop completed with undelivered notifications') ||
+    msg.includes('ResizeObserver loop limit exceeded')
+  ) {
+    return false // impede que o teste falhe
+  }
+  // deixe outros erros quebrarem o teste
+})

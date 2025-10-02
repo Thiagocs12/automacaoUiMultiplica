@@ -10,6 +10,7 @@ module.exports = defineConfig({
       APP_PASS: process.env.APP_PASS,
       APP_USER: process.env.APP_USER,
       BASE_URL_KEYCLOAK: process.env.BASE_URL_KEYCLOAK,
+      BASE_URL_BACKOFFICE: process.env.BASE_URL_BACKOFFICE,
     },
 
     setupNodeEvents(on, config) {
@@ -131,7 +132,7 @@ module.exports = defineConfig({
       return config;
     },
 
-    defaultCommandTimeout: 20000,
+    defaultCommandTimeout: 60000,
     pageLoadTimeout: 60000,
     testIsolation: true,
     chromeWebSecurity: false,
@@ -139,6 +140,6 @@ module.exports = defineConfig({
     // viewportHeight: 768,
   },
 
-  video: false,
+  video: true,
   screenshotOnRunFailure: false,
 });

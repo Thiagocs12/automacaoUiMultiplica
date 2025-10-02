@@ -9,6 +9,7 @@ Cypress.Commands.add('criarProspect', (cnpj, tipoProspect) => {
   cy.get('.prospeccao-MuiInputBase-root').type('Gerente Automa')//#campo gerente Criação da POC
   cy.get('[role="option"]').contains('GERENTE AUTOMAÇÃO').click();
   cy.realPress('Tab')
+  cy.wait(500)
   cy.contains('Salvar').click()
 });
 
@@ -24,16 +25,61 @@ Cypress.Commands.add('preencherPleitoLimiteGlobal', (limite) => {
 
 //Acessa o prospect pesquisado no monitor
 Cypress.Commands.add('acessarProspectNaTela', (acao) => {
+  if (acao === 'Votar'){
+    cy.get(':nth-child(5) > .MuiPaper-root > .MuiTableContainer-root > .MuiTable-root > .MuiTableBody-root > .MuiTableRow-root > .MuiTableCell-alignCenter > .MuiButtonBase-root').click() //# botão + expandir comites
+  } 
   cy.get('.prospeccao-MuiIconButton-label > .prospeccao-MuiSvgIcon-root').click()//#Ações da POC no monitor
-  cy.contains(acao).click()
+  cy.contains(acao).click()  
 })
 
-//Busca o prospect na tela de monitor
+// Busca o prospect na tela de monitor
 Cypress.Commands.add('buscarProspectMonitor', (cnpj, tela, acao = null) => {  
-  //cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')
+  // cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')
   cy.contains(tela).click()
   cy.get('[name="cnpj"]').type(cnpj)
   cy.contains('Buscar').click()
+  cy.wait(1000)
   if (acao !== null && acao !== undefined) {
-    cy.acessarProspectNaTela(acao)
-  }})
+    if (acao === 'Realizar POC') {
+      cy.get('.MuiTableCell-alignCenter > .MuiButtonBase-root').click()
+      cy.acessarProspectNaTela(acao)
+    } else {
+      cy.acessarProspectNaTela(acao)
+    }
+  }
+})
+
+// Aprovação do prospect no comite de crédito
+Cypress.Commands.add('aprovarProspectComite', () => {
+  cy.wait(2000);
+  cy.contains('Votação').click();
+  cy.contains('Portal Beyond').click();
+  cy.contains('Portal Terceiros').click();
+  cy.contains('Salvar').click();
+  cy.get(':nth-child(3) > .prospeccao-MuiBox-root > .prospeccao-MuiButtonBase-root').click(); //# Botão enviar votação
+  cy.get('input.PrivateSwitchBase-input.css-1m9pwf3').check({ force: true }) //# selecionar todos votantes
+  cy.contains('Enviar').click();
+})
+
+Cypress.Commands.add('acessarAtaComite', () => {
+  cy.wait(2000)
+  cy.contains('Votação').click();
+  cy.get('.MuiPaper-root > .MuiButtonBase-root').click()
+  cy.wait(2000)
+})
+
+Cypress.Commands.add('avancarComite', () => {
+  cy.wait(1000)
+  cy.contains('Avançar').click();
+  cy.get('[name="aprovar"] > .prospeccao-MuiButton-label').click();
+})
+
+Cypress.Commands.add('habilitarFundo', () => {
+  cy.get('#main-menu-body div:nth-child(16) > button:nth-child(2)').click();
+  cy.contains('Parâmetros Operação').click()
+  cy.contains('Fundos').click()
+  cy.get('.prospeccao-MuiTableCell-alignCenter > .prospeccao-MuiBox-root > :nth-child(1)').click()
+  cy.contains('Administradora habilitada').click()
+  cy.contains('Gestora habilitada').click()
+  cy.contains('Salvar').click()
+})

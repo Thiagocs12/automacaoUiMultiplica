@@ -1,85 +1,170 @@
-const user = {
-  usuario: Cypress.env('APP_USER'),
-  senha: Cypress.env('APP_PASS')
-}
-const empresa = {
-  cnpj: '14144375000130',
-  kyc: ['Clube de Futebol', 'Mútuo Petro', 'Participação Estrangeira', 'Mútuo SUS'],
-  produtos: {
-    ['CCB/NC']: { limite: '50000000', prazo: '365', taxa: '2.00', concentracao: '100' },
-    ['ANCORA']: { limite: '50000000', prazo: '365', taxa: '2.00', concentracao: '100' },
-    ['BOLETO']: { limite: '50000000', prazo: '365', taxa: '2.00', concentracao: '100' },
-    ['CLEAN']: { limite: '50000000', prazo: '365', taxa: '2.00', concentracao: '100' }
-  }
-}
+const user = Cypress.env('user')
+const empresa = Cypress.env('empresa')
 
 describe('Criação de uma POC para um cedente novo na casa', () => {
     before(() => {
         cy.cleanupPessoa(empresa.cnpj)
+        cy.armazenarKCTokenEmEnv()
     })
 
     beforeEach(() => {
         cy.loginKeycloak(user.usuario, user.senha)
     })
-    //skip
-    //it('encontrar coisas na tela', () => {
-    //    cy.viewport(1920, 1080)
-    //    cy.goTo('backoffice', '/')
-    //})
 
     it('Criar uma poc para um cedente novo na casa', () => {
         cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')
         cy.criarProspect(empresa.cnpj, 'PROSPECT')
-        cy.contains('Dados do Prospect').should('be.visible')
+        cy.verificarLocal('Dados do Prospect')
         cy.atualizarNomeFantasia(empresa.cnpj)
     })
-    
+
     it('Validar que não posso criar uma poc para um cnpj que já está na esteira', () => {
         cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')
         cy.criarProspect(empresa.cnpj, 'PROSPECT')
         cy.contains('CNPJ informado está associado a uma esteira ativa.').should('be.visible')
     })
 
-    it('Preencho os dados necessários para prosseguir com a poc', () => {
-        cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')        
+    it('Prospecção inicial', () => {
+        cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')
         cy.buscarProspectMonitor(empresa.cnpj, 'Monitor', 'Cadastrar Prospect')
         cy.wait(200)
-        cy.preencherPleitoLimiteGlobal('50000000')
+        cy.preencherPleitoLimiteGlobal('5000000')
+        cy.adicionarFundoPleito('MULTIPLICA')
         for (const produto in empresa.produtos) {
             const { limite, prazo, taxa, concentracao } = empresa.produtos[produto]
             cy.adicionarProdutosPleito(produto, limite, prazo, taxa, concentracao)
         }
         cy.avancarEsteira('TESTE AUTOMACAO - AVANÇAR ETAPA PARA DADOS COMPLEMENTARES')
-        })
-
-    it('Avançar a POC para KYC', () => {
-        cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')        
-        cy.buscarProspectMonitor(empresa.cnpj, 'Monitor', 'Cadastrar Prospect')
-        cy.avancarEsteira('TESTE AUTOMACAO - AVANÇAR ETAPA PARA KYC')
+        cy.verificarLocal()
     })
 
-    it('Avançar a POC para Aprovação Prospect', () => {
-        cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')        
+    it('Dados Complementares', () => {
+        cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')
+        cy.buscarProspectMonitor(empresa.cnpj, 'Monitor', 'Cadastrar Prospect')
+        cy.avancarEsteira('TESTE AUTOMACAO - AVANÇAR ETAPA PARA KYC')
+        cy.verificarLocal()
+    })
+
+    it('KYC', () => {
+        cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')
         cy.buscarProspectMonitor(empresa.cnpj, 'KYC', 'Responder KYC')
         for (const kyc of empresa.kyc) {
             cy.contains(kyc).click()
         }
         cy.contains('Salvar').click()
         cy.avancarEsteira('TESTE AUTOMACAO - AVANÇAR ETAPA PARA APROVAÇÃO PROSPECT')
+        cy.verificarLocal()
     })
 
-    it('Aprovar o Prospect', () => {
-        cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')        
+    it('Aprovação Plataforma', () => {
+        cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')
         cy.buscarProspectMonitor(empresa.cnpj, 'Monitor')
-        cy.aprovarProspect('PLATAFORMA')
-        cy.aprovarProspect('SUPERINTENDENCIA')
-        cy.aprovarProspect('DIRETORIA COMERCIAL')
+        cy.aprovarProspect('TESTE AUTOMACAO - APROVAR PROSPECT PLATAFORMA')
+        cy.verificarLocal()
     })
 
-    it('Aprovação do compliance', () => {
+    it('Aprovação Superintedente', () => {
+        cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')
+        cy.buscarProspectMonitor(empresa.cnpj, 'Monitor')
+        cy.aprovarProspect('TESTE AUTOMACAO - APROVAR PROSPECT SUPERINTENDENTE')
+        cy.verificarLocal()
+    })
+
+    it('Aprovação Diretoria', () => {
+        cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')
+        cy.buscarProspectMonitor(empresa.cnpj, 'Monitor')
+        cy.aprovarProspect('TESTE AUTOMACAO - APROVAR PROSPECT DIRETORIA')
+        cy.verificarLocal()
+    })
+
+    it('Aprovação compliance', () => {
         cy.menu('Beyond BackOffice', 'Compliance', 'Prospect')
         cy.buscarProspectMonitor(empresa.cnpj, 'Compliance')
         cy.preencherCompliance('TESTE AUTOMACAO - APROVAÇÃO COMPLIANCE')
         cy.avancarEsteira('TESTE AUTOMACAO - APROVAÇÃO PARA JURIDICO COMPLIANCE')
+    })
+
+    it('Aprovação jurídico compliance', () => {
+        cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')
+        cy.buscarProspectMonitor(empresa.cnpj, 'Monitor', 'Cadastrar Prospect')
+        cy.avancarEsteira('TESTE AUTOMACAO - APROVAÇÃO PARA COMPLIANCE 2')
+    })
+    
+    it('Aprovação compliance 2', () => {
+        cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')
+        cy.buscarProspectMonitor(empresa.cnpj, 'Monitor')
+        cy.aprovarProspect('TESTE AUTOMACAO - APROVAÇÃO PARA DISTRIBUIÇÃO', 'Cadastrar Prospect')
+        cy.verificarLocal()
+    })
+
+    it('Distribuição', () => {
+        cy.atualizarSituacaoComite()
+        cy.menu('Beyond BackOffice', 'Crédito', 'Prospect')
+        cy.contains('Distribuição').click()
+        cy.distribuirProposta(empresa.cnpj)
+        cy.verificarLocal('Comitê')
+    })
+
+    it('Analise de Credito', () => {
+        cy.setarPOC(empresa.cnpj)
+        cy.menu('Beyond BackOffice', 'Crédito', 'Prospect')
+        cy.buscarProspectMonitor(empresa.cnpj, 'Análise Crédito', 'Realizar POC')
+        cy.avancarEsteira('TESTE AUTOMACAO - APROVAÇÃO PARA PRÉ COMITÊ')
+        cy.verificarLocal('Análise Crédito')
+    })
+
+    it('Pré Comitê', () => {
+        cy.menu('Beyond BackOffice', 'Crédito', 'Prospect')
+        cy.buscarProspectMonitor(empresa.cnpj, 'Pré Comitê')
+        cy.get('.MuiTableCell-alignCenter > .MuiButtonBase-root').click() //#Botão
+        cy.acessarProspectNaTela('Analisar')
+        cy.avancarEsteira()
+        cy.verificarLocal()
+    })
+
+    it('Preencher e votar Comitê de Crédito', () => {
+        cy.setarComite(empresa.cnpj)
+        cy.menu('Beyond BackOffice', 'Comitê', 'Comitê de Crédito', 'Comitê de Crédito')
+        cy.buscarProspectMonitor(empresa.cnpj, 'Comitê de Crédito')
+        cy.acessarProspectNaTela('Votar')
+        cy.wait(5000)
+        cy.contains('Votação').click()
+        cy.aprovarProspectComite()
+        cy.votarComiteFavoravelPorCnpj(empresa.cnpj)
+        cy.obterIdProposta(empresa.cnpj).then((idProposta) => {
+            cy.finalizaPocComite(idProposta)
+        })
+    })
+
+    it('Comitê de crédito', () => {
+        cy.menu('Beyond BackOffice', 'Comitê', 'Comitê de Crédito', 'Comitê de Crédito')
+        cy.buscarProspectMonitor(empresa.cnpj, 'Comitê de Crédito')
+        cy.acessarProspectNaTela('Votar')
+        cy.acessarAtaComite()
+        cy.avancarComite()
+        cy.verificarLocal()
+    })
+
+    it('Docs Comerciais', () => {
+        cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')
+        cy.buscarProspectMonitor(empresa.cnpj, 'Monitor', 'Cadastrar Cedente')
+        cy.avancarEsteira('TESTE AUTOMACAO - AVANÇAR ETAPA PARA FORMALIZAÇÃO', 'Formalização')
+        cy.verificarLocal()
+    })
+
+    it('Formalização', () => {
+        cy.menu('Beyond BackOffice', 'Formalização', 'Formalização', 'Monitor')
+        cy.buscarProspectMonitor(empresa.cnpj, 'Formalização', 'Realizar Formalização')
+        cy.avancarEsteira('TESTE AUTOMACAO - AVANÇAR ETAPA PARA ADMINSTRADORA', 'Administradora')
+        cy.get(':nth-child(3) > div > .prospeccao-MuiButtonBase-root > .prospeccao-MuiButton-label').click() //#botão administradora
+        cy.get('[name="aprovar"] > .prospeccao-MuiButton-label').click() //#botão confirmar
+        cy.verificarLocal()
+    })
+
+    it('Administradora', () => {
+        cy.menu('Beyond BackOffice', 'Formalização', 'Administradora', 'Monitor')
+        cy.buscarProspectMonitor(empresa.cnpj, 'Administradora', 'Realizar Administração')
+        cy.habilitarFundo()
+        cy.avancarEsteira('TESTE AUTOMACAO - FINALIZAR A ESTEIRA', 'Finalizar')
     })
 })
