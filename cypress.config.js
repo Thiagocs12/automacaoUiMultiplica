@@ -136,8 +136,8 @@ module.exports = defineConfig({
   pageLoadTimeout: 60000,
   testIsolation: true,
   chromeWebSecurity: false,
-  viewportWidth: 1366,
-  viewportHeight: 768,
+  //viewportWidth: 1366,
+  //viewportHeight: 768,
   },
 
   video: true,

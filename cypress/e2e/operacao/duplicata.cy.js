@@ -87,7 +87,7 @@ describe('Operação - Duplicata', () => {
     cy.verificarLocal()
   })
   
-  it.only('Pagamento OPE', () => {
+  it('Pagamento OPE', () => {
     cy.loginKeycloak(user.usuario, user.senha)
     cy.menu('Beyond BackOffice', 'Comercial', 'Operação')
     cy.buscarEntidadeMonitor(empresa.cnpj, 'Monitor Diário', 'Realizar Pagamento OPE', 'Operação')

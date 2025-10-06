@@ -13,21 +13,25 @@ Cypress.Commands.add('acessarTelaBanking', (cedente, tela = null, menu = 'Beyond
 Cypress.Commands.add('criarOperacaDuplicata', (caminhoArquivo) => {
   cy.contains('Criar Operação').click()
   cy.contains('button', 'Olá').click()
-  if (cy.contains('Manter').should('be.visible')){
-    cy.get('.css-kef5kr > :nth-child(2)').click()//#tipo produto
-    cy.get('.css-kef5kr > :nth-child(2)').first().click()//#tipo produto
-  } else {
-    cy.get('.css-kef5kr > :nth-child(2)').click()//#tipo produto
-  }  
+  cy.get('body').then(($body) => {
+    if ($body.text().includes('Manter')) {
+      cy.get('.css-kef5kr > :nth-child(2)').click(); // #tipo produto
+      cy.get('.css-kef5kr > :nth-child(2)').click(); // #tipo produto
+    } else {
+      cy.get('.css-kef5kr > :nth-child(2)').first().click(); // #tipo produto
+    }
+  })
   cy.contains('button', 'ANTECIPACAO DE DUPLICATA').click()
   cy.get('.css-kef5kr > :nth-child(1)').click()//#sub produto
   cy.contains('button', 'PRODUTO').click()
-  if (cy.contains('Já consegui identificar! O produto da operação').should('be.visible')){
-    cy.contains('button', 'Continuar').click()
-  } else {
-    cy.contains('button', 'BOLETO').click()
-    cy.contains('button', 'Continuar').click()
-  }  
+  cy.get('body').then(($body) => {
+    if ($body.text().includes('Já consegui identificar! O produto da operação')) {
+      cy.contains('button', 'Continuar').click();
+    } else {
+      cy.contains('button', 'BOLETO').click();
+      cy.contains('button', 'Continuar').click();
+    }
+  })
   cy.get('.css-kef5kr > :nth-child(2)').click()//#continuar conta
   cy.get('.css-kef5kr > :nth-child(2)').click()//#upload de arquivo
   cy.get('#contained-button-file').attachFile(caminhoArquivo)

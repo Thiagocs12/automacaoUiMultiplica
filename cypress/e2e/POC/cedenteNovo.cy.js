@@ -3,7 +3,7 @@ const empresa = Cypress.env('empresa')
 
 describe('Criação de uma POC para um cedente novo na casa', () => {
   before(() => {
-    //cy.cleanupPessoa(empresa.cnpj)
+    cy.cleanupPessoa(empresa.cnpj)
     cy.armazenarKCTokenEmEnv()
   })
 
@@ -27,7 +27,7 @@ describe('Criação de uma POC para um cedente novo na casa', () => {
   it('Prospecção inicial', () => {
     cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')
     cy.buscarEntidadeMonitor(empresa.cnpj, 'Monitor', 'Cadastrar Prospect')
-    cy.wait(200)
+    cy.adicionarContaBancaria(empresa.contaBancaria)
     cy.preencherPleitoLimiteGlobal('5000000')
     cy.adicionarFundoPleito('MULTIPLICA')
     for (const produto in empresa.produtos) {
@@ -105,7 +105,7 @@ describe('Criação de uma POC para um cedente novo na casa', () => {
     cy.verificarLocal('Comitê')
   })
 
-  it.only('Analise de Credito', () => {
+  it('Analise de Credito', () => {
     cy.setarPOC(empresa.cnpj)
     cy.menu('Beyond BackOffice', 'Crédito', 'Prospect')
     cy.buscarEntidadeMonitor(empresa.cnpj, 'Análise Crédito', 'Realizar POC')
@@ -113,7 +113,7 @@ describe('Criação de uma POC para um cedente novo na casa', () => {
     cy.verificarLocal('Análise Crédito')
   })
 
-  it.only('Pré Comitê', () => {
+  it('Pré Comitê', () => {
     cy.menu('Beyond BackOffice', 'Crédito', 'Prospect')
     cy.buscarEntidadeMonitor(empresa.cnpj, 'Pré Comitê')
     cy.get('.MuiTableCell-alignCenter > .MuiButtonBase-root').click() //#Botão
@@ -122,7 +122,7 @@ describe('Criação de uma POC para um cedente novo na casa', () => {
     cy.verificarLocal()
   })
 
-  it.only('Preencher e votar Comitê de Crédito', () => {
+  it('Preencher e votar Comitê de Crédito', () => {
     cy.setarComite(empresa.cnpj)
     cy.menu('Beyond BackOffice', 'Comitê', 'Comitê de Crédito', 'Comitê de Crédito')
     cy.buscarEntidadeMonitor(empresa.cnpj, 'Comitê de Crédito')
@@ -136,7 +136,7 @@ describe('Criação de uma POC para um cedente novo na casa', () => {
     })
   })
 
-  it.only('Comitê de crédito', () => {
+  it('Comitê de crédito', () => {
     cy.menu('Beyond BackOffice', 'Comitê', 'Comitê de Crédito', 'Comitê de Crédito')
     cy.buscarEntidadeMonitor(empresa.cnpj, 'Comitê de Crédito')
     cy.acessarEntidadeNaTela('Votar')
@@ -145,14 +145,14 @@ describe('Criação de uma POC para um cedente novo na casa', () => {
     cy.verificarLocal()
   })
 
-  it.only('Docs Comerciais', () => {
+  it('Docs Comerciais', () => {
     cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')
     cy.buscarEntidadeMonitor(empresa.cnpj, 'Monitor', 'Cadastrar Cedente')
     cy.avancarEsteira('TESTE AUTOMACAO - AVANÇAR ETAPA PARA FORMALIZAÇÃO', 'Formalização')
     cy.verificarLocal()
   })
 
-  it.only('Formalização', () => {
+  it('Formalização', () => {
     cy.menu('Beyond BackOffice', 'Formalização', 'Formalização', 'Monitor')
     cy.buscarEntidadeMonitor(empresa.cnpj, 'Formalização', 'Realizar Formalização')
     cy.avancarEsteira('TESTE AUTOMACAO - AVANÇAR ETAPA PARA ADMINSTRADORA', 'Administradora')
@@ -161,7 +161,7 @@ describe('Criação de uma POC para um cedente novo na casa', () => {
     cy.verificarLocal()
   })
 
-  it.only('Administradora', () => {
+  it('Administradora', () => {
     cy.menu('Beyond BackOffice', 'Formalização', 'Administradora', 'Monitor')
     cy.buscarEntidadeMonitor(empresa.cnpj, 'Administradora', 'Realizar Administração')
     cy.habilitarFundo()

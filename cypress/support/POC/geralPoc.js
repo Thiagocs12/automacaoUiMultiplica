@@ -57,3 +57,26 @@ Cypress.Commands.add('habilitarFundo', () => {
   cy.contains('Gestora habilitada').click()
   cy.contains('Salvar').click()
 })
+
+Cypress.Commands.add('adicionarContaBancaria', (dadosConta) => {
+  cy.get('#main-menu-body section > div > main > div > div:nth-child(2) > div:nth-child(2) > div > div:nth-child(2) > div:nth-child(2) > div > div:nth-child(1) > div > div > div:nth-child(12) > button:nth-child(2)').click() //#avançar paginação prospect
+  cy.get('#main-menu-body section > div > main > div > div:nth-child(2) > div:nth-child(2) > div > div:nth-child(2) > div:nth-child(2) > div > div:nth-child(1) > div > div > div:nth-child(12) > button:nth-child(2)').click() //#avançar paginação prospect
+  cy.contains('Contas Bancárias').click()
+  cy.get('.prospeccao-MuiGrid-root > .prospeccao-MuiButtonBase-root').click()
+  cy.get('#main-menu-body section > div > main > div > div:nth-child(2) > div:nth-child(1) > div > div:nth-child(1) > button').click() //#adicionarContaBancaria
+  cy.get('#main-menu-body section > div > main > div > div:nth-child(2) > div:nth-child(1) > div > div:nth-child(2) > form > div:nth-child(1) > div:nth-child(1) > div > div > div > input').type(dadosConta.banco)
+  cy.contains('li.prospeccao-MuiAutocomplete-option', dadosConta.banco).click()
+  cy.get('#nroAgencia').type(dadosConta.agencia)
+  cy.get('#nroConta').type(dadosConta.conta)
+  cy.get('#dvConta').type(dadosConta.digito)
+  cy.get('#nomeContato').type(dadosConta.nomeContato)
+  cy.get('#emailContato').type(dadosConta.emailContato)
+  cy.get('[title="Open"]').eq(1).click()
+  cy.contains('li.prospeccao-MuiAutocomplete-option', dadosConta.ddi).click()
+  cy.get('[title="Open"]').eq(2).click()
+  cy.contains('li.prospeccao-MuiAutocomplete-option', dadosConta.ddd).click()
+  cy.get('#main-menu-body section > div > main > div > div:nth-child(2) > div:nth-child(1) > div > div:nth-child(2) > form > div:nth-child(1) > div:nth-child(11) > div > input').type(dadosConta.telefone)
+  cy.get('#mui-component-select-tipoClassificacaoConta').click()
+  cy.contains(dadosConta.tipoConta).click()
+  cy.contains('Salvar').click()
+})

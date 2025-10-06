@@ -32,6 +32,18 @@ Cypress.env('empresa', {
   cnpj: '98670003000137',
   razaoSocial: 'VINHOS NOE',
   kyc: ['Clube de Futebol', 'Mútuo Petro', 'Participação Estrangeira', 'Mútuo SUS'],
+  contaBancaria: {
+    banco: '33 - SANTANDER',
+    agencia: '0001',
+    conta: '02538695',
+    digito: '1',
+    nomeContato: 'NOE',
+    emailContato: 'noe@vinhosnoe.com.br',
+    ddi: 55,
+    ddd: 11,
+    telefone: 999999999,
+    tipoConta: 'NORMAL'
+  },
   produtos: {
     ['CCB/NC']: { limite: '5000000', prazo: '365', taxa: '2.00', concentracao: '100' },
     ['ANCORA']: { limite: '5000000', prazo: '365', taxa: '2.00', concentracao: '100' },

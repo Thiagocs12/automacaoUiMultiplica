@@ -1,10 +1,6 @@
 // Adiciona produtos ao pleito pelo grupo
-Cypress.Commands.add('adicionarProdutosPleito', (produto, limite, prazo, taxa, concetracao,pleito = false) => {
-  if (pleito !== true) {
-    cy.get('.prospeccao-MuiGrid-root > :nth-child(2)').click() //# adicionar produto pleito
-  } else {
-    cy.get('#main-menu-body > section > div > main > div > div:nth-child(2) > div:nth-child(1) > div:nth-child(2) > div:nth-child(3) > div:nth-child(1) > div > button:nth-child(1)').click()
-  }
+Cypress.Commands.add('adicionarProdutosPleito', (produto, limite, prazo, taxa, concetracao) => {
+  cy.get('.prospeccao-MuiGrid-root > :nth-child(2)').click() //# adicionar produto pleito
   cy.contains(produto).click()
   cy.wait(100)
   cy.contains('span', produto).click()
