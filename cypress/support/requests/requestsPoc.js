@@ -5,8 +5,8 @@ Cypress.Commands.add('pocPleitoProduto', (idProposta) => {
     headers: {
       Authorization: `Bearer ${Cypress.env('token')}`
     }
-  });
-});
+  })
+})
 
 Cypress.Commands.add('pocPleito', (idProposta) => {
   return cy.request({
@@ -15,8 +15,8 @@ Cypress.Commands.add('pocPleito', (idProposta) => {
     headers: {
       Authorization: `Bearer ${Cypress.env('token')}`
     }
-  });
-});
+  })
+})
 
 Cypress.Commands.add('pocComiteLimiteProduto', (idComiteProposta) => {
   return cy.request({
@@ -25,8 +25,8 @@ Cypress.Commands.add('pocComiteLimiteProduto', (idComiteProposta) => {
     headers: {
       Authorization: `Bearer ${Cypress.env('token')}`
     }
-  });
-});
+  })
+})
 
 Cypress.Commands.add('pocComiteLimiteBoleto', (idComiteProposta) => {
   return cy.request({
@@ -35,8 +35,8 @@ Cypress.Commands.add('pocComiteLimiteBoleto', (idComiteProposta) => {
     headers: {
       Authorization: `Bearer ${Cypress.env('token')}`
     }
-  });
-});
+  })
+})
 
 Cypress.Commands.add('pocVotacao', (idComiteProposta) => {
   return cy.request({
@@ -45,8 +45,8 @@ Cypress.Commands.add('pocVotacao', (idComiteProposta) => {
     headers: {
       Authorization: `Bearer ${Cypress.env('token')}`
     }
-  });
-});
+  })
+})
 
 Cypress.Commands.add('setarPOC', (cnpj) => {
   cy.obterIdProposta(cnpj).then((idProposta) => {
@@ -62,5 +62,5 @@ Cypress.Commands.add('setarComite', (cnpj) => {
         cy.pocComiteLimiteBoleto(idComiteProposta)
         cy.pocVotacao(idComiteProposta)
       })
-  });
+  })
 })

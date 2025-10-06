@@ -1,8 +1,5 @@
-const operacaoDuplicata = require('./operacaoDuplicata');
-const geralOperacao = require('./geralOperacao');
+const operacao = require('./operacao')
 
 module.exports = {
-  operacaoDuplicata,
-  geralOperacao
+  operacao
 };
-
