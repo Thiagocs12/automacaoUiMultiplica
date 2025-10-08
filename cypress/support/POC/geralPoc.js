@@ -5,13 +5,12 @@ Cypress.Commands.add('criarProspect', (cnpj, tipoProspect) => {
   cy.realPress('Tab')
   cy.wait(500)
   cy.get('#mui-component-select-tipoProspect').click()//#campo tipo prospect criação da POC
-  cy.get('[role="option"]').contains(tipoProspect) .click();
+  cy.get('[role="option"]').contains(tipoProspect) .click()
   cy.get('.prospeccao-MuiInputBase-root').type('Gerente Automa')//#campo gerente Criação da POC
-  cy.get('[role="option"]').contains('GERENTE AUTOMAÇÃO').click();
-  cy.realPress('Tab')
+  cy.get('[role="option"]').contains('GERENTE AUTOMAÇÃO').click()
   cy.wait(500)
   cy.contains('Salvar').click()
-});
+})
 
 //Preenche o limite global do pleito
 Cypress.Commands.add('preencherPleitoLimiteGlobal', (limite) => {
@@ -23,63 +22,60 @@ Cypress.Commands.add('preencherPleitoLimiteGlobal', (limite) => {
     .click()
 })
 
-//Acessa o prospect pesquisado no monitor
-Cypress.Commands.add('acessarProspectNaTela', (acao) => {
-  if (acao === 'Votar'){
-    cy.get(':nth-child(5) > .MuiPaper-root > .MuiTableContainer-root > .MuiTable-root > .MuiTableBody-root > .MuiTableRow-root > .MuiTableCell-alignCenter > .MuiButtonBase-root').click() //# botão + expandir comites
-  } 
-  cy.get('.prospeccao-MuiIconButton-label > .prospeccao-MuiSvgIcon-root').click()//#Ações da POC no monitor
-  cy.contains(acao).click()  
-})
-
-// Busca o prospect na tela de monitor
-Cypress.Commands.add('buscarProspectMonitor', (cnpj, tela, acao = null) => {  
-  // cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')
-  cy.contains(tela).click()
-  cy.get('[name="cnpj"]').type(cnpj)
-  cy.contains('Buscar').click()
-  cy.wait(1000)
-  if (acao !== null && acao !== undefined) {
-    if (acao === 'Realizar POC') {
-      cy.get('.MuiTableCell-alignCenter > .MuiButtonBase-root').click()
-      cy.acessarProspectNaTela(acao)
-    } else {
-      cy.acessarProspectNaTela(acao)
-    }
-  }
-})
-
 // Aprovação do prospect no comite de crédito
 Cypress.Commands.add('aprovarProspectComite', () => {
-  cy.wait(2000);
-  cy.contains('Votação').click();
-  cy.contains('Portal Beyond').click();
-  cy.contains('Portal Terceiros').click();
-  cy.contains('Salvar').click();
-  cy.get(':nth-child(3) > .prospeccao-MuiBox-root > .prospeccao-MuiButtonBase-root').click(); //# Botão enviar votação
+  cy.wait(2000)
+  cy.contains('Votação').click()
+  cy.contains('Portal Beyond').click()
+  cy.contains('Portal Terceiros').click()
+  cy.contains('Salvar').click()
+  cy.get(':nth-child(3) > .prospeccao-MuiBox-root > .prospeccao-MuiButtonBase-root').click() //# Botão enviar votação
   cy.get('input.PrivateSwitchBase-input.css-1m9pwf3').check({ force: true }) //# selecionar todos votantes
-  cy.contains('Enviar').click();
+  cy.contains('Enviar').click()
 })
 
 Cypress.Commands.add('acessarAtaComite', () => {
   cy.wait(2000)
-  cy.contains('Votação').click();
+  cy.contains('Votação').click()
   cy.get('.MuiPaper-root > .MuiButtonBase-root').click()
   cy.wait(2000)
 })
 
 Cypress.Commands.add('avancarComite', () => {
   cy.wait(1000)
-  cy.contains('Avançar').click();
-  cy.get('[name="aprovar"] > .prospeccao-MuiButton-label').click();
+  cy.contains('Avançar').click()
+  cy.get('[name="aprovar"] > .prospeccao-MuiButton-label').click()
 })
 
 Cypress.Commands.add('habilitarFundo', () => {
-  cy.get('#main-menu-body div:nth-child(16) > button:nth-child(2)').click();
+  cy.get('#main-menu-body div:nth-child(16) > button:nth-child(2)').click()
   cy.contains('Parâmetros Operação').click()
   cy.contains('Fundos').click()
   cy.get('.prospeccao-MuiTableCell-alignCenter > .prospeccao-MuiBox-root > :nth-child(1)').click()
   cy.contains('Administradora habilitada').click()
   cy.contains('Gestora habilitada').click()
+  cy.contains('Salvar').click()
+})
+
+Cypress.Commands.add('adicionarContaBancaria', (dadosConta) => {
+  cy.get('#main-menu-body section > div > main > div > div:nth-child(2) > div:nth-child(2) > div > div:nth-child(2) > div:nth-child(2) > div > div:nth-child(1) > div > div > div:nth-child(12) > button:nth-child(2)').click() //#avançar paginação prospect
+  cy.get('#main-menu-body section > div > main > div > div:nth-child(2) > div:nth-child(2) > div > div:nth-child(2) > div:nth-child(2) > div > div:nth-child(1) > div > div > div:nth-child(12) > button:nth-child(2)').click() //#avançar paginação prospect
+  cy.contains('Contas Bancárias').click()
+  cy.get('.prospeccao-MuiGrid-root > .prospeccao-MuiButtonBase-root').click()
+  cy.get('#main-menu-body section > div > main > div > div:nth-child(2) > div:nth-child(1) > div > div:nth-child(1) > button').click() //#adicionarContaBancaria
+  cy.get('#main-menu-body section > div > main > div > div:nth-child(2) > div:nth-child(1) > div > div:nth-child(2) > form > div:nth-child(1) > div:nth-child(1) > div > div > div > input').type(dadosConta.banco)
+  cy.contains('li.prospeccao-MuiAutocomplete-option', dadosConta.banco).click()
+  cy.get('#nroAgencia').type(dadosConta.agencia)
+  cy.get('#nroConta').type(dadosConta.conta)
+  cy.get('#dvConta').type(dadosConta.digito)
+  cy.get('#nomeContato').type(dadosConta.nomeContato)
+  cy.get('#emailContato').type(dadosConta.emailContato)
+  cy.get('[title="Open"]').eq(1).click()
+  cy.contains('li.prospeccao-MuiAutocomplete-option', dadosConta.ddi).click()
+  cy.get('[title="Open"]').eq(2).click()
+  cy.contains('li.prospeccao-MuiAutocomplete-option', dadosConta.ddd).click()
+  cy.get('#main-menu-body section > div > main > div > div:nth-child(2) > div:nth-child(1) > div > div:nth-child(2) > form > div:nth-child(1) > div:nth-child(11) > div > input').type(dadosConta.telefone)
+  cy.get('#mui-component-select-tipoClassificacaoConta').click()
+  cy.contains(dadosConta.tipoConta).click()
   cy.contains('Salvar').click()
 })

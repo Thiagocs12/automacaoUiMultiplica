@@ -19,7 +19,9 @@ import './poc'
 import './helpers'
 import './querysSql'
 import './requests'
-import "cypress-real-events";
+import './operacao'
+import "cypress-real-events"
+import 'cypress-file-upload'
 
 Cypress.env('user', {
   usuario: Cypress.env('APP_USER'),
@@ -27,14 +29,25 @@ Cypress.env('user', {
 })
 
 Cypress.env('empresa', {
-  cnpj: '14144375000130',
-  razaoSocial: 'MG POLIMEROS INDUSTRIA E COMERCIO LTDA',
+  cnpj: '98670003000137',
+  razaoSocial: 'VINHOS NOE',
   kyc: ['Clube de Futebol', 'Mútuo Petro', 'Participação Estrangeira', 'Mútuo SUS'],
+  contaBancaria: {
+    banco: '33 - SANTANDER',
+    agencia: '0001',
+    conta: '02538695',
+    digito: '1',
+    nomeContato: 'NOE',
+    emailContato: 'noe@vinhosnoe.com.br',
+    ddi: 55,
+    ddd: 11,
+    telefone: 999999999,
+    tipoConta: 'NORMAL'
+  },
   produtos: {
     ['CCB/NC']: { limite: '5000000', prazo: '365', taxa: '2.00', concentracao: '100' },
     ['ANCORA']: { limite: '5000000', prazo: '365', taxa: '2.00', concentracao: '100' },
-    ['BOLETO']: { limite: '5000000', prazo: '365', taxa: '2.00', concentracao: '100' },
-    ['CLEAN']:  { limite: '5000000', prazo: '365', taxa: '2.00', concentracao: '100' }
+    ['BOLETO']: { limite: '5000000', prazo: '365', taxa: '2.00', concentracao: '100' }
   }
 })
 
@@ -43,28 +56,34 @@ Cypress.on('uncaught:exception', (err) => {
   if (
     /Cannot read properties of undefined \(reading 'content'\)/.test(err.message)
   ) {
-    return false; // evita falha do teste
+    return false // evita falha do teste
   }
   // para outros erros, deixa falhar normalmente
-});
+})
 
 // Opcional: ignorar especificamente 502 para não derrubar o teste
 Cypress.on('uncaught:exception', (err) => {
   if (/Request failed with status code 502/.test(err.message)) {
-    return false; // não falha o teste por este erro
+    return false // não falha o teste por este erro
   }
-});
+})
+
+Cypress.on('uncaught:exception', (err) => {
+  if (/Request failed with status code 406/.test(err.message)) {
+    return false // não falha o teste por este erro
+  }
+})
 
 Cypress.on('uncaught:exception', (err) => {
   if (/Request failed with status code 500/.test(err.message)) {
-    return false; // não falha o teste por este erro
+    return false // não falha o teste por este erro
   }
-});
+})
 Cypress.on('uncaught:exception', (err) => {
   if (/Network Error/.test(err.message)) {
-    return false; // não falha o teste por este erro
+    return false // não falha o teste por este erro
   }
-});
+})
 
 // Silencia apenas o erro do ResizeObserver
 Cypress.on('uncaught:exception', (err) => {

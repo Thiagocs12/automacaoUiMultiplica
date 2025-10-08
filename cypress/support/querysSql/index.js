@@ -1,5 +1,7 @@
-const querysSql = require('./querysSql');
+const poc = require('./poc')
+const operacao = require('./operacao')
 
 module.exports = {
-  querysSql,
+  poc,
+  operacao
 };
