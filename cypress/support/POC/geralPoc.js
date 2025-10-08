@@ -8,7 +8,6 @@ Cypress.Commands.add('criarProspect', (cnpj, tipoProspect) => {
   cy.get('[role="option"]').contains(tipoProspect) .click()
   cy.get('.prospeccao-MuiInputBase-root').type('Gerente Automa')//#campo gerente Criação da POC
   cy.get('[role="option"]').contains('GERENTE AUTOMAÇÃO').click()
-  cy.realPress('Tab')
   cy.wait(500)
   cy.contains('Salvar').click()
 })

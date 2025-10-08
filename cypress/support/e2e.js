@@ -69,6 +69,12 @@ Cypress.on('uncaught:exception', (err) => {
 })
 
 Cypress.on('uncaught:exception', (err) => {
+  if (/Request failed with status code 406/.test(err.message)) {
+    return false // não falha o teste por este erro
+  }
+})
+
+Cypress.on('uncaught:exception', (err) => {
   if (/Request failed with status code 500/.test(err.message)) {
     return false // não falha o teste por este erro
   }

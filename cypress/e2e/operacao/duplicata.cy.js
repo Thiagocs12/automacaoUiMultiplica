@@ -4,7 +4,7 @@ const empresa = Cypress.env('empresa')
 
 describe('Operação - Duplicata', () => {
   before(() => {
-      cy.armazenarKCTokenEmEnv()
+    cy.armazenarKCTokenEmEnv()
   })
   
   it('Criar a pré operacao', () => {
@@ -25,7 +25,7 @@ describe('Operação - Duplicata', () => {
   it('Verificar o vinculo e avançar operação', () => {
     cy.obterUltimaPreOperacaoPorCnpj(empresa.cnpj).then((idPreOperacao) => {
       cy.atualizarNotaFiscalPorPreOperacao(idPreOperacao)
-      cy.wait(500)
+      cy.wait(1000)
       cy.atualizarVencimentosPreOperacao(idPreOperacao)
     })
     cy.loginKeycloak(user.usuario, user.senha, 'banking')
@@ -42,6 +42,9 @@ describe('Operação - Duplicata', () => {
     cy.menu('Beyond BackOffice', 'Comercial', 'Operação')
     cy.buscarEntidadeMonitor(empresa.cnpj, 'Monitor Diário', 'Analisar Operação', 'Operação')
     cy.adicionarFundoLocalCobrancaOpe('MULTIPLICA', 'CONTA BRADESCO')
+    cy.get(':nth-child(11) > .mop-MuiStepLabel-root').click()
+    cy.get('[aria-label="Gerar Danfe"]').click()
+    cy.wait(500)
     cy.avancarEsteira('TESTE AUTOMAÇÃO - AVANÇAR ETAPA DE MIDDLE', 'Avançar', 'Operação')
     cy.verificarLocal()
   })

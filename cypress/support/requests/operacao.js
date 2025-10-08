@@ -7,3 +7,13 @@ Cypress.Commands.add('reprocessarTitulos', (idPreOperacao) => {
     }
   })
 })
+
+Cypress.Commands.add('gerarDanfeLote', (idOperacao) => {
+  return cy.request({
+    method: 'GET',
+    url: `${Cypress.env('BASE_URL_BACKOFFICE')}/mc-operacao-backoffice-ms/api/v1/titulos/geraDANFE/lote?idOperacao=${idOperacao}`,
+    headers: {
+      Authorization: `Bearer ${Cypress.env('token')}`
+    }
+  })
+})

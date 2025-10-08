@@ -1,7 +1,7 @@
-const requestsPoc = require('./requestsPoc')
-const requestsOperacao = require('./requestsOperacao')
+const poc = require('./poc')
+const operacao = require('./operacao')
 
 module.exports = {
-  requestsPoc,
-  requestsOperacao
+  poc,
+  operacao
 }

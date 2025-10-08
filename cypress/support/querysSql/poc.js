@@ -63,6 +63,7 @@ Cypress.Commands.add('cleanupPessoa', (cnpjCpf) => {
       DELETE FROM MC_MOP_ASSINATURA_DIGITAL WHERE idOperacao in (SELECT id FROM MC_MOP_OPERACAO WHERE idCedente IN (SELECT id FROM MC_CED_CEDENTE WHERE idPessoa IN (SELECT id FROM MC_CAD_PESSOA WHERE cnpjCpf=@cnpjCpf)));
       DELETE FROM MC_MOP_OPERACAO_TERMO WHERE idOperacao in (SELECT id FROM MC_MOP_OPERACAO WHERE idCedente IN (SELECT id FROM MC_CED_CEDENTE WHERE idPessoa IN (SELECT id FROM MC_CAD_PESSOA WHERE cnpjCpf=@cnpjCpf)));
       DELETE FROM MC_MOP_OPERACAO_TITULO        WHERE idOperacao IN (SELECT id FROM MC_MOP_OPERACAO WHERE idCedente IN (SELECT id FROM MC_CED_CEDENTE WHERE idPessoa IN (SELECT id FROM MC_CAD_PESSOA WHERE cnpjCpf=@cnpjCpf)));
+      DELETE FROM MC_MOP_OPERACAO_TARIFA        WHERE idOperacao IN (SELECT id FROM MC_MOP_OPERACAO WHERE idCedente IN (SELECT id FROM MC_CED_CEDENTE WHERE idPessoa IN (SELECT id FROM MC_CAD_PESSOA WHERE cnpjCpf='98670003000137')));
       DELETE FROM MC_MOP_OPERACAO               WHERE idCedente IN (SELECT id FROM MC_CED_CEDENTE WHERE idPessoa IN (SELECT id FROM MC_CAD_PESSOA WHERE cnpjCpf=@cnpjCpf));
       DELETE FROM MC_CED_BOLETO                 WHERE idCedente IN (SELECT id FROM MC_CED_CEDENTE WHERE idPessoa IN (SELECT id FROM MC_CAD_PESSOA WHERE cnpjCpf=@cnpjCpf));
       DELETE FROM MC_CED_PARAMETRO_OPERACAO     WHERE idCedente IN (SELECT id FROM MC_CED_CEDENTE WHERE idPessoa IN (SELECT id FROM MC_CAD_PESSOA WHERE cnpjCpf=@cnpjCpf));
@@ -211,6 +212,10 @@ Cypress.Commands.add('finalizaPocComite', (idProposta) => {
 Cypress.Commands.add('atualizarSituacaoComite', () => {
   return cy.task('db:exec', {
     sql: `
+      UPDATE beyondhml.dbo.MC_CAD_COMITE
+      SET idSituacao = 5
+      WHERE id <> 376;
+
       UPDATE beyondhml.dbo.MC_CAD_COMITE
       SET idSituacao = 6
       WHERE id = 376;

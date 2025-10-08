@@ -15,8 +15,8 @@ Cypress.Commands.add('criarOperacaDuplicata', (caminhoArquivo) => {
   cy.contains('button', 'Olá').click()
   cy.get('body').then(($body) => {
     if ($body.text().includes('Manter')) {
-      cy.get('.css-kef5kr > :nth-child(2)').click(); // #tipo produto
-      cy.get('.css-kef5kr > :nth-child(2)').click(); // #tipo produto
+      cy.get('.css-kef5kr > :nth-child(2)').first().click(); // #tipo produto
+      cy.get('.css-kef5kr > :nth-child(2)').first().click(); // #tipo produto
     } else {
       cy.get('.css-kef5kr > :nth-child(2)').first().click(); // #tipo produto
     }
