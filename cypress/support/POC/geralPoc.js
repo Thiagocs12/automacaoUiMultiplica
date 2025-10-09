@@ -55,13 +55,18 @@ Cypress.Commands.add('habilitarFundo', () => {
   cy.contains('Administradora habilitada').click()
   cy.contains('Gestora habilitada').click()
   cy.contains('Salvar').click()
+  cy.contains('Atualizar valores globais').then(($el) => {
+    if ($el.length > 0) {
+      cy.contains('Confirmar').click()
+    }
+  })
 })
 
 Cypress.Commands.add('adicionarContaBancaria', (dadosConta) => {
   cy.get('#main-menu-body section > div > main > div > div:nth-child(2) > div:nth-child(2) > div > div:nth-child(2) > div:nth-child(2) > div > div:nth-child(1) > div > div > div:nth-child(12) > button:nth-child(2)').click() //#avançar paginação prospect
-  cy.get('#main-menu-body section > div > main > div > div:nth-child(2) > div:nth-child(2) > div > div:nth-child(2) > div:nth-child(2) > div > div:nth-child(1) > div > div > div:nth-child(12) > button:nth-child(2)').click() //#avançar paginação prospect
   cy.contains('Contas Bancárias').click()
   cy.get('.prospeccao-MuiGrid-root > .prospeccao-MuiButtonBase-root').click()
+  cy.wait(1000)
   cy.get('#main-menu-body section > div > main > div > div:nth-child(2) > div:nth-child(1) > div > div:nth-child(1) > button').click() //#adicionarContaBancaria
   cy.get('#main-menu-body section > div > main > div > div:nth-child(2) > div:nth-child(1) > div > div:nth-child(2) > form > div:nth-child(1) > div:nth-child(1) > div > div > div > input').type(dadosConta.banco)
   cy.contains('li.prospeccao-MuiAutocomplete-option', dadosConta.banco).click()

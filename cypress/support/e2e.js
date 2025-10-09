@@ -51,6 +51,33 @@ Cypress.env('empresa', {
   }
 })
 
+Cypress.env('grupoEconomico', {
+  nome: 'STERICYCLE',
+  empresasGrupo: {
+    ['01568077000125']: {principal: true, razaoSocial: 'STERICYCLE'},
+    ['05462743000105']: {principal: false, razaoSocial: 'ABORGAMA DO BRASIL LTDA'},
+    ['11568295000113']: {principal: false, razaoSocial: 'B Green Novas Participacoes LTDA'}
+  },
+  kyc: ['Clube de Futebol', 'Mútuo Petro', 'Participação Estrangeira', 'Mútuo SUS'],
+  contaBancaria: {
+    banco: '33 - SANTANDER',
+    agencia: '0001',
+    conta: '02538695',
+    digito: '1',
+    nomeContato: 'NOE',
+    emailContato: 'noe@vinhosnoe.com.br',
+    ddi: 55,
+    ddd: 11,
+    telefone: 999999999,
+    tipoConta: 'NORMAL'
+  },
+  produtos: {
+    ['CCB/NC']: { limite: '5000000', prazo: '365', taxa: '2.00', concentracao: '100' },
+    ['ANCORA']: { limite: '5000000', prazo: '365', taxa: '2.00', concentracao: '100' },
+    ['BOLETO']: { limite: '5000000', prazo: '365', taxa: '2.00', concentracao: '100' }
+  }
+})
+
 // Ignora esse erro específico para o teste não falhar
 Cypress.on('uncaught:exception', (err) => {
   if (
