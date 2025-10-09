@@ -1,11 +1,11 @@
-const user = Cypress.env('user');
-const grupoEconomico = Cypress.env('grupoEconomico');
+const user = Cypress.env('user')
+const grupoEconomico = Cypress.env('grupoEconomico')
 
-let cnpj;
+let cnpj
 
 const empresaPrincipal = Object.entries(grupoEconomico.empresasGrupo).find(([cnpjKey, empresa]) => empresa.principal);
 if (empresaPrincipal) {
-  [cnpj] = empresaPrincipal;
+  [cnpj] = empresaPrincipal
 }
 
 describe('Criação de uma POC para um cedente novo na casa', () => {
