@@ -1,19 +1,3 @@
-// ***********************************************************
-// This example support/e2e.js is processed and
-// loaded automatically before your test files.
-//
-// This is a great place to put global configuration and
-// behavior that modifies Cypress.
-//
-// You can change the location of this file or turn off
-// automatically serving support files with the
-// 'supportFile' configuration option.
-//
-// You can read more here:
-// https://on.cypress.io/configuration
-// ***********************************************************
-
-// Import commands.js using ES2015 syntax:
 import './commands'
 import './poc'
 import './helpers'
@@ -31,7 +15,20 @@ Cypress.env('user', {
 Cypress.env('empresa', {
   cnpj: '98670003000137',
   razaoSocial: 'VINHOS NOE',
-  kyc: ['Clube de Futebol', 'Mútuo Petro', 'Participação Estrangeira', 'Mútuo SUS'],
+  kyc: [
+    'Clube de Futebol',
+    'Mútuo Petro',
+    'Participação Estrangeira',
+    'Mútuo SUS'
+  ],
+  socio: {
+    cpf: '02245983092',
+    tipoAssinatura: 'Individual'
+  },
+  pessoaLigada: {
+    cpf: '64534685068',
+    tipoPessoa: 'Devedor Solidario'
+  },
   contaBancaria: {
     banco: '33 - SANTANDER',
     agencia: '0001',
@@ -45,18 +42,29 @@ Cypress.env('empresa', {
     tipoConta: 'NORMAL'
   },
   produtos: {
-    ['CCB/NC']: { limite: '5000000', prazo: '365', taxa: '2.00', concentracao: '100' },
-    ['ANCORA']: { limite: '5000000', prazo: '365', taxa: '2.00', concentracao: '100' },
-    ['BOLETO']: { limite: '5000000', prazo: '365', taxa: '2.00', concentracao: '100' }
+    'CCB/NC':  { limite: '5000000', prazo: '365', taxa: '2.00', concentracao: '100' },
+    'ANCORA':  { limite: '5000000', prazo: '365', taxa: '2.00', concentracao: '100' },
+    'BOLETO':  { limite: '5000000', prazo: '365', taxa: '2.00', concentracao: '100' }
+  },
+  contato: {
+    nome: 'NOE',
+    email: 'noe@vinhosnoe.com.br',
+    ddi: 55,
+    ddd: 11,
+    telefone: 999999999
+  },
+  telefones: {
+    'NOE':   { ddi: 55, ddd: 11, telefone: 999999999 },
+    'TIAGO': { ddi: 55, ddd: 11, telefone: 999999998 }
   }
-})
+});
 
 Cypress.env('grupoEconomico', {
   nome: 'STERICYCLE',
   empresasGrupo: {
-    ['01568077000125']: {principal: true, razaoSocial: 'STERICYCLE'},
-    ['05462743000105']: {principal: false, razaoSocial: 'ABORGAMA DO BRASIL LTDA'},
-    ['11568295000113']: {principal: false, razaoSocial: 'B Green Novas Participacoes LTDA'}
+    ['01568077000125']: { principal: true, razaoSocial: 'STERICYCLE' },
+    ['05462743000105']: { principal: false, razaoSocial: 'ABORGAMA DO BRASIL LTDA' },
+    ['11568295000113']: { principal: false, razaoSocial: 'B Green Novas Participacoes LTDA' }
   },
   kyc: ['Clube de Futebol', 'Mútuo Petro', 'Participação Estrangeira', 'Mútuo SUS'],
   contaBancaria: {
@@ -76,50 +84,46 @@ Cypress.env('grupoEconomico', {
     ['ANCORA']: { limite: '5000000', prazo: '365', taxa: '2.00', concentracao: '100' },
     ['BOLETO']: { limite: '5000000', prazo: '365', taxa: '2.00', concentracao: '100' }
   }
-})
+});
 
-// Ignora esse erro específico para o teste não falhar
+
 Cypress.on('uncaught:exception', (err) => {
   if (
     /Cannot read properties of undefined \(reading 'content'\)/.test(err.message)
   ) {
-    return false // evita falha do teste
+    return false
   }
-  // para outros erros, deixa falhar normalmente
 })
 
-// Opcional: ignorar especificamente 502 para não derrubar o teste
 Cypress.on('uncaught:exception', (err) => {
   if (/Request failed with status code 502/.test(err.message)) {
-    return false // não falha o teste por este erro
+    return false
   }
 })
 
 Cypress.on('uncaught:exception', (err) => {
   if (/Request failed with status code 406/.test(err.message)) {
-    return false // não falha o teste por este erro
+    return false
   }
 })
 
 Cypress.on('uncaught:exception', (err) => {
   if (/Request failed with status code 500/.test(err.message)) {
-    return false // não falha o teste por este erro
+    return false
   }
 })
 Cypress.on('uncaught:exception', (err) => {
   if (/Network Error/.test(err.message)) {
-    return false // não falha o teste por este erro
+    return false
   }
 })
 
-// Silencia apenas o erro do ResizeObserver
 Cypress.on('uncaught:exception', (err) => {
   const msg = err?.message || ''
   if (
     msg.includes('ResizeObserver loop completed with undelivered notifications') ||
     msg.includes('ResizeObserver loop limit exceeded')
   ) {
-    return false // impede que o teste falhe
+    return false
   }
-  // deixe outros erros quebrarem o teste
 })

@@ -36,9 +36,11 @@ Cypress.Commands.add('cleanupPessoa', (cnpjCpf) => {
       DELETE FROM MC_CAD_PESSOA_SOCIO            WHERE idPessoa = @idPessoa;
       DELETE FROM MC_CAD_PESSOA_ENTIDADE         WHERE idPessoa = @idPessoa;
       DELETE FROM MC_CAD_PESSOA_TELEFONE         WHERE idPessoa = @idPessoa;
+      DELETE FROM MC_PRT_PRINCIPAIS_PAISES       WHERE idProspect = @idProspect;
       DELETE FROM MC_CED_GERENTE_LOG             WHERE idCedente = @idCedente;
       DELETE FROM MC_MOP_TITULOS_POSICAO         WHERE idTitulo IN (SELECT id FROM MC_MOP_TITULOS WHERE idCedente = @idCedente);
       DELETE FROM MC_PRT_PROSPECT                WHERE idPessoa = @idPessoa;
+      DELETE FROM MC_CAD_PESSOA_RECUP_JUDICIAL   WHERE idPessoa = @idPessoa;
       DELETE FROM MC_MOP_TITULOS_COBRANCA        WHERE idTitulo IN (SELECT id FROM MC_MOP_TITULOS WHERE idCedente = @idCedente);
       DELETE FROM MC_MOP_TITULOS_LEGADO          WHERE idTitulo IN (SELECT id FROM MC_MOP_TITULOS WHERE idCedente = @idCedente);
       DELETE FROM MC_MOP_TITULOS_MOVIMENTO       WHERE idTitulo IN (SELECT id FROM MC_MOP_TITULOS WHERE idCedente = @idCedente);
@@ -87,6 +89,7 @@ Cypress.Commands.add('cleanupPessoa', (cnpjCpf) => {
       DELETE FROM MC_MOP_TITULOS                WHERE idSacado = @idSacado;
       DELETE FROM MC_MOP_OPERACAO_TITULO        WHERE idSacado = @idSacado;
       DELETE FROM MC_CAD_SACADO                 WHERE idPessoa = @idPessoa;
+      DELETE FROM MC_CAD_PESSOA_LIGADA          WHERE idPessoaLigada = @idPessoa;
       DELETE FROM MC_CED_CEDENTE                WHERE idPessoa = @idPessoa;
       DELETE FROM MC_CAD_PESSOA                 WHERE id=@idPessoa;
     `,
@@ -243,3 +246,15 @@ Cypress.Commands.add('excluirGrupoEconomico', (nomeGrupo) => {
     `
   return cy.task('db:exec', { sql, params: { nomeGrupo } })
  })
+
+Cypress.Commands.add('cedenteVencido', (cnpjCpf) => {
+  const sql = `
+      DECLARE @idPessoa INT;
+      SET @idPessoa = (SELECT id FROM MC_CAD_PESSOA WHERE cnpjCpf = @cnpjCpf);
+
+      UPDATE MC_CED_CEDENTE
+	      SET	dataValidadeFinal = GETDATE()-1
+      WHERE idPessoa = @idPessoa
+  `;
+  return cy.task('db:exec', { sql, params: { cnpjCpf } })
+})

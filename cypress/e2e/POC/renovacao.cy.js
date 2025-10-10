@@ -1,9 +1,8 @@
 const user = Cypress.env('user')
 const empresa = Cypress.env('empresa')
 
-describe('Criação de uma POC para um cedente novo na casa', () => {
+describe('Renovação de um cedente da casa', () => {
   before(() => {
-    cy.cleanupPessoa(empresa.cnpj)
     cy.armazenarKCTokenEmEnv()
   })
 
@@ -11,49 +10,21 @@ describe('Criação de uma POC para um cedente novo na casa', () => {
     cy.loginKeycloak(user.usuario, user.senha)
   })
 
-  it('Criar uma poc para um cedente novo na casa', () => {
+  it('Criar uma renovação para um cedente da casa', () => {
     cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')
-    cy.criarProspect(empresa.cnpj, 'PROSPECT')
-    cy.verificarLocal('Dados do Prospect')
-    cy.atualizarNomeFantasia(empresa.cnpj)
-  })
-
-  it('Validar que não posso criar uma poc para um cnpj que já está na esteira', () => {
-    cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')
-    cy.criarProspect(empresa.cnpj, 'PROSPECT')
-    cy.contains('CNPJ informado está associado a uma esteira ativa.').should('be.visible')
+    cy.cedenteVencido(empresa.cnpj)
+    cy.criarProspect(empresa.cnpj, 'PROSPECT', false)
+    cy.verificarLocal()
   })
 
   it('Prospecção inicial', () => {
     cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')
     cy.buscarEntidadeMonitor(empresa.cnpj, 'Monitor', 'Cadastrar Prospect')
-    cy.adicionarContaBancaria(empresa.contaBancaria)
-    cy.preencherPleitoLimiteGlobal('5000000')
-    cy.adicionarFundoPleito('MULTIPLICA')
-    cy.adicionarFundoPleito('MULTIAGRO')
-    for (const produto in empresa.produtos) {
-      const { limite, prazo, taxa, concentracao } = empresa.produtos[produto]
-      cy.adicionarProdutosPleito(produto, limite, prazo, taxa, concentracao)
-    }
+    cy.adicionarTelefone(empresa.telefones)
+    cy.adicionarContato(empresa.contato)
+    cy.adicionarSocio(empresa.socio)
+    cy.ajustesRenovacao('6000000')
     cy.avancarEsteira('TESTE AUTOMACAO - AVANÇAR ETAPA PARA DADOS COMPLEMENTARES')
-    cy.verificarLocal()
-  })
-
-  it('Dados Complementares', () => {
-    cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')
-    cy.buscarEntidadeMonitor(empresa.cnpj, 'Monitor', 'Cadastrar Prospect')
-    cy.avancarEsteira('TESTE AUTOMACAO - AVANÇAR ETAPA PARA KYC')
-    cy.verificarLocal()
-  })
-
-  it('KYC', () => {
-    cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')
-    cy.buscarEntidadeMonitor(empresa.cnpj, 'KYC', 'Responder KYC')
-    for (const kyc of empresa.kyc) {
-      cy.contains(kyc).click()
-    }
-    cy.contains('Salvar').click()
-    cy.avancarEsteira('TESTE AUTOMACAO - AVANÇAR ETAPA PARA APROVAÇÃO PROSPECT')
     cy.verificarLocal()
   })
 
@@ -75,26 +46,6 @@ describe('Criação de uma POC para um cedente novo na casa', () => {
     cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')
     cy.buscarEntidadeMonitor(empresa.cnpj, 'Monitor')
     cy.aprovarProspect('TESTE AUTOMACAO - APROVAR PROSPECT DIRETORIA')
-    cy.verificarLocal()
-  })
-
-  it('Aprovação compliance', () => {
-    cy.menu('Beyond BackOffice', 'Compliance', 'Prospect')
-    cy.buscarEntidadeMonitor(empresa.cnpj, 'Compliance')
-    cy.preencherCompliance('TESTE AUTOMACAO - APROVAÇÃO COMPLIANCE')
-    cy.avancarEsteira('TESTE AUTOMACAO - APROVAÇÃO PARA JURIDICO COMPLIANCE')
-  })
-
-  it('Aprovação jurídico compliance', () => {
-    cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')
-    cy.buscarEntidadeMonitor(empresa.cnpj, 'Monitor', 'Cadastrar Prospect')
-    cy.avancarEsteira('TESTE AUTOMACAO - APROVAÇÃO PARA COMPLIANCE 2')
-  })
-  
-  it('Aprovação compliance 2', () => {
-    cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')
-    cy.buscarEntidadeMonitor(empresa.cnpj, 'Monitor')
-    cy.aprovarProspect('TESTE AUTOMACAO - APROVAÇÃO PARA DISTRIBUIÇÃO', 'Cadastrar Prospect')
     cy.verificarLocal()
   })
 
@@ -165,7 +116,7 @@ describe('Criação de uma POC para um cedente novo na casa', () => {
   it('Administradora', () => {
     cy.menu('Beyond BackOffice', 'Formalização', 'Administradora', 'Monitor')
     cy.buscarEntidadeMonitor(empresa.cnpj, 'Administradora', 'Realizar Administração')
-    cy.habilitarFundo(2)
+    cy.habilitarFundo(1)
     cy.avancarEsteira('TESTE AUTOMACAO - FINALIZAR A ESTEIRA', 'Finalizar')
   })
 })

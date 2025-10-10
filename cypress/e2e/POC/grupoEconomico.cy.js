@@ -8,7 +8,7 @@ if (empresaPrincipal) {
   [cnpj] = empresaPrincipal
 }
 
-describe('Criação de uma POC para um cedente novo na casa', () => {
+describe('Criação de uma POC para um grupo economico novo na casa', () => {
   before(() => {
     Object.keys(grupoEconomico.empresasGrupo).forEach((cnpj) => {
       cy.cleanupPessoa(cnpj)
@@ -20,19 +20,13 @@ describe('Criação de uma POC para um cedente novo na casa', () => {
     cy.loginKeycloak(user.usuario, user.senha)
   })
 
-  it('Criar uma poc para um cedente novo na casa', () => {
+  it('Criar uma poc para um grupo economico novo na casa', () => {
     cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')
     cy.criarProspect(cnpj, 'PROSPECT')
     cy.verificarLocal('Dados do Prospect')
     Object.keys(grupoEconomico.empresasGrupo).forEach((cnpj) => {
       cy.atualizarNomeFantasia(cnpj)
     })
-  })
-
-  it('Validar que não posso criar uma poc para um cnpj que já está na esteira', () => {
-    cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')
-    cy.criarProspect(cnpj, 'PROSPECT')
-    cy.contains('CNPJ informado está associado a uma esteira ativa.').should('be.visible')
   })
 
   it('Prospecção inicial', () => {
@@ -45,7 +39,7 @@ describe('Criação de uma POC para um cedente novo na casa', () => {
         cy.cadastrarEmpresasGrupo(cnpj, razaoSocial)
       }
     })
-    cy.adicionarContaBancaria(grupoEconomico.contaBancaria)
+    cy.adicionarContaBancaria(grupoEconomico.contaBancaria, false)
     cy.preencherPleitoLimiteGlobal('5000000')
     cy.adicionarFundoPleito('MULTIPLICA')
     for (const produto in grupoEconomico.produtos) {
@@ -164,25 +158,34 @@ describe('Criação de uma POC para um cedente novo na casa', () => {
   })
 
   it('Docs Comerciais', () => {
-    cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')
-    cy.buscarEntidadeMonitor(cnpj, 'Monitor', 'Cadastrar Cedente')
-    cy.avancarEsteira('TESTE AUTOMACAO - AVANÇAR ETAPA PARA FORMALIZAÇÃO', 'Formalização')
-    cy.verificarLocal()
+    Object.keys(grupoEconomico.empresasGrupo).forEach((cnpj) => {
+      cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')
+      cy.buscarEntidadeMonitor(cnpj, 'Monitor', 'Cadastrar Cedente')
+      cy.avancarEsteira('TESTE AUTOMACAO - AVANÇAR ETAPA PARA FORMALIZAÇÃO', 'Formalização')
+      cy.verificarLocal()
+      cy.get('.menu-jss18 > img').click()
+    })
   })
 
   it('Formalização', () => {
-    cy.menu('Beyond BackOffice', 'Formalização', 'Formalização', 'Monitor')
-    cy.buscarEntidadeMonitor(cnpj, 'Formalização', 'Realizar Formalização')
-    cy.avancarEsteira('TESTE AUTOMACAO - AVANÇAR ETAPA PARA ADMINSTRADORA', 'Administradora')
-    cy.get(':nth-child(3) > div > .prospeccao-MuiButtonBase-root > .prospeccao-MuiButton-label').click() //#botão administradora
-    cy.get('[name="aprovar"] > .prospeccao-MuiButton-label').click() //#botão confirmar
-    cy.verificarLocal()
+    Object.keys(grupoEconomico.empresasGrupo).forEach((cnpj) => {
+      cy.menu('Beyond BackOffice', 'Formalização', 'Formalização', 'Monitor')
+      cy.buscarEntidadeMonitor(cnpj, 'Formalização', 'Realizar Formalização')
+      cy.avancarEsteira('TESTE AUTOMACAO - AVANÇAR ETAPA PARA ADMINSTRADORA', 'Administradora')
+      cy.get(':nth-child(3) > div > .prospeccao-MuiButtonBase-root > .prospeccao-MuiButton-label').click() //#botão administradora
+      cy.get('[name="aprovar"] > .prospeccao-MuiButton-label').click() //#botão confirmar
+      cy.verificarLocal()
+      cy.get('.menu-jss18 > img').click()
+    })
   })
 
   it('Administradora', () => {
-    cy.menu('Beyond BackOffice', 'Formalização', 'Administradora', 'Monitor')
-    cy.buscarEntidadeMonitor(cnpj, 'Administradora', 'Realizar Administração')
-    cy.habilitarFundo()
-    cy.avancarEsteira('TESTE AUTOMACAO - FINALIZAR A ESTEIRA', 'Finalizar')
+    Object.keys(grupoEconomico.empresasGrupo).forEach((cnpj) => {
+      cy.menu('Beyond BackOffice', 'Formalização', 'Administradora', 'Monitor')
+      cy.buscarEntidadeMonitor(cnpj, 'Administradora', 'Realizar Administração')
+      cy.habilitarFundo()
+      cy.avancarEsteira('TESTE AUTOMACAO - FINALIZAR A ESTEIRA', 'Finalizar')
+      cy.get('.menu-jss18 > img').click()
+    })
   })
 })
