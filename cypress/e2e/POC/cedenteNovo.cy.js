@@ -30,6 +30,7 @@ describe('Criação de uma POC para um cedente novo na casa', () => {
     cy.adicionarContaBancaria(empresa.contaBancaria)
     cy.preencherPleitoLimiteGlobal('5000000')
     cy.adicionarFundoPleito('MULTIPLICA')
+    cy.adicionarFundoPleito('MULTIAGRO')
     for (const produto in empresa.produtos) {
       const { limite, prazo, taxa, concentracao } = empresa.produtos[produto]
       cy.adicionarProdutosPleito(produto, limite, prazo, taxa, concentracao)
@@ -164,7 +165,7 @@ describe('Criação de uma POC para um cedente novo na casa', () => {
   it('Administradora', () => {
     cy.menu('Beyond BackOffice', 'Formalização', 'Administradora', 'Monitor')
     cy.buscarEntidadeMonitor(empresa.cnpj, 'Administradora', 'Realizar Administração')
-    cy.habilitarFundo()
+    cy.habilitarFundo(2)
     cy.avancarEsteira('TESTE AUTOMACAO - FINALIZAR A ESTEIRA', 'Finalizar')
   })
 })

@@ -34,6 +34,13 @@ module.exports = defineConfig({
     // expõe o mapa de apps para uso em commands/testes
     config.env.apps = APPS;
 
+    on('after:spec', () => {
+      // força o navegador a reiniciar
+      return new Promise((resolve) => {
+        resolve();
+      });
+    });
+
     // ---------------- DB (MSSQL) ----------------
     const sql = require('mssql')
     let pool; // conexão única reaproveitável
