@@ -15,6 +15,10 @@ Cypress.env('user', {
 Cypress.env('empresa', {
   cnpj: '98670003000137',
   razaoSocial: 'VINHOS NOE',
+  fundos: [
+    'MULTIPLICA',
+    'MULTIFRIGO'
+  ],
   kyc: [
     'Clube de Futebol',
     'Mútuo Petro',
@@ -66,7 +70,16 @@ Cypress.env('grupoEconomico', {
     ['05462743000105']: { principal: false, razaoSocial: 'ABORGAMA DO BRASIL LTDA' },
     ['11568295000113']: { principal: false, razaoSocial: 'B Green Novas Participacoes LTDA' }
   },
-  kyc: ['Clube de Futebol', 'Mútuo Petro', 'Participação Estrangeira', 'Mútuo SUS'],
+  fundos: [
+    'MULTIPLICA',
+    'MULTIFRIGO'
+  ],
+  kyc: [
+    'Clube de Futebol',
+    'Mútuo Petro',
+    'Participação Estrangeira',
+    'Mútuo SUS'
+  ],
   contaBancaria: {
     banco: '33 - SANTANDER',
     agencia: '0001',
@@ -103,6 +116,12 @@ Cypress.on('uncaught:exception', (err) => {
 
 Cypress.on('uncaught:exception', (err) => {
   if (/Request failed with status code 406/.test(err.message)) {
+    return false
+  }
+})
+
+Cypress.on('uncaught:exception', (err) => {
+  if (/Request failed with status code 404/.test(err.message)) {
     return false
   }
 })

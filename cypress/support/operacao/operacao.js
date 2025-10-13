@@ -45,13 +45,29 @@ Cypress.Commands.add('enviarXml', (caminhoArquivo) => {
   cy.contains('Arquivo importado com sucesso').should('be.visible')
 })
 
-Cypress.Commands.add('adicionarFundoLocalCobrancaOpe', (fundo, localCobranca) => {
+Cypress.Commands.add('adicionarInformacoesPagamento', (contaCedente, estruturada = false, localCobranca = 'CONTA BRADESCO', contaFundo = '013022-2') => {
+  cy.contains('Pagamentos').click()
+  if (estruturada) {
+    cy.get('.MuiOutlinedInput-root > .MuiSelect-select').eq(2).click()//#seletor pagamento cedente
+    cy.contains(contaCedente).click()
+    cy.get('.MuiOutlinedInput-root > .MuiSelect-select').eq(3).click()//#seletor local de cobrança
+    cy.contains(localCobranca).click()
+    cy.get('.MuiOutlinedInput-root > .MuiSelect-select').eq(4).click()//#seletor pagamento fundo
+    cy.contains(contaFundo).click()
+    cy.get('[data-testid="SaveIcon"]').eq(0).click()//#salvar
+    cy.get('[data-testid="SaveIcon"]').eq(1).click()//#salvar
+    cy.get('[data-testid="SaveIcon"]').eq(2).click()//#salvar
+  } else {
+    cy.get('.MuiOutlinedInput-root > .MuiSelect-select').eq(3).click()//#seletor local de cobrança
+    cy.contains(localCobranca).click()
+    cy.get('[data-testid="SaveIcon"]').eq(1).click()//#salvar
+  }
+})
+
+Cypress.Commands.add('adicionarFundoOpe', (fundo, contaCedente) => {
   cy.get('[data-testid="EditIcon"]').first().click()
   cy.get('[style="width: 100%; grid-area: fundo;"] > .MuiFormControl-root > .MuiOutlinedInput-root > .MuiSelect-select').click()//#seletor fundo
   cy.contains(fundo).click()
   cy.get('[data-testid="SaveIcon"]').first().click()
-  cy.contains('Pagamentos').click()
-  cy.get(':nth-child(2) > .MuiFormControl-root > .MuiOutlinedInput-root > .MuiSelect-select').click()//#seletor local de cobrança
-  cy.contains(localCobranca).click()
-  cy.get(':nth-child(2) > .MuiButtonBase-root > [data-testid="SaveIcon"]').click()
+  cy.adicionarInformacoesPagamento(contaCedente)
 })

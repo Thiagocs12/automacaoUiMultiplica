@@ -44,9 +44,10 @@ Cypress.Commands.add('buscarEntidadeMonitor', (cnpj, tela, acao = null, entidade
   cy.contains(tela).click()
 
   if (entidade === 'Operação') {
-  cy.get('.mop-mop6 > .mop-MuiInputBase-root > .mop-MuiInputBase-input').type(cnpj)
+    cy.get('.mop-mop6 > .mop-MuiInputBase-root > .mop-MuiInputBase-input').type(cnpj)
+    cy.dataMonitorDiario()
   } else if (entidade === 'Prospect') {
-  cy.get('[name="cnpj"]').type(cnpj)
+    cy.get('[name="cnpj"]').type(cnpj)
   }
 
   cy.contains('Buscar').click()
@@ -54,7 +55,7 @@ Cypress.Commands.add('buscarEntidadeMonitor', (cnpj, tela, acao = null, entidade
   
   if (acao !== null && acao !== undefined) {
   if (acao === 'Realizar POC') {
-    cy.get('.MuiTableCell-alignCenter > .MuiButtonBase-root').click()
+    cy.get('.MuiTableCell-alignCenter > .MuiButtonBase-root').first().click()
     cy.acessarEntidadeNaTela(acao, entidade)
   } else {
     cy.acessarEntidadeNaTela(acao, entidade)
@@ -69,7 +70,7 @@ Cypress.Commands.add('acessarEntidadeNaTela', (acao, entidade = 'Prospect') => {
   cy.get(':nth-child(5) > .MuiPaper-root > .MuiTableContainer-root > .MuiTable-root > .MuiTableBody-root > .MuiTableRow-root > .MuiTableCell-alignCenter > .MuiButtonBase-root').click() //# botão + expandir comites
   }
   if (entidade === 'Operação') {
-  cy.get('.mop-MuiIconButton-label > .mop-MuiSvgIcon-root').click()//#Ações da entidade no monitor operação
+  cy.get('.mop-MuiIconButton-label > .mop-MuiSvgIcon-root').first().click()//#Ações da entidade no monitor operação
   } else if (entidade === 'Prospect') {
   cy.get('.prospeccao-MuiIconButton-label > .prospeccao-MuiSvgIcon-root').click()//#Ações da entidade no monitor prospect
   }

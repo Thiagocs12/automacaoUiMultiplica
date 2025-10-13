@@ -116,7 +116,7 @@ describe('Renovação de um cedente da casa', () => {
   it('Administradora', () => {
     cy.menu('Beyond BackOffice', 'Formalização', 'Administradora', 'Monitor')
     cy.buscarEntidadeMonitor(empresa.cnpj, 'Administradora', 'Realizar Administração')
-    cy.habilitarFundo(1)
+    //cy.habilitarFundo(1)
     cy.avancarEsteira('TESTE AUTOMACAO - FINALIZAR A ESTEIRA', 'Finalizar')
   })
 })

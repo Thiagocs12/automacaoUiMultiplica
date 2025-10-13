@@ -13,85 +13,88 @@ Cypress.Commands.add('cleanupPessoa', (cnpjCpf) => {
       DECLARE @idSacado INT;
       SET @idSacado = (SELECT id FROM MC_CAD_SACADO WHERE idPessoa = @idPessoa);
 
+      UPDATE MC_CED_CEDENTE
+          SET idProspect = null
+      WHERE id = @idCedente;
+      UPDATE MC_MOP_OPERACAO_TITULO 
+      	SET idPreOperacaoTitulo = NULL, idNotaFiscal = null, idNotaFiscalDuplicata = null 
+      WHERE idOperacao IN (SELECT id FROM MC_MOP_OPERACAO WHERE idCedente = @idCedente);
+      UPDATE MC_MOP_PRE_OPERACAO
+         SET idOperacao = NULL
+      WHERE idCedente = @idCedente;      
+      UPDATE MC_MOP_OPERACAO
+        SET idPreOperacao = NULL
+      WHERE idCedente = @idCedente; 
+
       DELETE FROM MC_CAD_PESSOA_ENDERECO   WHERE idPessoa = @idPessoa;
       DELETE FROM MC_CED_FILIAL            WHERE idPessoa = @idPessoa;
       DELETE FROM MC_PRT_FILIAL            WHERE idPessoa = @idPessoa;
       DELETE FROM MC_PRT_FILIAL            WHERE idProspect = @idProspect;
       DELETE FROM MC_PRT_FORNECEDORES      WHERE idProspect = @idProspect;
-      DELETE FROM MC_POC_PROSPECT          WHERE idProspect = @idProspect;
-      
-      UPDATE MC_CED_CEDENTE
-          SET idProspect = null
-      WHERE id = @idCedente;
-      
-      UPDATE MC_MOP_OPERACAO_TITULO 
-      	SET idPreOperacaoTitulo = NULL, idNotaFiscal = null, idNotaFiscalDuplicata = null 
-      WHERE idOperacao IN (SELECT id FROM MC_MOP_OPERACAO WHERE idCedente = @idCedente);
-      
-      DELETE FROM MC_MOP_ENTIDADE_ARQUIVO WHERE idCedente = @idCedente; 
-      DELETE FROM MC_MOP_OPERACAO_CONTA_BANCARIA WHERE idPessoaContaBancaria IN (SELECT id FROM MC_CAD_PESSOA_CONTA_BANCARIA WHERE idPessoa = @idPessoa);
-      DELETE FROM MC_CAD_PESSOA_CONTA_BANCARIA   WHERE idPessoa = @idPessoa;
-      DELETE FROM MC_CAD_PESSOA_CONTATO          WHERE idPessoa = @idPessoa;
-      DELETE FROM MC_CAD_EMPRESA_GRUPO_ECONOMICO WHERE idPessoa = @idPessoa;
-      DELETE FROM MC_CAD_PESSOA_SOCIO            WHERE idPessoa = @idPessoa;
-      DELETE FROM MC_CAD_PESSOA_ENTIDADE         WHERE idPessoa = @idPessoa;
-      DELETE FROM MC_CAD_PESSOA_TELEFONE         WHERE idPessoa = @idPessoa;
-      DELETE FROM MC_PRT_PRINCIPAIS_PAISES       WHERE idProspect = @idProspect;
-      DELETE FROM MC_CED_GERENTE_LOG             WHERE idCedente = @idCedente;
-      DELETE FROM MC_MOP_TITULOS_POSICAO         WHERE idTitulo IN (SELECT id FROM MC_MOP_TITULOS WHERE idCedente = @idCedente);
-      DELETE FROM MC_PRT_PROSPECT                WHERE idPessoa = @idPessoa;
-      DELETE FROM MC_CAD_PESSOA_RECUP_JUDICIAL   WHERE idPessoa = @idPessoa;
-      DELETE FROM MC_MOP_TITULOS_COBRANCA        WHERE idTitulo IN (SELECT id FROM MC_MOP_TITULOS WHERE idCedente = @idCedente);
-      DELETE FROM MC_MOP_TITULOS_LEGADO          WHERE idTitulo IN (SELECT id FROM MC_MOP_TITULOS WHERE idCedente = @idCedente);
-      DELETE FROM MC_MOP_TITULOS_MOVIMENTO       WHERE idTitulo IN (SELECT id FROM MC_MOP_TITULOS WHERE idCedente = @idCedente);
-      DELETE FROM MC_MOP_TITULOS_PAGAMENTO       WHERE idTitulo IN (SELECT id FROM MC_MOP_TITULOS WHERE idCedente = @idCedente);
-      DELETE FROM MC_MOP_TITULOS                 WHERE idCedente = @idCedente;
-      DELETE FROM MC_CED_FUNDO                   WHERE idCedente = @idCedente;
-      DELETE FROM MC_CED_LOCAL_COBRANCA_NN       WHERE idCedente = @idCedente;
-      DELETE FROM MC_CED_GARANTIA_REGRA          WHERE idCedente = @idCedente;
-      DELETE FROM MC_CED_CEDENTE_CONVENIO        WHERE idCedente = @idCedente;
+      DELETE FROM MC_POC_PROSPECT          WHERE idProspect = @idProspect;     
+      DELETE FROM MC_MOP_ENTIDADE_ARQUIVO          WHERE idCedente = @idCedente; 
+      DELETE FROM MC_MOP_OPERACAO_CONTA_BANCARIA   WHERE idPessoaContaBancaria IN (SELECT id FROM MC_CAD_PESSOA_CONTA_BANCARIA WHERE idPessoa = @idPessoa);
+      DELETE FROM MC_CAD_PESSOA_CONTA_BANCARIA     WHERE idPessoa = @idPessoa;
+      DELETE FROM MC_CAD_PESSOA_CONTATO            WHERE idPessoa = @idPessoa;
+      DELETE FROM MC_CAD_EMPRESA_GRUPO_ECONOMICO   WHERE idPessoa = @idPessoa;
+      DELETE FROM MC_CAD_PESSOA_SOCIO              WHERE idPessoa = @idPessoa;
+      DELETE FROM MC_CAD_PESSOA_ENTIDADE           WHERE idPessoa = @idPessoa;
+      DELETE FROM MC_CAD_PESSOA_TELEFONE           WHERE idPessoa = @idPessoa;
+      DELETE FROM MC_PRT_PRINCIPAIS_PAISES         WHERE idProspect = @idProspect;
+      DELETE FROM MC_CED_GERENTE_LOG               WHERE idCedente = @idCedente;
+      DELETE FROM MC_MOP_TITULOS_POSICAO           WHERE idTitulo IN (SELECT id FROM MC_MOP_TITULOS WHERE idCedente = @idCedente);
+      DELETE FROM MC_PRT_PROSPECT                  WHERE idPessoa = @idPessoa;
+      DELETE FROM MC_CAD_PESSOA_RECUP_JUDICIAL     WHERE idPessoa = @idPessoa;
+      DELETE FROM MC_MOP_TITULOS_COBRANCA          WHERE idTitulo IN (SELECT id FROM MC_MOP_TITULOS WHERE idCedente = @idCedente);
+      DELETE FROM MC_MOP_TITULOS_LEGADO            WHERE idTitulo IN (SELECT id FROM MC_MOP_TITULOS WHERE idCedente = @idCedente);
+      DELETE FROM MC_MOP_TITULOS_MOVIMENTO         WHERE idTitulo IN (SELECT id FROM MC_MOP_TITULOS WHERE idCedente = @idCedente);
+      DELETE FROM MC_MOP_TITULOS_PAGAMENTO         WHERE idTitulo IN (SELECT id FROM MC_MOP_TITULOS WHERE idCedente = @idCedente);
+      DELETE FROM MC_MOP_TITULOS                   WHERE idCedente = @idCedente;
+      DELETE FROM MC_CED_FUNDO                     WHERE idCedente = @idCedente;
+      DELETE FROM MC_CED_LOCAL_COBRANCA_NN         WHERE idCedente = @idCedente;
+      DELETE FROM MC_CED_GARANTIA_REGRA            WHERE idCedente = @idCedente;
+      DELETE FROM MC_CED_CEDENTE_CONVENIO          WHERE idCedente = @idCedente;
       DELETE FROM MC_MOP_ASSINATURA_DIGITAL_SACADO WHERE idOperacaoTitulo in (SELECT id FROM MC_MOP_OPERACAO_TITULO WHERE idSacado = @idSacado);
-      DELETE FROM MC_ENT_DOCUMENTO_KIT           WHERE idCedenteGarantia IN (SELECT id FROM MC_CED_GARANTIA WHERE idCedente = @idCedente);
-      DELETE FROM MC_CED_GARANTIA_ITEM           WHERE idCedenteGarantia IN (SELECT id FROM MC_CED_GARANTIA WHERE idCedente = @idCedente);
-      DELETE FROM MC_CED_GARANTIA                WHERE idCedente = @idCedente;
-      DELETE FROM MC_MOP_OPERACAO_TITULO_ERRO    WHERE idPreOperacaoTitulo IN (SELECT id FROM MC_MOP_PRE_OPERACAO_TITULO WHERE idPreOperacao IN (SELECT id FROM MC_MOP_PRE_OPERACAO WHERE idCedente = @idCedente));
-      DELETE FROM MC_MOP_PRE_OPERACAO_TITULO     WHERE idPreOperacao IN (SELECT id FROM MC_MOP_PRE_OPERACAO WHERE idCedente = @idCedente);
-      DELETE FROM MC_MOP_NOTA_XML_DUPLICATA      WHERE idNotaXml IN (SELECT id FROM MC_MOP_NOTA_XML WHERE idCedente = @idCedente);
-      DELETE FROM MC_MOP_NOTA_XML                WHERE idCedente = @idCedente;      
-      
-      UPDATE MC_MOP_PRE_OPERACAO
-         SET idOperacao = NULL
-       WHERE idCedente = @idCedente;      
-      
-       UPDATE MC_MOP_OPERACAO
-         SET idPreOperacao = NULL
-       WHERE idCedente = @idCedente;      
-      
-      DELETE FROM MC_CAD_ALCADA_PENDENTE_WHATS  WHERE idPreOperacao IN (SELECT id FROM MC_MOP_PRE_OPERACAO WHERE idCedente = @idCedente);
-      DELETE FROM MC_MOP_PRE_OPERACAO           WHERE idCedente = @idCedente;
+      DELETE FROM MC_ENT_DOCUMENTO_KIT             WHERE idCedenteGarantia IN (SELECT id FROM MC_CED_GARANTIA WHERE idCedente = @idCedente);
+      DELETE FROM MC_CED_GARANTIA_ITEM             WHERE idCedenteGarantia IN (SELECT id FROM MC_CED_GARANTIA WHERE idCedente = @idCedente);
+      DELETE FROM MC_CED_GARANTIA                  WHERE idCedente = @idCedente;
+      DELETE FROM MC_MOP_OPERACAO_TITULO_ERRO      WHERE idPreOperacaoTitulo IN (SELECT id FROM MC_MOP_PRE_OPERACAO_TITULO WHERE idPreOperacao IN (SELECT id FROM MC_MOP_PRE_OPERACAO WHERE idCedente = @idCedente));
+      DELETE FROM MC_MOP_PRE_OPERACAO_TITULO       WHERE idPreOperacao IN (SELECT id FROM MC_MOP_PRE_OPERACAO WHERE idCedente = @idCedente);
+      DELETE FROM MC_MOP_PRE_OPERACAO_TITULO_EXC   WHERE idNotaFiscal in (SELECT id FROM MC_MOP_NOTA_XML WHERE idCedente = @idCedente);
+      DELETE FROM MC_MOP_PRE_OPERACAO_TITULO_EXC   WHERE idNotaFiscalDuplicata in (SELECT id FROM MC_MOP_NOTA_XML_DUPLICATA WHERE idNotaXml IN (SELECT id FROM MC_MOP_NOTA_XML WHERE idCedente = @idCedente));
+      DELETE FROM MC_MOP_PRE_OPERACAO_TITULO_EXC   WHERE idNotaFiscal in (SELECT id FROM MC_MOP_NOTA_XML WHERE idCedente = @idCedente);
+      DELETE FROM MC_MOP_PRE_OPERACAO_TITULO_EXC   WHERE idNotaFiscalDuplicata in (SELECT id FROM MC_MOP_NOTA_XML_DUPLICATA WHERE idNotaXml IN (SELECT id FROM MC_MOP_NOTA_XML WHERE idCedente = @idCedente));
+      DELETE FROM MC_MOP_NOTA_XML_DUPLICATA        WHERE idNotaXml IN (SELECT id FROM MC_MOP_NOTA_XML WHERE idCedente = @idCedente);
+      DELETE FROM MC_MOP_NOTA_XML                  WHERE idCedente = @idCedente;
+      DELETE FROM MC_CAD_ALCADA_PENDENTE_WHATS     WHERE idPreOperacao IN (SELECT id FROM MC_MOP_PRE_OPERACAO WHERE idCedente = @idCedente);
+      DELETE FROM MC_MOP_OPERACAO_CUSTO            WHERE idPreOperacao in (SELECT ID FROM MC_MOP_PRE_OPERACAO WHERE idCedente = @idCedente);
+      DELETE FROM MC_MOP_PRE_OPERACAO              WHERE idCedente = @idCedente;
       DELETE FROM MC_MOP_ASSINATURA_DIGITAL_SACADO WHERE idOperacaoTitulo in (SELECT id FROM MC_MOP_OPERACAO_TITULO WHERE idOperacao IN (SELECT id FROM MC_MOP_OPERACAO WHERE idCedente = @idCedente));
       DELETE FROM MC_MOP_ASSINATURA_DIGITAL_SACADO WHERE idOperacao in (SELECT id FROM MC_MOP_OPERACAO WHERE idCedente = @idCedente);
-      DELETE FROM MC_MOP_ASSINATURA_DIGITAL WHERE idOperacao in (SELECT id FROM MC_MOP_OPERACAO WHERE idCedente = @idCedente);
-      DELETE FROM MC_MOP_OPERACAO_TERMO WHERE idOperacao in (SELECT id FROM MC_MOP_OPERACAO WHERE idCedente = @idCedente);
-      DELETE FROM MC_MOP_OPERACAO_TITULO        WHERE idOperacao IN (SELECT id FROM MC_MOP_OPERACAO WHERE idCedente = @idCedente);
-      DELETE FROM MC_MOP_OPERACAO_TARIFA        WHERE idOperacao IN (SELECT id FROM MC_MOP_OPERACAO WHERE idCedente = @idCedente);
-      DELETE FROM MC_MOP_OPERACAO               WHERE idCedente = @idCedente;
-      DELETE FROM MC_CED_BOLETO                 WHERE idCedente = @idCedente;
-      DELETE FROM MC_CED_PARAMETRO_OPERACAO     WHERE idCedente = @idCedente;
-      DELETE FROM MC_CED_PRODUTO                WHERE idCedente = @idCedente;
-      DELETE FROM MC_CED_PRODUTO_GARANTIA_REGRA WHERE idCedenteProduto IN (SELECT id FROM MC_CED_PRODUTO WHERE idCedente = @idCedente);
-      DELETE FROM MC_CED_PRODUTO                WHERE idCedente = @idCedente;
-      DELETE FROM MC_CED_PORTAL_CONVENIO        WHERE idCedente = @idCedente;
-      DELETE FROM MC_PRT_DADOS_OPERACIONAIS     WHERE idPessoa = @idPessoa;
-      DELETE FROM MC_CED_FILIAL                 WHERE idCedente = @idCedente;
-      DELETE FROM MC_CED_OBSERVACAO             WHERE idCedente = @idCedente;
-      DELETE FROM MC_MOP_MONITORAMENTO_NFE      WHERE idOperacaotitulo in (SELECT id FROM MC_MOP_OPERACAO_TITULO WHERE idSacado = @idSacado);
-      DELETE FROM MC_MOP_TITULOS                WHERE idSacado = @idSacado;
-      DELETE FROM MC_MOP_OPERACAO_TITULO        WHERE idSacado = @idSacado;
-      DELETE FROM MC_CAD_SACADO                 WHERE idPessoa = @idPessoa;
-      DELETE FROM MC_CAD_PESSOA_LIGADA          WHERE idPessoaLigada = @idPessoa;
-      DELETE FROM MC_CED_CEDENTE                WHERE idPessoa = @idPessoa;
-      DELETE FROM MC_CAD_PESSOA                 WHERE id=@idPessoa;
+      DELETE FROM MC_MOP_ASSINATURA_DIGITAL        WHERE idOperacao in (SELECT id FROM MC_MOP_OPERACAO WHERE idCedente = @idCedente);
+      DELETE FROM MC_MOP_OPERACAO_TERMO            WHERE idOperacao in (SELECT id FROM MC_MOP_OPERACAO WHERE idCedente = @idCedente);
+      DELETE FROM MC_MOP_OPERACAO_TITULO           WHERE idOperacao IN (SELECT id FROM MC_MOP_OPERACAO WHERE idCedente = @idCedente);
+      DELETE FROM MC_MOP_OPERACAO_TARIFA           WHERE idOperacao IN (SELECT id FROM MC_MOP_OPERACAO WHERE idCedente = @idCedente);
+      DELETE FROM MC_MOP_OPERACAO_TERMO_SECAO_HIST WHERE idOperacaoTermoSecao in (SELECT id FROM MC_MOP_OPERACAO_TERMO_SECAO WHERE idOperacao in (SELECT id FROM MC_MOP_OPERACAO WHERE idCedente = @idCedente));
+   	  DELETE FROM MC_MOP_OPERACAO_TERMO_SECAO      WHERE idOperacao in (SELECT id FROM MC_MOP_OPERACAO WHERE idCedente = @idCedente);
+      DELETE FROM MC_MOP_PRE_OPERACAO_EXC          WHERE idCedente = @idCedente;
+      DELETE FROM MC_MOP_OPERACAO                  WHERE idCedente = @idCedente;
+      DELETE FROM MC_CED_BOLETO                    WHERE idCedente = @idCedente;
+      DELETE FROM MC_CED_PARAMETRO_OPERACAO        WHERE idCedente = @idCedente;
+      DELETE FROM MC_CED_PRODUTO                   WHERE idCedente = @idCedente;
+      DELETE FROM MC_CED_PRODUTO_GARANTIA_REGRA    WHERE idCedenteProduto IN (SELECT id FROM MC_CED_PRODUTO WHERE idCedente = @idCedente);
+      DELETE FROM MC_CED_PRODUTO                   WHERE idCedente = @idCedente;
+      DELETE FROM MC_CED_PORTAL_CONVENIO           WHERE idCedente = @idCedente;
+      DELETE FROM MC_PRT_DADOS_OPERACIONAIS        WHERE idPessoa = @idPessoa;
+      DELETE FROM MC_CED_FILIAL                    WHERE idCedente = @idCedente;
+      DELETE FROM MC_CED_OBSERVACAO                WHERE idCedente = @idCedente;
+      DELETE FROM MC_MOP_MONITORAMENTO_NFE         WHERE idOperacaotitulo in (SELECT id FROM MC_MOP_OPERACAO_TITULO WHERE idSacado = @idSacado);
+      DELETE FROM MC_MOP_TITULOS                   WHERE idSacado = @idSacado;
+      DELETE FROM MC_MOP_OPERACAO_TITULO           WHERE idSacado = @idSacado;
+      DELETE FROM MC_CAD_SACADO                    WHERE idPessoa = @idPessoa;
+      DELETE FROM MC_CAD_PESSOA_LIGADA             WHERE idPessoaLigada = @idPessoa;
+      DELETE FROM MC_CED_CEDENTE                   WHERE idPessoa = @idPessoa;
+      DELETE FROM MC_CAD_PESSOA                    WHERE id=@idPessoa;
     `,
     params: { cnpjCpf }
   })
