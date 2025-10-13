@@ -41,7 +41,7 @@ describe('Operação - Duplicata', () => {
     cy.loginKeycloak(user.usuario, user.senha)
     cy.menu('Beyond BackOffice', 'Comercial', 'Operação')
     cy.buscarEntidadeMonitor(empresa.cnpj, 'Monitor Diário', 'Analisar Operação', 'Operação')
-    cy.adicionarFundoLocalCobrancaOpe('MULTIPLICA', 'CONTA BRADESCO')
+    cy.adicionarFundoOpe('MULTIPLICA', empresa.contaBancaria.conta)
     cy.get(':nth-child(11) > .mop-MuiStepLabel-root').click()
     cy.get('[aria-label="Gerar Danfe"]').click()
     cy.wait(500)

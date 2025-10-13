@@ -41,7 +41,9 @@ describe('Criação de uma POC para um grupo economico novo na casa', () => {
     })
     cy.adicionarContaBancaria(grupoEconomico.contaBancaria, false)
     cy.preencherPleitoLimiteGlobal('5000000')
-    cy.adicionarFundoPleito('MULTIPLICA')
+    empresa.fundos.forEach((fundo) => {
+      cy.adicionarFundoPleito(fundo)
+    })
     for (const produto in grupoEconomico.produtos) {
       const { limite, prazo, taxa, concentracao } = grupoEconomico.produtos[produto]
       cy.adicionarProdutosPleito(produto, limite, prazo, taxa, concentracao)
