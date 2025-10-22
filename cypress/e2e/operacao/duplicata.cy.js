@@ -25,8 +25,9 @@ describe('Operação - Duplicata', () => {
   it('Verificar o vinculo e avançar operação', () => {
     cy.obterUltimaPreOperacaoPorCnpj(empresa.cnpj).then((idPreOperacao) => {
       cy.atualizarNotaFiscalPorPreOperacao(idPreOperacao)
-      cy.wait(1000)
+      cy.wait(200)
       cy.atualizarVencimentosPreOperacao(idPreOperacao)
+      cy.reprocessarTitulos(idPreOperacao)
     })
     cy.loginKeycloak(user.usuario, user.senha, 'banking')
     cy.acessarTelaBanking(empresa.razaoSocial)
@@ -70,6 +71,7 @@ describe('Operação - Duplicata', () => {
     cy.menu('Beyond BackOffice', 'Comercial', 'Operação')
     cy.buscarEntidadeMonitor(empresa.cnpj, 'Monitor Diário', 'Analisar Tesouraria OPE', 'Operação')
     cy.contains('Efetivar').click()
+    cy.contains('Sua operação foi efetivada').should('be.visible')
     cy.avancarEsteira('TESTE AUTOMAÇÃO - AVANÇAR ETAPA DE TESOURARIA OPE', 'Avançar', 'Operação')
     cy.verificarLocal()
   })

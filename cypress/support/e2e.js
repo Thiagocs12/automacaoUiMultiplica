@@ -2,6 +2,7 @@ import './commands'
 import './poc'
 import './helpers'
 import './querysSql'
+import './liquidacao'
 import './requests'
 import './operacao'
 import "cypress-real-events"
@@ -16,8 +17,8 @@ Cypress.env('empresa', {
   cnpj: '98670003000137',
   razaoSocial: 'VINHOS NOE',
   fundos: [
-    'MULTIPLICA',
-    'MULTIFRIGO'
+    'MULTIPLICA FUNDO DE INVESTIMENTO EM D',
+    'MULTIFRIGO FUNDO DE INVESTIMENTO EM DIREITOS CREDITORIOS NAO PADRONIZADOS'
   ],
   kyc: [
     'Clube de Futebol',

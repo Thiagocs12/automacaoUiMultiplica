@@ -79,7 +79,7 @@ describe('Renovação de um cedente da casa', () => {
     cy.menu('Beyond BackOffice', 'Comitê', 'Comitê de Crédito', 'Comitê de Crédito')
     cy.buscarEntidadeMonitor(empresa.cnpj, 'Comitê de Crédito')
     cy.acessarEntidadeNaTela('Votar')
-    cy.wait(5000)
+    cy.wait(3000)
     cy.contains('Votação').click()
     cy.aprovarProspectComite()
     cy.votarComiteFavoravelPorCnpj(empresa.cnpj)
@@ -116,7 +116,6 @@ describe('Renovação de um cedente da casa', () => {
   it('Administradora', () => {
     cy.menu('Beyond BackOffice', 'Formalização', 'Administradora', 'Monitor')
     cy.buscarEntidadeMonitor(empresa.cnpj, 'Administradora', 'Realizar Administração')
-    //cy.habilitarFundo(1)
     cy.avancarEsteira('TESTE AUTOMACAO - FINALIZAR A ESTEIRA', 'Finalizar')
   })
 })

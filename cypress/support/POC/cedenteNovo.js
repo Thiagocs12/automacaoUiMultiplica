@@ -13,7 +13,7 @@ Cypress.Commands.add('adicionarProdutosPleito', (produto, limite, prazo, taxa, c
   cy.wait(100)
   cy.get('.css-2cy7sg > .MuiFormControl-root > .MuiOutlinedInput-root > .MuiOutlinedInput-input').clear().type(concetracao) //# adição de grupo de produto concetracao
   cy.wait(100)
-  cy.get('.css-1bvc4cc > .MuiButton-root').click()
+  cy.tikGet('.css-1bvc4cc > .MuiButton-root')
 })
 
 // Adiciona produtos ao pleito pelo grupo
@@ -22,12 +22,12 @@ Cypress.Commands.add('adicionarFundoPleito', (fundo) => {
   cy.wait(500)
   cy.get('#main-menu-body > section > div > main > div > div:nth-child(2) > div:nth-child(1) > div > div:nth-child(6) > div > div:nth-child(2) > div > form > div:nth-child(1) > div > div > div > div > div > button:nth-child(2) > span:nth-child(1) > svg').click()
   cy.contains(fundo).click()
-  cy.get('.prospeccao-MuiGrid-grid-md-4 > div > .prospeccao-MuiButton-contained').click()
+  cy.tikGet('.prospeccao-MuiGrid-grid-md-4 > div > .prospeccao-MuiButton-contained')
 })
 
 // Avança as etapas de aprovação do prospect
 Cypress.Commands.add('aprovarProspect', (parecer, acao = 'Analisar Prospect') => {
-  cy.wait(500)
+  cy.wait(2000)
   cy.acessarEntidadeNaTela(acao)
   cy.avancarEsteira(parecer)
 })
@@ -42,7 +42,7 @@ Cypress.Commands.add('preencherCompliance', (parecer) => {
   cy.contains('ANALISTA AUTOMAÇÃO').click()
   cy.get('[name="parecer"]').type(parecer)
   cy.get('[name="observacao"]').type(parecer)
-  cy.contains('Salvar').click()
+  cy.tikCon('Salvar')
 })
 
 Cypress.Commands.add('distribuirProposta', (cnpj) => {

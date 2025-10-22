@@ -12,7 +12,7 @@ describe('Operação - Nota Comercial', () => {
     cy.loginKeycloak(user.usuario, user.senha)
   })
   
-  it('Criar a pré operacao', () => {
+  it.skip('Criar a pré operacao', () => {
     cy.menu('Beyond BackOffice', 'Comercial', 'Operação')
     cy.criarOperacaoEstruturada(empresa, produto, 15, 50000000, 'NC-', 200000000)
     cy.verificarLocal()

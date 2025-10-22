@@ -1,5 +1,4 @@
 Cypress.Commands.add('adicionarGrupoEconomico', (nomeGrupo) => {
-  cy.excluirGrupoEconomico(nomeGrupo)
   cy.get('#main-menu-body section > div > main > div > div:nth-child(2) > div:nth-child(2) > div > div:nth-child(2) > div:nth-child(2) > div > div:nth-child(1) > div > div > div:nth-child(12) > button:nth-child(2)').click() //#avançar paginação prospect
   cy.contains('Grupo Econômico').click()
   cy.wait(1000)

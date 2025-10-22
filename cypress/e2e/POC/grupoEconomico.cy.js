@@ -20,18 +20,11 @@ describe('Criação de uma POC para um grupo economico novo na casa', () => {
     cy.loginKeycloak(user.usuario, user.senha)
   })
 
-  it('Criar uma poc para um grupo economico novo na casa', () => {
+  it('Prospecção Inicial', () => {
     cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')
     cy.criarProspect(cnpj, 'PROSPECT')
     cy.verificarLocal('Dados do Prospect')
-    Object.keys(grupoEconomico.empresasGrupo).forEach((cnpj) => {
-      cy.atualizarNomeFantasia(cnpj)
-    })
-  })
-
-  it('Prospecção inicial', () => {
-    cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')
-    cy.buscarEntidadeMonitor(cnpj, 'Monitor', 'Cadastrar Prospect')
+    cy.excluirGrupoEconomico(grupoEconomico.nome)
     cy.adicionarGrupoEconomico(grupoEconomico.nome)
     Object.entries(grupoEconomico.empresasGrupo).forEach(([cnpj, empresa]) => {
       if (empresa.principal === false) {
@@ -39,9 +32,12 @@ describe('Criação de uma POC para um grupo economico novo na casa', () => {
         cy.cadastrarEmpresasGrupo(cnpj, razaoSocial)
       }
     })
+    Object.keys(grupoEconomico.empresasGrupo).forEach((cnpj) => {
+      cy.atualizarNomeFantasia(cnpj)
+    })
     cy.adicionarContaBancaria(grupoEconomico.contaBancaria, false)
     cy.preencherPleitoLimiteGlobal('5000000')
-    empresa.fundos.forEach((fundo) => {
+    grupoEconomico.fundos.forEach((fundo) => {
       cy.adicionarFundoPleito(fundo)
     })
     for (const produto in grupoEconomico.produtos) {
@@ -70,23 +66,13 @@ describe('Criação de uma POC para um grupo economico novo na casa', () => {
     cy.verificarLocal()
   })
 
-  it('Aprovação Plataforma', () => {
+  it('Aprovação Prospect', () => {
     cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')
     cy.buscarEntidadeMonitor(cnpj, 'Monitor')
     cy.aprovarProspect('TESTE AUTOMACAO - APROVAR PROSPECT PLATAFORMA')
     cy.verificarLocal()
-  })
-
-  it('Aprovação Superintedente', () => {
-    cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')
-    cy.buscarEntidadeMonitor(cnpj, 'Monitor')
     cy.aprovarProspect('TESTE AUTOMACAO - APROVAR PROSPECT SUPERINTENDENTE')
     cy.verificarLocal()
-  })
-
-  it('Aprovação Diretoria', () => {
-    cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')
-    cy.buscarEntidadeMonitor(cnpj, 'Monitor')
     cy.aprovarProspect('TESTE AUTOMACAO - APROVAR PROSPECT DIRETORIA')
     cy.verificarLocal()
   })
@@ -98,15 +84,11 @@ describe('Criação de uma POC para um grupo economico novo na casa', () => {
     cy.avancarEsteira('TESTE AUTOMACAO - APROVAÇÃO PARA JURIDICO COMPLIANCE')
   })
 
-  it('Aprovação jurídico compliance', () => {
+  it('Aprovação jurídico compliance e compliance 2', () => {
     cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')
     cy.buscarEntidadeMonitor(cnpj, 'Monitor', 'Cadastrar Prospect')
     cy.avancarEsteira('TESTE AUTOMACAO - APROVAÇÃO PARA COMPLIANCE 2')
-  })
-  
-  it('Aprovação compliance 2', () => {
-    cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')
-    cy.buscarEntidadeMonitor(cnpj, 'Monitor')
+    cy.verificarLocal()
     cy.aprovarProspect('TESTE AUTOMACAO - APROVAÇÃO PARA DISTRIBUIÇÃO', 'Cadastrar Prospect')
     cy.verificarLocal()
   })
@@ -136,58 +118,46 @@ describe('Criação de uma POC para um grupo economico novo na casa', () => {
     cy.verificarLocal()
   })
 
-  it('Preencher e votar Comitê de Crédito', () => {
+  it('Comitê de crédito', () => {
     cy.setarComite(cnpj)
     cy.menu('Beyond BackOffice', 'Comitê', 'Comitê de Crédito', 'Comitê de Crédito')
-    cy.buscarEntidadeMonitor(cnpj, 'Comitê de Crédito')
-    cy.acessarEntidadeNaTela('Votar')
-    cy.wait(5000)
-    cy.contains('Votação').click()
-    cy.aprovarProspectComite()
-    cy.votarComiteFavoravelPorCnpj(cnpj)
-    cy.obterIdProposta(cnpj).then((idProposta) => {
-      cy.finalizaPocComite(idProposta)
-    })
-  })
-
-  it('Comitê de crédito', () => {
-    cy.menu('Beyond BackOffice', 'Comitê', 'Comitê de Crédito', 'Comitê de Crédito')
-    cy.buscarEntidadeMonitor(cnpj, 'Comitê de Crédito')
-    cy.acessarEntidadeNaTela('Votar')
+    cy.buscarEntidadeMonitor(cnpj, 'Comitê de Crédito', 'Votar')
+    cy.aprovarComite(cnpj)
     cy.acessarAtaComite()
     cy.avancarComite()
     cy.verificarLocal()
   })
 
   it('Docs Comerciais', () => {
-    Object.keys(grupoEconomico.empresasGrupo).forEach((cnpj) => {
-      cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')
-      cy.buscarEntidadeMonitor(cnpj, 'Monitor', 'Cadastrar Cedente')
+    cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')
+    cy.buscarEntidadeMonitor(cnpj, 'Monitor')
+    Object.keys(grupoEconomico.empresasGrupo).forEach(() => {
+      cy.wait(1000)
+      cy.acessarEntidadeNaTela('Cadastrar Cedente')
       cy.avancarEsteira('TESTE AUTOMACAO - AVANÇAR ETAPA PARA FORMALIZAÇÃO', 'Formalização')
       cy.verificarLocal()
-      cy.get('.menu-jss18 > img').click()
     })
   })
 
   it('Formalização', () => {
-    Object.keys(grupoEconomico.empresasGrupo).forEach((cnpj) => {
-      cy.menu('Beyond BackOffice', 'Formalização', 'Formalização', 'Monitor')
-      cy.buscarEntidadeMonitor(cnpj, 'Formalização', 'Realizar Formalização')
+    cy.menu('Beyond BackOffice', 'Formalização', 'Formalização', 'Monitor')
+    cy.buscarEntidadeMonitor(cnpj, 'Formalização')
+    Object.keys(grupoEconomico.empresasGrupo).forEach(() => {
+      cy.acessarEntidadeNaTela('Realizar Formalização')
       cy.avancarEsteira('TESTE AUTOMACAO - AVANÇAR ETAPA PARA ADMINSTRADORA', 'Administradora')
       cy.get(':nth-child(3) > div > .prospeccao-MuiButtonBase-root > .prospeccao-MuiButton-label').click() //#botão administradora
       cy.get('[name="aprovar"] > .prospeccao-MuiButton-label').click() //#botão confirmar
       cy.verificarLocal()
-      cy.get('.menu-jss18 > img').click()
     })
   })
 
   it('Administradora', () => {
-    Object.keys(grupoEconomico.empresasGrupo).forEach((cnpj) => {
-      cy.menu('Beyond BackOffice', 'Formalização', 'Administradora', 'Monitor')
-      cy.buscarEntidadeMonitor(cnpj, 'Administradora', 'Realizar Administração')
+    cy.menu('Beyond BackOffice', 'Formalização', 'Administradora', 'Monitor')
+    cy.buscarEntidadeMonitor(cnpj, 'Administradora')
+    Object.keys(grupoEconomico.empresasGrupo).forEach(() => {
+      cy.acessarEntidadeNaTela('Realizar Administração')
       cy.habilitarFundo()
       cy.avancarEsteira('TESTE AUTOMACAO - FINALIZAR A ESTEIRA', 'Finalizar')
-      cy.get('.menu-jss18 > img').click()
     })
   })
 })
