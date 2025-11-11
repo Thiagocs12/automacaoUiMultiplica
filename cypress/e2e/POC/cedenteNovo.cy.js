@@ -1,10 +1,11 @@
 const user = Cypress.env('user')
-const empresa = Cypress.env('empresa')
+const empresa = Cypress.env('empresa2')
 
 describe('Criação de uma POC para um cedente novo na casa', () => {
   before(() => {
     cy.cleanupPessoa(empresa.cnpj)
     cy.armazenarKCTokenEmEnv()
+    cy.capturarIdsParecer()
   })
 
   beforeEach(() => {
@@ -116,10 +117,10 @@ describe('Criação de uma POC para um cedente novo na casa', () => {
     cy.verificarLocal()
   })
 
-  it('Docs Comerciais', () => {
+  it('Middle Documental', () => {
     cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')
     cy.buscarEntidadeMonitor(empresa.cnpj, 'Monitor', 'Cadastrar Cedente')
-    cy.avancarEsteira('TESTE AUTOMACAO - AVANÇAR ETAPA PARA FORMALIZAÇÃO', 'Formalização')
+    cy.avancarEsteira('TESTE AUTOMACAO - AVANÇAR ETAPA PARA DOCS COMERCIAL', 'Formalização')
     cy.verificarLocal()
   })
 

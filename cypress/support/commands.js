@@ -1,12 +1,9 @@
-// Define a origem do Keycloak a partir das variáveis de ambiente
 const kcOrigin = Cypress.env('BASE_URL_KEYCLOAK')
 const getApps = Cypress.env('apps')
 
 // Comando customizado para login bem-sucedido via Keycloak
 Cypress.Commands.add('loginKeycloak', (usuario, senha, plataforma = 'backoffice') => {
-  // Garante que está na aplicação antes de trocar de domínio
   cy.goTo(plataforma, '/')
-  // Executa o fluxo de login no domínio do Keycloak
   cy.origin(kcOrigin, { args: { usuario, senha } }, ({ usuario, senha }) => {
     cy.get('#username').clear().type(usuario)
     cy.get('#password').clear().type(senha, { log: false })
@@ -24,7 +21,6 @@ Cypress.Commands.add('loginKeycloakError', (usuario, senha, plataforma = 'backof
     cy.get('#username').clear().type(usuario)
     cy.get('#password').clear().type(senha, { log: false })
     cy.get('form').submit()
-    // Valida que a mensagem de erro aparece
     cy.contains('Usuário ou senha inválidos').should('be.visible')
   })
 })
@@ -34,7 +30,7 @@ Cypress.Commands.add('menu', (modulo, area, entidade, home = 'Home') => {
   cy.contains(modulo).click()
   cy.contains(area).click()
   cy.contains(home).trigger('mouseover')
-  if (area !== 'Compliance') {
+  if (area !== 'Compliance') {  
     cy.contains(entidade).click()
   }
 })
@@ -51,7 +47,6 @@ Cypress.Commands.add('buscarEntidadeMonitor', (cnpj, tela, acao = null, entidade
   }
 
   cy.contains('Buscar').click()
-  cy.wait(500)
   if (acao !== null && acao !== undefined) {
     if (acao === 'Realizar POC') {
       cy.get('.MuiTableCell-alignCenter > .MuiButtonBase-root').first().click()
@@ -71,7 +66,7 @@ Cypress.Commands.add('acessarEntidadeNaTela', (acao, entidade = 'Prospect') => {
   if (entidade === 'Operação') {
     cy.get('.mop-MuiIconButton-label > .mop-MuiSvgIcon-root').first().click()//#Ações da entidade no monitor operação
   } else if (entidade === 'Prospect') {
-    cy.get('.prospeccao-MuiIconButton-label > .prospeccao-MuiSvgIcon-root').click()//#Ações da entidade no monitor prospect
+    cy.get('.prospeccao-MuiIconButton-label > .prospeccao-MuiSvgIcon-root').first().click()//#Ações da entidade no monitor prospect
   }
   cy.contains(acao).click()  
 })
@@ -143,7 +138,6 @@ Cypress.Commands.add('goTo', (app, path = '/') => {
   cy.visit(urlFor(app, path))
 })
 
-// cypress/support/commands.js
 Cypress.Commands.add('armazenarKCTokenEmEnv', () => {
   cy.intercept(
   {
@@ -166,4 +160,50 @@ Cypress.Commands.add('armazenarKCTokenEmEnv', () => {
     })
   }
   ).as('kcToken')
+})
+
+Cypress.Commands.add('finalizarEtapaEsteira', (situacao = 'APROVADO') => {
+  const idEsteira = Cypress.env('idEsteira')
+  const idEtapa = Cypress.env('idEtapa')
+  const idParecer = Cypress.env('idOcorrencia') 
+
+  return cy.request({
+    method: 'POST',
+    url: `${Cypress.env('BASE_URL_MULTIFLOW')}/api/v1/esteira/finalizarEtapa`,
+    headers: {
+      Authorization: `Bearer ${Cypress.env('token')}`,
+      Accept: 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: {
+      idEsteira,
+      idEtapa,
+      idParecer,
+      situacao
+    }
+  }).then((response) => {
+    expect(response.status).to.eq(200)
+
+    return cy.wrap(response.body)
+  })
+})
+
+Cypress.Commands.add('capturarIdsParecer', () => {
+  cy.intercept('POST', '**/mc-multiflow-ms/api/v1/ocorrencia/parecer*').as('parecerReq')
+})
+
+Cypress.Commands.add('aguardarParecer', () => {
+  cy.wait('@parecerReq', { timeout: 20000 }).then(({ response }) => {
+    const { id, idEtapa, idEsteira } = response.body
+
+    Cypress.env('idOcorrencia', id)
+    Cypress.env('idEtapa', idEtapa)
+    Cypress.env('idEsteira', idEsteira)
+  })
+})
+
+Cypress.Commands.add('aprovarAlcada', (parecer) => {
+  cy.get('[name="votar"]').type(parecer)
+  cy.get('[name="aprovar"] > .mop-MuiButton-label').click()//# botao aprovar alcada
+  cy.contains('button', 'Confirmar').click()
 })

@@ -1,5 +1,5 @@
 const user = Cypress.env('user')
-const empresa = Cypress.env('empresa')
+const empresa = Cypress.env('empresa2')
 
 
 describe('Operação - Duplicata', () => {
@@ -15,17 +15,20 @@ describe('Operação - Duplicata', () => {
     cy.verificarLocal('Operações')
   })
 
-  it('Adicionar xmls e ajustar vencimentos', () => {
+  it.only('Adicionar xmls e ajustar vencimentos', () => {
     cy.loginKeycloak(user.usuario, user.senha, 'banking')
     cy.acessarTelaBanking(empresa.razaoSocial, 'Importar XML')
     cy.enviarXml('/operacao/xmlOperacaoAutomacao.zip')
     cy.verificarLocal('Arquivo importado com sucesso!')
-  })
-
-  it('Verificar o vinculo e avançar operação', () => {
+    cy.wait(10000)
     cy.obterUltimaPreOperacaoPorCnpj(empresa.cnpj).then((idPreOperacao) => {
       cy.atualizarNotaFiscalPorPreOperacao(idPreOperacao)
-      cy.wait(200)
+    })
+  })
+
+  it.only('Verificar o vinculo e avançar operação', () => {
+    cy.obterUltimaPreOperacaoPorCnpj(empresa.cnpj).then((idPreOperacao) => {
+      cy.atualizarNotaFiscalPorPreOperacao(idPreOperacao)
       cy.atualizarVencimentosPreOperacao(idPreOperacao)
       cy.reprocessarTitulos(idPreOperacao)
     })
@@ -43,8 +46,8 @@ describe('Operação - Duplicata', () => {
     cy.menu('Beyond BackOffice', 'Comercial', 'Operação')
     cy.buscarEntidadeMonitor(empresa.cnpj, 'Monitor Diário', 'Analisar Operação', 'Operação')
     cy.adicionarFundoOpe('MULTIPLICA', empresa.contaBancaria.conta)
-    cy.get(':nth-child(11) > .mop-MuiStepLabel-root').click()
-    cy.get('[aria-label="Gerar Danfe"]').click()
+    cy.tikGet(':nth-child(11) > .mop-MuiStepLabel-root').click()
+    cy.tikGet('[aria-label="Gerar Danfe"]').click()
     cy.wait(500)
     cy.avancarEsteira('TESTE AUTOMAÇÃO - AVANÇAR ETAPA DE MIDDLE', 'Avançar', 'Operação')
     cy.verificarLocal()
@@ -64,6 +67,14 @@ describe('Operação - Duplicata', () => {
     cy.buscarEntidadeMonitor(empresa.cnpj, 'Monitor Diário', 'Analisar MOP', 'Operação')
     cy.avancarEsteira('TESTE AUTOMAÇÃO - AVANÇAR ETAPA DE ANALISE MOP', 'Avançar', 'Operação')
     cy.verificarLocal()
+  })
+
+  it('Alcada Diretoria', () => {
+    cy.loginKeycloak(user.usuario, user.senha)
+    cy.menu('Beyond BackOffice', 'Comercial', 'Operação')
+    cy.buscarEntidadeMonitor(empresa.cnpj, 'Monitor Diário', 'Analisar Alçada Diretoria OPE', 'Operação')
+    cy.aprovarAlcada('Aprovar Operação na Alçada Diretoria OPE')
+    cy.verificarLocal('Alçada aprovada com sucesso!')
   })
 
   it('Tesouraria OPE', () => {

@@ -77,6 +77,7 @@ Cypress.Commands.add('cleanupPessoa', (cnpjCpf) => {
       DELETE FROM MC_MOP_ASSINATURA_DIGITAL           WHERE idOperacao in (SELECT id FROM MC_MOP_OPERACAO WHERE idCedente = @idCedente);
       DELETE FROM MC_MOP_OPERACAO_TERMO_HIST          WHERE idOperacaoTermo in (SELECT id FROM MC_MOP_OPERACAO_TERMO WHERE idOperacao in (SELECT id FROM MC_MOP_OPERACAO WHERE idCedente = @idCedente))
       DELETE FROM MC_MOP_OPERACAO_TERMO               WHERE idOperacao in (SELECT id FROM MC_MOP_OPERACAO WHERE idCedente = @idCedente);
+      DELETE FROM MC_MOP_OPERACAO_TITULO_ERRO         WHERE idOperacaoTitulo IN (SELECT id FROM MC_MOP_OPERACAO_TITULO WHERE idOperacao IN (SELECT id FROM MC_MOP_OPERACAO WHERE idCedente = @idCedente));
       DELETE FROM MC_MOP_OPERACAO_TITULO              WHERE idOperacao IN (SELECT id FROM MC_MOP_OPERACAO WHERE idCedente = @idCedente);
       DELETE FROM MC_MOP_OPERACAO_TARIFA              WHERE idOperacao IN (SELECT id FROM MC_MOP_OPERACAO WHERE idCedente = @idCedente);
       DELETE FROM MC_MOP_OPERACAO_TERMO_SECAO_HIST    WHERE idOperacaoTermoSecao in (SELECT id FROM MC_MOP_OPERACAO_TERMO_SECAO WHERE idOperacao in (SELECT id FROM MC_MOP_OPERACAO WHERE idCedente = @idCedente));
@@ -102,6 +103,7 @@ Cypress.Commands.add('cleanupPessoa', (cnpjCpf) => {
       DELETE FROM MC_CAD_SACADO                       WHERE idPessoa = @idPessoa;
       DELETE FROM MC_CAD_PESSOA_LIGADA                WHERE idPessoaLigada = @idPessoa;
       DELETE FROM MC_CED_CEDENTE                      WHERE idPessoa = @idPessoa;
+      DELETE FROM MC_CAD_PESSOA_LIGADA                WHERE idPessoa=@idPessoa;
       DELETE FROM MC_CAD_PESSOA                       WHERE id=@idPessoa;
     `,
     params: { cnpjCpf }
@@ -279,16 +281,19 @@ Cypress.Commands.add('atualizarSituacaoComite', () => {
 
 Cypress.Commands.add('excluirGrupoEconomico', (nomeGrupo) => {
   const sql = `
-      DECLARE @idGrupoEconomico int;
-      SET @idGrupoEconomico = (select id from MC_CAD_GRUPO_ECONOMICO where descricao = @nomeGrupo);
+    DECLARE @idGrupoEconomico INT;
+    SET @idGrupoEconomico = (SELECT id FROM MC_CAD_GRUPO_ECONOMICO WHERE descricao = @nomeGrupo);
 
-      UPDATE MC_PRT_PROSPECT SET idGrupoEconomico = NULL WHERE idGrupoEconomico = @idGrupoEconomico;
-      
-      DELETE FROM MC_CAD_EMPRESA_GRUPO_ECONOMICO WHERE idGrupoEconomico = @idGrupoEconomico;
-      DELETE FROM MC_CAD_GRUPO_ECONOMICO WHERE id = @idGrupoEconomico;
-    `
-  return cy.task('db:exec', { sql, params: { nomeGrupo } })
- })
+    UPDATE MC_PRT_PROSPECT SET idGrupoEconomico = NULL WHERE idGrupoEconomico = @idGrupoEconomico;
+    DELETE FROM MC_CAD_EMPRESA_GRUPO_ECONOMICO WHERE idGrupoEconomico = @idGrupoEconomico;
+    DELETE FROM MC_CAD_GRUPO_ECONOMICO WHERE id = @idGrupoEconomico;
+  `
+
+  return cy.task('db:exec', { sql, params: { nomeGrupo } }).then((res) => {
+    if (!res) throw new Error(`❌ Falha ao excluir grupo econômico: ${nomeGrupo}`)
+    cy.log(`✅ Grupo econômico '${nomeGrupo}' excluído com sucesso`)
+  })
+})
 
 Cypress.Commands.add('cedenteVencido', (cnpjCpf) => {
   const sql = `

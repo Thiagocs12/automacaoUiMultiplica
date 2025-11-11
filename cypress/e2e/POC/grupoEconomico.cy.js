@@ -13,7 +13,9 @@ describe('Criação de uma POC para um grupo economico novo na casa', () => {
     Object.keys(grupoEconomico.empresasGrupo).forEach((cnpj) => {
       cy.cleanupPessoa(cnpj)
     })
+    cy.excluirGrupoEconomico(grupoEconomico.nome)
     cy.armazenarKCTokenEmEnv()
+    cy.capturarIdsParecer()
   })
 
   beforeEach(() => {
@@ -24,7 +26,6 @@ describe('Criação de uma POC para um grupo economico novo na casa', () => {
     cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')
     cy.criarProspect(cnpj, 'PROSPECT')
     cy.verificarLocal('Dados do Prospect')
-    cy.excluirGrupoEconomico(grupoEconomico.nome)
     cy.adicionarGrupoEconomico(grupoEconomico.nome)
     Object.entries(grupoEconomico.empresasGrupo).forEach(([cnpj, empresa]) => {
       if (empresa.principal === false) {
@@ -125,6 +126,13 @@ describe('Criação de uma POC para um grupo economico novo na casa', () => {
     cy.aprovarComite(cnpj)
     cy.acessarAtaComite()
     cy.avancarComite()
+    cy.verificarLocal()
+  })
+
+  it('Middle Documental', () => {
+    cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')
+    cy.buscarEntidadeMonitor(cnpj, 'Monitor', 'Cadastrar Cedente')
+    cy.avancarEsteira('TESTE AUTOMACAO - AVANÇAR ETAPA PARA FORMALIZAÇÃO', 'Formalização')
     cy.verificarLocal()
   })
 

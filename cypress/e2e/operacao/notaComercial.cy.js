@@ -1,5 +1,5 @@
 const user = Cypress.env('user')
-const empresa = Cypress.env('empresa')
+const empresa = Cypress.env('empresa2')
 const produto = 'AQUISICAO FINANCEIRA - NOTA COMERCIAL - NOTA COMERCIAL - FINANCEIRA - DEPOSITO EM CONTA'
 
 
@@ -12,7 +12,7 @@ describe('Operação - Nota Comercial', () => {
     cy.loginKeycloak(user.usuario, user.senha)
   })
   
-  it.skip('Criar a pré operacao', () => {
+  it('Criar a pré operacao', () => {
     cy.menu('Beyond BackOffice', 'Comercial', 'Operação')
     cy.criarOperacaoEstruturada(empresa, produto, 15, 50000000, 'NC-', 200000000)
     cy.verificarLocal()
@@ -23,6 +23,17 @@ describe('Operação - Nota Comercial', () => {
     cy.buscarEntidadeMonitor(empresa.cnpj, 'Monitor Estruturada', 'Analisar Operação', 'Operação')
     cy.avancarEsteira('TESTE AUTOMAÇÃO - AVANÇAR ETAPA DE MIDDLE OPE', 'Avançar', 'Operação')
     cy.verificarLocal()
+  })
+
+  it('Alcada Diretoria', () => {
+    cy.menu('Beyond BackOffice', 'Comercial', 'Operação')
+    cy.buscarEntidadeMonitor(empresa.cnpj, 'Monitor Estruturada', null, 'Operação')
+    cy.get('body').then(($body) => {
+      if ($body.text().includes('Alçada Diretoria OPE')) {
+        cy.aprovarAlcada('Aprovar Operação na Alçada Diretoria OPE')
+        cy.verificarLocal('Alçada aprovada com sucesso!')
+      }
+    })
   })
 
   it('Formalização OPE', () => {

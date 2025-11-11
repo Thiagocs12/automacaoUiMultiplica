@@ -17,27 +17,29 @@ Cypress.Commands.add('obterUltimaPreOperacaoPorCnpj', (cnpjCpf) => {
 
 Cypress.Commands.add( 'atualizarNotaFiscalPorPreOperacao', (idPreOperacao) => {
   const sql = `
-    UPDATE a
-    SET 
-        a.idNotaFiscal          = c.id,
-        a.idNotaFiscalDuplicata = d.id,
-        a.chaveNota             = c.chaveNota
-    FROM MC_MOP_PRE_OPERACAO_TITULO a
-    JOIN MC_MOP_PRE_OPERACAO b
-      ON a.idPreOperacao = b.id
-    LEFT JOIN MC_MOP_NOTA_XML c
-      ON b.idCedente = c.idCedente
-    AND a.numDocumento LIKE '%' + c.numeroNota + '%'
-    AND a.cnpjSacado = c.cnpjDestinatario
-    LEFT JOIN MC_MOP_NOTA_XML_DUPLICATA d
-      ON c.id = d.idNotaXML
-    AND a.valorTotal <= d.valor
-    WHERE
-        b.id = @idPreOperacao
-        AND (
-             ISNULL(a.idNotaFiscalDuplicata, 0) <> ISNULL(d.id, 0)
-          OR ISNULL(a.idNotaFiscal,         0) <> ISNULL(c.id, 0)
-          OR ISNULL(a.chaveNota,           '') <> ISNULL(c.chaveNota, ''))`
+      UPDATE a
+      SET 
+          a.idNotaFiscal          = c.id,
+          a.idNotaFiscalDuplicata = d.id,
+          a.chaveNota             = c.chaveNota
+      FROM MC_MOP_PRE_OPERACAO_TITULO a
+      JOIN MC_MOP_PRE_OPERACAO b
+        ON a.idPreOperacao = b.id
+      LEFT JOIN MC_MOP_NOTA_XML c
+        ON b.idCedente = c.idCedente
+      AND a.numDocumento LIKE '%' + c.numeroNota + '%'
+      AND a.cnpjSacado = c.cnpjDestinatario
+      LEFT JOIN MC_MOP_NOTA_XML_DUPLICATA d
+        ON c.id = d.idNotaXML
+      AND a.valorTotal <= d.valor
+      AND a.dataVencimento BETWEEN DATEADD(DAY, -2, d.dataVencimento)
+                                AND DATEADD(DAY,  2, d.dataVencimento)
+      WHERE
+          b.id = @idPreOperacao
+          AND (
+               ISNULL(a.idNotaFiscalDuplicata, 0) <> ISNULL(d.id, 0)
+            OR ISNULL(a.idNotaFiscal,         0) <> ISNULL(c.id, 0)
+            OR ISNULL(a.chaveNota,           '') <> ISNULL(c.chaveNota, ''));`
   return cy.task('db:exec', { sql, params: { idPreOperacao } })
 })
 

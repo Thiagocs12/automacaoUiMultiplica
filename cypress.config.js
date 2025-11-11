@@ -11,6 +11,7 @@ module.exports = defineConfig({
     APP_USER: process.env.APP_USER,
     BASE_URL_KEYCLOAK: process.env.BASE_URL_KEYCLOAK,
     BASE_URL_BACKOFFICE: process.env.BASE_URL_BACKOFFICE,
+    BASE_URL_MULTIFLOW: process.env.BASE_URL_MULTIFLOW,
   },
 
   setupNodeEvents(on, config) {
@@ -139,14 +140,14 @@ module.exports = defineConfig({
     return config;
   },
 
-  defaultCommandTimeout: 60000,
-  pageLoadTimeout: 60000,
+  defaultCommandTimeout: 20000,
+  pageLoadTimeout: 20000,
   testIsolation: true,
   chromeWebSecurity: false,
   //viewportWidth: 1366,
   //viewportHeight: 768,
   },
 
-  video: true,
+  video: false,
   screenshotOnRunFailure: false,
 })

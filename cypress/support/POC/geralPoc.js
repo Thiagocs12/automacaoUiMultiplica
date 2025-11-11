@@ -3,7 +3,7 @@ Cypress.Commands.add('criarProspect', (cnpj, tipoProspect, nova = true) => {
   cy.contains('Novo Prospect').click()
   cy.get('.MuiTextField-root > .MuiOutlinedInput-root > .MuiOutlinedInput-input').type(cnpj) //#campo cnpj criação da POC
   cy.realPress('Tab')
-  cy.wait(500)
+  cy.wait(1000)
   if (nova){
     cy.get('#mui-component-select-tipoProspect').click()//#campo tipo prospect criação da POC
     cy.get('body').then(($body) => {
@@ -32,7 +32,7 @@ Cypress.Commands.add('preencherPleitoLimiteGlobal', (limite) => {
     .trigger('mouseover')
   cy.get('[title="Pleito/Produto"]').click()
   cy.get('[name="limiteGlobal"]').clear().type(limite)
-  cy.tikGet('#main-menu-body > section > div > main > div > div:nth-of-type(2) > div:nth-of-type(1) > div > div:nth-of-type(2) > form > div:nth-of-type(1) > div:nth-of-type(2) > button')//#Salvar Pleito ...
+  cy.tikGet('.MuiButton-root')
 })
 
 // Aprovação do prospect no comite de crédito
@@ -53,12 +53,12 @@ Cypress.Commands.add('aprovarProspectComite', () => {
 })
 
 Cypress.Commands.add('acessarAtaComite', () => {
-  cy.contains('Relatório de Crédito').click()
-  cy.wait(5000)
+  cy.wait(1000)
   cy.contains('span', 'Votação').click()
-  cy.wait(5000)
+  cy.intercept('POST', '**/mc-poc-ms/api/v1/pocVotacao/generateAtaComitetext*').as('gerarAta')
   cy.get('.MuiPaper-root > .MuiButtonBase-root').click()
-  cy.wait(2000)
+  cy.wait('@gerarAta').its('response.statusCode').should('eq', 200)
+  cy.log('Requisição de geração da ata finalizada com sucesso')
 })
 
 Cypress.Commands.add('avancarComite', () => {
@@ -74,7 +74,7 @@ Cypress.Commands.add('habilitarFundo', (quantidade) => {
     cy.get('.prospeccao-MuiTableCell-alignCenter > .prospeccao-MuiBox-root > :nth-child(1)').eq(i).click()
     cy.contains('Administradora habilitada').click()
     cy.contains('Gestora habilitada').click()
-    cy.tikCon('Salvar')
+    cy.get('.prospeccao-MuiButton-label').eq(2).realClick()//# botão salvar edição fundo
     cy.get('body').then(($body) => {
       if ($body.text().includes('Atualizar valores globais')) {
         cy.tikCon('Confirmar')
@@ -174,7 +174,7 @@ Cypress.Commands.add('ajustesRenovacao', (pleito) => {
 })
 
 Cypress.Commands.add('aprovarComite', (cnpj) => {
-    cy.wait(3000)
+    cy.wait(2000)
     cy.contains('Votação').click()
     cy.aprovarProspectComite()
     cy.verificarLocal('Votação iniciada com sucesso')
@@ -184,7 +184,6 @@ Cypress.Commands.add('aprovarComite', (cnpj) => {
     })
   })
 
-// Dica: este comando **rende** uma string (via yield), então use com .then(...)
 Cypress.Commands.add('urlFor', (app, path = '/') => {
   return urlFor(app, path)
 })
