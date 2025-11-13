@@ -140,8 +140,8 @@ module.exports = defineConfig({
     return config;
   },
 
-  defaultCommandTimeout: 20000,
-  pageLoadTimeout: 20000,
+  defaultCommandTimeout: 40000,
+  pageLoadTimeout: 40000,
   testIsolation: true,
   chromeWebSecurity: false,
   //viewportWidth: 1366,

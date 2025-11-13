@@ -74,32 +74,23 @@ Cypress.Commands.add('acessarEntidadeNaTela', (acao, entidade = 'Prospect') => {
 // Avança a esteira aberta na tela
 Cypress.Commands.add('avancarEsteira', (parecer = null, botao = 'Avançar', entidade = 'Prospect') => {
   if (parecer !== null && parecer !== undefined) {
+    cy.wait(500)
     if (entidade === 'Operação') {
-      cy.wait(500)
-      cy.get('[aria-label="Parecer"]').click()
-      cy.get('.mop-MuiGrid-root > .mop-MuiButtonBase-root').click()//#Botão adicionar parecer operação
-      cy.get('[name="parecer"]').type(parecer)
+      cy.adicionarParecerOperacao(parecer)
     } else if (entidade === 'Prospect') {
-      cy.wait(500)
-      cy.get('[title="Parecer"]').click()
-      cy.get('.prospeccao-MuiGrid-root > .prospeccao-MuiButtonBase-root').click()//#Botão adicionar parecer prospect
-      cy.get('[name="parecer"]').type(parecer)
+      cy.adicionarParecerProspect(parecer)
     } else if (entidade === 'ORP') {
-      cy.wait(500)
-      cy.get('[aria-label="Parecer"]').click()
-      cy.get('.MuiGrid-root > .MuiButtonBase-root').click()
-      cy.get('[placeholder="Parecer"]').type(parecer)
+      cy.adicionarParecerORP(parecer)
     }
     cy.contains('Salvar').click()
     cy.tikCon('Confirmar')
   }
   if (botao !== 'Administradora') {
-    cy.wait(500)
     cy.contains(botao).click()
     cy.contains('Confirmar').click()
+    cy.wait(500)
     cy.get('body').then(($body) => {
       if ($body.text().includes('Não foi possível avançar esta proposta')) {
-        cy.wait(500)
         cy.contains(botao).click()
         cy.contains('Confirmar').click()
       }
@@ -107,7 +98,6 @@ Cypress.Commands.add('avancarEsteira', (parecer = null, botao = 'Avançar', enti
   }
 })
 
-// support/commands.js
 Cypress.Commands.add('tikGet', (elemento, tempo = 500000) => {
   cy.clock()
   cy.get(elemento).click()

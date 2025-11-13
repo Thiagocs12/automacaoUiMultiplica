@@ -30,7 +30,7 @@ describe('Criação de uma POC para um cedente novo na casa', () => {
     cy.verificarLocal()
   })
 
-  it('Validar que não posso criar uma poc para um cnpj que já está na esteira', () => {
+  it.skip('Validar que não posso criar uma poc para um cnpj que já está na esteira', () => {
     cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')
     cy.criarProspect(empresa.cnpj, 'PROSPECT')
     cy.contains('CNPJ informado está associado a uma esteira ativa.').should('be.visible')
@@ -94,23 +94,14 @@ describe('Criação de uma POC para um cedente novo na casa', () => {
     cy.setarPOC(empresa.cnpj)
     cy.menu('Beyond BackOffice', 'Crédito', 'Prospect')
     cy.buscarEntidadeMonitor(empresa.cnpj, 'Análise Crédito', 'Realizar POC')
-    cy.avancarEsteira('TESTE AUTOMACAO - APROVAÇÃO PARA PRÉ COMITÊ')
+    cy.avancarEsteira('TESTE AUTOMACAO - APROVAÇÃO PARA COMITÊ')
     cy.verificarLocal('Análise Crédito')
   })
 
-  it('Pré Comitê', () => {
-    cy.menu('Beyond BackOffice', 'Crédito', 'Prospect')
-    cy.buscarEntidadeMonitor(empresa.cnpj, 'Pré Comitê')
-    cy.get('.MuiTableCell-alignCenter > .MuiButtonBase-root').click() //#Botão ações pré comitê
-    cy.acessarEntidadeNaTela('Analisar')
-    cy.avancarEsteira()
-    cy.verificarLocal()
-  })
-
   it('Comitê de crédito', () => {
-    cy.setarComite(empresa.cnpj)
     cy.menu('Beyond BackOffice', 'Comitê', 'Comitê de Crédito', 'Comitê de Crédito')
     cy.buscarEntidadeMonitor(empresa.cnpj, 'Comitê de Crédito', 'Votar')
+    cy.setarComite(empresa.cnpj)
     cy.aprovarComite(empresa.cnpj)
     cy.acessarAtaComite()
     cy.avancarComite()

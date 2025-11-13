@@ -106,23 +106,14 @@ describe('Criação de uma POC para um grupo economico novo na casa', () => {
     cy.setarPOC(cnpj)
     cy.menu('Beyond BackOffice', 'Crédito', 'Prospect')
     cy.buscarEntidadeMonitor(cnpj, 'Análise Crédito', 'Realizar POC')
-    cy.avancarEsteira('TESTE AUTOMACAO - APROVAÇÃO PARA PRÉ COMITÊ')
+    cy.avancarEsteira('TESTE AUTOMACAO - APROVAÇÃO PARA COMITÊ')
     cy.verificarLocal('Análise Crédito')
   })
 
-  it('Pré Comitê', () => {
-    cy.menu('Beyond BackOffice', 'Crédito', 'Prospect')
-    cy.buscarEntidadeMonitor(cnpj, 'Pré Comitê')
-    cy.get('.MuiTableCell-alignCenter > .MuiButtonBase-root').click() //#Botão
-    cy.acessarEntidadeNaTela('Analisar')
-    cy.avancarEsteira()
-    cy.verificarLocal()
-  })
-
   it('Comitê de crédito', () => {
-    cy.setarComite(cnpj)
     cy.menu('Beyond BackOffice', 'Comitê', 'Comitê de Crédito', 'Comitê de Crédito')
     cy.buscarEntidadeMonitor(cnpj, 'Comitê de Crédito', 'Votar')
+    cy.setarComite(cnpj)
     cy.aprovarComite(cnpj)
     cy.acessarAtaComite()
     cy.avancarComite()
@@ -132,16 +123,8 @@ describe('Criação de uma POC para um grupo economico novo na casa', () => {
   it('Middle Documental', () => {
     cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')
     cy.buscarEntidadeMonitor(cnpj, 'Monitor', 'Cadastrar Cedente')
-    cy.avancarEsteira('TESTE AUTOMACAO - AVANÇAR ETAPA PARA FORMALIZAÇÃO', 'Formalização')
-    cy.verificarLocal()
-  })
-
-  it('Docs Comerciais', () => {
-    cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')
-    cy.buscarEntidadeMonitor(cnpj, 'Monitor')
     Object.keys(grupoEconomico.empresasGrupo).forEach(() => {
       cy.wait(1000)
-      cy.acessarEntidadeNaTela('Cadastrar Cedente')
       cy.avancarEsteira('TESTE AUTOMACAO - AVANÇAR ETAPA PARA FORMALIZAÇÃO', 'Formalização')
       cy.verificarLocal()
     })
@@ -151,6 +134,7 @@ describe('Criação de uma POC para um grupo economico novo na casa', () => {
     cy.menu('Beyond BackOffice', 'Formalização', 'Formalização', 'Monitor')
     cy.buscarEntidadeMonitor(cnpj, 'Formalização')
     Object.keys(grupoEconomico.empresasGrupo).forEach(() => {
+      cy.wait(1000)
       cy.acessarEntidadeNaTela('Realizar Formalização')
       cy.avancarEsteira('TESTE AUTOMACAO - AVANÇAR ETAPA PARA ADMINSTRADORA', 'Administradora')
       cy.get(':nth-child(3) > div > .prospeccao-MuiButtonBase-root > .prospeccao-MuiButton-label').click() //#botão administradora
@@ -163,6 +147,7 @@ describe('Criação de uma POC para um grupo economico novo na casa', () => {
     cy.menu('Beyond BackOffice', 'Formalização', 'Administradora', 'Monitor')
     cy.buscarEntidadeMonitor(cnpj, 'Administradora')
     Object.keys(grupoEconomico.empresasGrupo).forEach(() => {
+      cy.wait(1000)
       cy.acessarEntidadeNaTela('Realizar Administração')
       cy.habilitarFundo()
       cy.avancarEsteira('TESTE AUTOMACAO - FINALIZAR A ESTEIRA', 'Finalizar')

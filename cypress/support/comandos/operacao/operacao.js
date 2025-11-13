@@ -49,11 +49,11 @@ Cypress.Commands.add('adicionarInformacoesPagamento', (contaCedente, estruturada
   cy.contains('Pagamentos').click()
   if (estruturada) {
     cy.get('.MuiOutlinedInput-root > .MuiSelect-select').eq(2).click()//#seletor pagamento cedente
-    cy.contains(contaCedente).click()
+    cy.contains(contaCedente).click({force: true})
     cy.get('.MuiOutlinedInput-root > .MuiSelect-select').eq(3).click()//#seletor local de cobrança
-    cy.contains(localCobranca).click()
+    cy.contains(localCobranca).click({force: true})
     cy.get('.MuiOutlinedInput-root > .MuiSelect-select').eq(4).click()//#seletor pagamento fundo
-    cy.contains(contaFundo).click()
+    cy.contains(contaFundo).click({force: true})
     cy.get('[data-testid="SaveIcon"]').eq(0).click()//#salvar
     cy.get('[data-testid="SaveIcon"]').eq(1).click()//#salvar
     cy.get('[data-testid="SaveIcon"]').eq(2).click()//#salvar

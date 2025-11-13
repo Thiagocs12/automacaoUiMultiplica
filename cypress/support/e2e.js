@@ -1,10 +1,8 @@
 import './commands'
-import './poc'
+import './comandos'
 import './helpers'
 import './querysSql'
-import './liquidacao'
 import './requests'
-import './operacao'
 import "cypress-real-events"
 import 'cypress-file-upload'
 
