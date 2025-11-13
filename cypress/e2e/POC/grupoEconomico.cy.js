@@ -119,12 +119,12 @@ describe('Criação de uma POC para um grupo economico novo na casa', () => {
     cy.avancarComite()
     cy.verificarLocal()
   })
-
+  
   it('Middle Documental', () => {
     cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')
-    cy.buscarEntidadeMonitor(cnpj, 'Monitor', 'Cadastrar Cedente')
-    Object.keys(grupoEconomico.empresasGrupo).forEach(() => {
+    Object.keys(grupoEconomico.empresasGrupo).forEach((cnpj) => {
       cy.wait(1000)
+      cy.buscarEntidadeMonitor(cnpj, 'Monitor', 'Cadastrar Cedente')
       cy.avancarEsteira('TESTE AUTOMACAO - AVANÇAR ETAPA PARA FORMALIZAÇÃO', 'Formalização')
       cy.verificarLocal()
     })
@@ -132,10 +132,9 @@ describe('Criação de uma POC para um grupo economico novo na casa', () => {
 
   it('Formalização', () => {
     cy.menu('Beyond BackOffice', 'Formalização', 'Formalização', 'Monitor')
-    cy.buscarEntidadeMonitor(cnpj, 'Formalização')
-    Object.keys(grupoEconomico.empresasGrupo).forEach(() => {
+    Object.keys(grupoEconomico.empresasGrupo).forEach((cnpj) => {
       cy.wait(1000)
-      cy.acessarEntidadeNaTela('Realizar Formalização')
+      cy.buscarEntidadeMonitor(cnpj, 'Formalização', 'Realizar Formalização')
       cy.avancarEsteira('TESTE AUTOMACAO - AVANÇAR ETAPA PARA ADMINSTRADORA', 'Administradora')
       cy.get(':nth-child(3) > div > .prospeccao-MuiButtonBase-root > .prospeccao-MuiButton-label').click() //#botão administradora
       cy.get('[name="aprovar"] > .prospeccao-MuiButton-label').click() //#botão confirmar
@@ -145,11 +144,10 @@ describe('Criação de uma POC para um grupo economico novo na casa', () => {
 
   it('Administradora', () => {
     cy.menu('Beyond BackOffice', 'Formalização', 'Administradora', 'Monitor')
-    cy.buscarEntidadeMonitor(cnpj, 'Administradora')
-    Object.keys(grupoEconomico.empresasGrupo).forEach(() => {
+    Object.keys(grupoEconomico.empresasGrupo).forEach((cnpj) => {
       cy.wait(1000)
-      cy.acessarEntidadeNaTela('Realizar Administração')
-      cy.habilitarFundo()
+      cy.buscarEntidadeMonitor(cnpj, 'Administradora', 'Realizar Administração')
+      cy.habilitarFundo(2)
       cy.avancarEsteira('TESTE AUTOMACAO - FINALIZAR A ESTEIRA', 'Finalizar')
     })
   })

@@ -1,5 +1,5 @@
 const user = Cypress.env('user')
-const empresa = Cypress.env('empresa')
+const empresa = Cypress.env('empresa2')
 
 describe('Renovação de um cedente da casa', () => {
   before(() => {

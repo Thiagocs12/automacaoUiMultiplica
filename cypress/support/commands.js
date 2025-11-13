@@ -38,14 +38,12 @@ Cypress.Commands.add('menu', (modulo, area, entidade, home = 'Home') => {
 // Acessar a entidade no monitor
 Cypress.Commands.add('buscarEntidadeMonitor', (cnpj, tela, acao = null, entidade = 'Prospect') => {  
   cy.contains(tela).click()
-
   if (entidade === 'Operação') {
     cy.get('.mop-mop6 > .mop-MuiInputBase-root > .mop-MuiInputBase-input').type(cnpj)
     cy.dataMonitorDiario()
   } else if (entidade === 'Prospect') {
-    cy.get('[name="cnpj"]').type(cnpj)
+    cy.get('[name="cnpj"]').clear().type(cnpj)
   }
-
   cy.contains('Buscar').click()
   if (acao !== null && acao !== undefined) {
     if (acao === 'Realizar POC') {
@@ -82,7 +80,6 @@ Cypress.Commands.add('avancarEsteira', (parecer = null, botao = 'Avançar', enti
     } else if (entidade === 'ORP') {
       cy.adicionarParecerORP(parecer)
     }
-    cy.contains('Salvar').click()
     cy.tikCon('Confirmar')
   }
   if (botao !== 'Administradora') {
