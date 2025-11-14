@@ -1,5 +1,5 @@
 const user = Cypress.env('user')
-const empresa = Cypress.env('empresa2')
+const empresa = Cypress.env('empresa')
 
 describe('Criação de uma POC para um cedente novo na casa', () => {
   before(() => {
@@ -18,7 +18,7 @@ describe('Criação de uma POC para um cedente novo na casa', () => {
     cy.verificarLocal('Dados do Prospect')
     cy.atualizarNomeFantasia(empresa.cnpj)
     cy.adicionarContaBancaria(empresa.contaBancaria)
-    cy.preencherPleitoLimiteGlobal('5000000')
+    cy.preencherPleitoLimiteGlobal('500000000')
     empresa.fundos.forEach((fundo) => {
       cy.adicionarFundoPleito(fundo)
     })
@@ -103,7 +103,6 @@ describe('Criação de uma POC para um cedente novo na casa', () => {
     cy.buscarEntidadeMonitor(empresa.cnpj, 'Comitê de Crédito', 'Votar')
     cy.setarComite(empresa.cnpj)
     cy.aprovarComite(empresa.cnpj)
-    cy.acessarAtaComite()
     cy.avancarComite()
     cy.verificarLocal()
   })

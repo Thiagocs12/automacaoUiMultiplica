@@ -115,7 +115,6 @@ describe('Criação de uma POC para um grupo economico novo na casa', () => {
     cy.buscarEntidadeMonitor(cnpj, 'Comitê de Crédito', 'Votar')
     cy.setarComite(cnpj)
     cy.aprovarComite(cnpj)
-    cy.acessarAtaComite()
     cy.avancarComite()
     cy.verificarLocal()
   })

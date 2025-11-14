@@ -1,9 +1,7 @@
 // Criar prospect
 Cypress.Commands.add('criarProspect', (cnpj, tipoProspect, nova = true) => {
   cy.contains('Novo Prospect').click()
-  cy.get('.MuiTextField-root > .MuiOutlinedInput-root > .MuiOutlinedInput-input').type(cnpj) //#campo cnpj criação da POC
-  cy.realPress('Tab')
-  cy.wait(1000)
+  cy.aguardarRequisicao('GET', '/mc-pessoas-ms/api/v1/pessoa/findPessoaJuridicaNotRegister', '.MuiOutlinedInput-input', 'type', 0, cnpj)
   if (nova){
     cy.get('#mui-component-select-tipoProspect').click()//#campo tipo prospect criação da POC
     cy.get('body').then(($body) => {
@@ -19,11 +17,6 @@ Cypress.Commands.add('criarProspect', (cnpj, tipoProspect, nova = true) => {
   }
   cy.wait(500)
   cy.contains('Salvar').click()
-  cy.get('body').then(($body) => {
-    if ($body.text().includes('Campo Obrigatório')) {
-      cy.contains('Salvar').click()
-    }
-  })
 })
 
 //Preenche o limite global do pleito
@@ -52,13 +45,19 @@ Cypress.Commands.add('aprovarProspectComite', () => {
   cy.contains('Enviar').click()
 })
 
-Cypress.Commands.add('acessarAtaComite', () => {
-  cy.wait(1000)
-  cy.contains('span', 'Votação').click()
-  cy.intercept('POST', '**/mc-poc-ms/api/v1/pocVotacao/generateAtaComitetext*').as('gerarAta')
-  cy.get('.MuiPaper-root > .MuiButtonBase-root').click()
-  cy.wait('@gerarAta').its('response.statusCode').should('eq', 200)
-  cy.log('Requisição de geração da ata finalizada com sucesso')
+Cypress.Commands.add('aguardarRequisicao', (method, endpoint, elemento = null, acao = 'click', eq = 0, texto) => {
+  cy.intercept(method, `**${endpoint}*`).as('interceptedRequest')
+  if(elemento !== null){
+    if (acao === 'click') {
+      cy.get(elemento).eq(eq).click()
+    } else if (acao === 'realClick') {
+      cy.get(elemento).eq(eq).realClick()
+    } else if (acao === 'type') {
+      cy.get(elemento).eq(eq).type(texto)
+    }}
+  cy.realPress('Tab')
+  cy.wait('@interceptedRequest', { timeout: 30000 }).its('response.statusCode').should('eq', 200)
+  cy.log('Requisição realizada com sucesso')
 })
 
 Cypress.Commands.add('avancarComite', () => {
@@ -174,14 +173,16 @@ Cypress.Commands.add('ajustesRenovacao', (pleito) => {
 })
 
 Cypress.Commands.add('aprovarComite', (cnpj) => {
-    cy.wait(2000)
-    cy.contains('Votação').click()
-    cy.aprovarProspectComite()
-    cy.verificarLocal('Votação iniciada com sucesso')
-    cy.votarComiteFavoravelPorCnpj(cnpj)
-    cy.obterIdProposta(cnpj).then((idProposta) => {
-      cy.finalizaPocComite(idProposta)
-    })
+  //cy.wait(2000)
+  cy.contains('Votação').click()
+  cy.aprovarProspectComite()
+  cy.verificarLocal('Votação iniciada com sucesso')
+  cy.votarComiteFavoravelPorCnpj(cnpj)
+  cy.obterIdProposta(cnpj).then((idProposta) => {
+    cy.finalizaPocComite(idProposta)
+  })
+  cy.contains('span', 'Votação').click()
+  cy.aguardarRequisicao('POST', '/mc-poc-ms/api/v1/pocVotacao/generateAtaComitetext', '#ata')
   })
 
 Cypress.Commands.add('urlFor', (app, path = '/') => {

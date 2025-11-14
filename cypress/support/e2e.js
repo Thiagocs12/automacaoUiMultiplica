@@ -45,9 +45,9 @@ Cypress.env('user', {
      tipoConta: 'NORMAL'
    },
    produtos: {
-     'CCB/NC':  { limite: '5000000', prazo: '365', taxa: '2.00', concentracao: '100' },
-     'ANCORA':  { limite: '5000000', prazo: '365', taxa: '2.00', concentracao: '100' },
-     'BOLETO':  { limite: '5000000', prazo: '365', taxa: '2.00', concentracao: '100' }
+     'CCB/NC':  { limite: '500000000', prazo: '365', taxa: '2.00', concentracao: '100' },
+     'ANCORA':  { limite: '500000000', prazo: '365', taxa: '2.00', concentracao: '100' },
+     'BOLETO':  { limite: '500000000', prazo: '365', taxa: '2.00', concentracao: '100' }
    },
    contato: {
      nome: 'NOE',
@@ -101,9 +101,9 @@ Cypress.env('user', {
      tipoConta: 'NORMAL'
    },
    produtos: {
-     'CCB/NC':  { limite: '5000000', prazo: '365', taxa: '2.00', concentracao: '100' },
-     'ANCORA':  { limite: '5000000', prazo: '365', taxa: '2.00', concentracao: '100' },
-     'BOLETO':  { limite: '5000000', prazo: '365', taxa: '2.00', concentracao: '100' }
+     'CCB/NC':  { limite: '500000000', prazo: '365', taxa: '2.00', concentracao: '100' },
+     'ANCORA':  { limite: '500000000', prazo: '365', taxa: '2.00', concentracao: '100' },
+     'BOLETO':  { limite: '500000000', prazo: '365', taxa: '2.00', concentracao: '100' }
    },
    contato: {
      nome: 'NOE',
@@ -148,56 +148,27 @@ Cypress.env('grupoEconomico', {
     tipoConta: 'NORMAL'
   },
   produtos: {
-    ['CCB/NC']: { limite: '5000000', prazo: '365', taxa: '2.00', concentracao: '100' },
-    ['ANCORA']: { limite: '5000000', prazo: '365', taxa: '2.00', concentracao: '100' },
-    ['BOLETO']: { limite: '5000000', prazo: '365', taxa: '2.00', concentracao: '100' }
+    ['CCB/NC']: { limite: '500000000', prazo: '365', taxa: '2.00', concentracao: '100' },
+    ['ANCORA']: { limite: '500000000', prazo: '365', taxa: '2.00', concentracao: '100' },
+    ['BOLETO']: { limite: '500000000', prazo: '365', taxa: '2.00', concentracao: '100' }
   }
 });
 
 
 Cypress.on('uncaught:exception', (err) => {
+
   if (
-    /Cannot read properties of undefined \(reading 'content'\)/.test(err.message)
+    /Cannot read properties of undefined \(reading 'content'\)/.test(err.message) ||
+    /Request failed with status code 502/.test(err.message) ||
+    /Request failed with status code 406/.test(err.message) ||
+    /Request failed with status code 404/.test(err.message) ||
+    /Request failed with status code 500/.test(err.message) ||
+    /Network Error/.test(err.message) ||
+    err.message.includes('ResizeObserver loop completed with undelivered notifications') ||
+    err.message.includes('ResizeObserver loop limit exceeded')
   ) {
     return false
   }
+
 })
 
-Cypress.on('uncaught:exception', (err) => {
-  if (/Request failed with status code 502/.test(err.message)) {
-    return false
-  }
-})
-
-Cypress.on('uncaught:exception', (err) => {
-  if (/Request failed with status code 406/.test(err.message)) {
-    return false
-  }
-})
-
-Cypress.on('uncaught:exception', (err) => {
-  if (/Request failed with status code 404/.test(err.message)) {
-    return false
-  }
-})
-
-Cypress.on('uncaught:exception', (err) => {
-  if (/Request failed with status code 500/.test(err.message)) {
-    return false
-  }
-})
-Cypress.on('uncaught:exception', (err) => {
-  if (/Network Error/.test(err.message)) {
-    return false
-  }
-})
-
-Cypress.on('uncaught:exception', (err) => {
-  const msg = err?.message || ''
-  if (
-    msg.includes('ResizeObserver loop completed with undelivered notifications') ||
-    msg.includes('ResizeObserver loop limit exceeded')
-  ) {
-    return false
-  }
-})

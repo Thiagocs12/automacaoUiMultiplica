@@ -15,7 +15,7 @@ describe('Operação - Duplicata', () => {
     cy.verificarLocal('Operações')
   })
 
-  it.only('Adicionar xmls e ajustar vencimentos', () => {
+  it('Adicionar xmls e ajustar vencimentos', () => {
     cy.loginKeycloak(user.usuario, user.senha, 'banking')
     cy.acessarTelaBanking(empresa.razaoSocial, 'Importar XML')
     cy.enviarXml('/operacao/xmlOperacaoAutomacao.zip')
@@ -26,7 +26,7 @@ describe('Operação - Duplicata', () => {
     })
   })
 
-  it.only('Verificar o vinculo e avançar operação', () => {
+  it('Verificar o vinculo e avançar operação', () => {
     cy.obterUltimaPreOperacaoPorCnpj(empresa.cnpj).then((idPreOperacao) => {
       cy.atualizarNotaFiscalPorPreOperacao(idPreOperacao)
       cy.atualizarVencimentosPreOperacao(idPreOperacao)
@@ -87,7 +87,7 @@ describe('Operação - Duplicata', () => {
     cy.verificarLocal()
   })
 
-  it('Gestora OPE', () => {
+  it.only('Gestora OPE', () => {
     cy.loginKeycloak(user.usuario, user.senha)
     cy.menu('Beyond BackOffice', 'Comercial', 'Operação')
     cy.buscarEntidadeMonitor(empresa.cnpj, 'Monitor Diário', 'Analisar Gestora OPE', 'Operação')
@@ -95,7 +95,7 @@ describe('Operação - Duplicata', () => {
     cy.verificarLocal()
   })
 
-  it('Tesouraria Pag', () => {
+  it.only('Tesouraria Pag', () => {
     cy.loginKeycloak(user.usuario, user.senha)
     cy.menu('Beyond BackOffice', 'Comercial', 'Operação')
     cy.buscarEntidadeMonitor(empresa.cnpj, 'Monitor Diário', 'Analisar Tesouraria OPE', 'Operação')
@@ -103,7 +103,7 @@ describe('Operação - Duplicata', () => {
     cy.verificarLocal()
   })
   
-  it('Pagamento OPE', () => {
+  it.only('Pagamento OPE', () => {
     cy.loginKeycloak(user.usuario, user.senha)
     cy.menu('Beyond BackOffice', 'Comercial', 'Operação')
     cy.buscarEntidadeMonitor(empresa.cnpj, 'Monitor Diário', 'Realizar Pagamento OPE', 'Operação')

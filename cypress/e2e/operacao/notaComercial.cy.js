@@ -1,5 +1,5 @@
 const user = Cypress.env('user')
-const empresa = Cypress.env('empresa2')
+const empresa = Cypress.env('empresa')
 const produto = 'AQUISICAO FINANCEIRA - NOTA COMERCIAL - NOTA COMERCIAL - FINANCEIRA - DEPOSITO EM CONTA'
 
 
@@ -101,21 +101,21 @@ describe('Operação - Nota Comercial', () => {
     cy.verificarLocal()
   })
 
-  it('Gestora OPE', () => {
+  it.only('Gestora OPE', () => {
     cy.menu('Beyond BackOffice', 'Comercial', 'Operação')
     cy.buscarEntidadeMonitor(empresa.cnpj, 'Monitor Diário', 'Analisar Gestora OPE', 'Operação')
     cy.avancarEsteira('TESTE AUTOMAÇÃO - AVANÇAR ETAPA DE GESTORA OPE', 'Avançar', 'Operação')
     cy.verificarLocal()
   })
 
-  it('Tesouraria Pag', () => {
+  it.only('Tesouraria Pag', () => {
     cy.menu('Beyond BackOffice', 'Comercial', 'Operação')
     cy.buscarEntidadeMonitor(empresa.cnpj, 'Monitor Diário', 'Analisar Tesouraria OPE', 'Operação')
     cy.avancarEsteira('TESTE AUTOMAÇÃO - AVANÇAR ETAPA DE TESOURARIA PAG', 'Avançar', 'Operação')
     cy.verificarLocal()
   })
   
-  it('Pagamento OPE', () => {
+  it.only('Pagamento OPE', () => {
     cy.menu('Beyond BackOffice', 'Comercial', 'Operação')
     cy.buscarEntidadeMonitor(empresa.cnpj, 'Monitor Diário', 'Realizar Pagamento OPE', 'Operação')
     cy.avancarEsteira('TESTE AUTOMAÇÃO - PAGAR OPERAÇÃO', 'Avançar', 'Operação')

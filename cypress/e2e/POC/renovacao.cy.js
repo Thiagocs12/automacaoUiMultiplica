@@ -1,5 +1,5 @@
 const user = Cypress.env('user')
-const empresa = Cypress.env('empresa2')
+const empresa = Cypress.env('empresa')
 
 describe('Renovação de um cedente da casa', () => {
   before(() => {
@@ -56,7 +56,6 @@ describe('Renovação de um cedente da casa', () => {
     cy.buscarEntidadeMonitor(cnpj, 'Comitê de Crédito', 'Votar')
     cy.setarComite(cnpj)
     cy.aprovarComite(cnpj)
-    cy.acessarAtaComite()
     cy.avancarComite()
     cy.verificarLocal()
   })
