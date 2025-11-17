@@ -173,7 +173,7 @@ Cypress.Commands.add('ajustesRenovacao', (pleito) => {
 })
 
 Cypress.Commands.add('aprovarComite', (cnpj) => {
-  //cy.wait(2000)
+  cy.wait(2000)
   cy.contains('Votação').click()
   cy.aprovarProspectComite()
   cy.verificarLocal('Votação iniciada com sucesso')

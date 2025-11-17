@@ -14,7 +14,7 @@ Cypress.Commands.add('adicionarProdutosPleito', (produto, limite, prazo, taxa, c
 // Adiciona produtos ao pleito pelo grupo
 Cypress.Commands.add('adicionarFundoPleito', (fundo) => {
   cy.get('.prospeccao-MuiBox-root > .prospeccao-MuiButtonBase-root').first().click() //# adicionar fundo pleito
-  cy.get('.prospeccao-MuiInputBase-input').eq(5).click()
+  cy.get('.prospeccao-MuiInputBase-input').last().click()
   cy.contains(fundo).click()
   cy.tikGet('.prospeccao-MuiGrid-grid-md-4 > div > .prospeccao-MuiButton-contained')
 })

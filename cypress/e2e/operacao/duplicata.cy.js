@@ -1,5 +1,5 @@
 const user = Cypress.env('user')
-const empresa = Cypress.env('empresa2')
+const empresa = Cypress.env('empresa')
 
 
 describe('Operação - Duplicata', () => {
