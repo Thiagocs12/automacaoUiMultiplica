@@ -8,7 +8,11 @@ Cypress.Commands.add('adicionarProdutosPleito', (produto, limite, prazo, taxa, c
   cy.get('.MuiOutlinedInput-input').eq(2).clear().type(prazo) //# adição de grupo de produto prazo
   cy.get('.MuiOutlinedInput-input').eq(3).clear().type(taxa) //# adição de grupo de produto taxa
   cy.get('.MuiOutlinedInput-input').eq(4).clear().type(concetracao) //# adição de grupo de produto concetracao
-  cy.tikGet('.css-1bvc4cc > .MuiButton-root')
+    cy.aguardarRequisicao(
+    'POST',
+    '/mc-prospect-ms/api/v1/pleitoProduto/registerPleitoProdutoLote',
+    '.css-1bvc4cc > .MuiButton-root',
+  )
 })
 
 // Adiciona produtos ao pleito pelo grupo

@@ -36,8 +36,8 @@ describe('Criação de uma POC para um grupo economico novo na casa', () => {
     Object.keys(grupoEconomico.empresasGrupo).forEach((cnpj) => {
       cy.atualizarNomeFantasia(cnpj)
     })
-    cy.adicionarContaBancaria(grupoEconomico.contaBancaria, false)
-    cy.preencherPleitoLimiteGlobal('5000000')
+    cy.adicionarContaBancaria(grupoEconomico.contaBancaria, true)
+    cy.preencherPleitoLimiteGlobal('500000000')
     grupoEconomico.fundos.forEach((fundo) => {
       cy.adicionarFundoPleito(fundo)
     })
