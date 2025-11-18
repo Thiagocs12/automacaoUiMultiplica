@@ -56,7 +56,6 @@ Cypress.Commands.add('setarPOC', (cnpj) => {
 })
 
 Cypress.Commands.add('setarComite', (cnpj) => {
-  cy.aguardarRequisicao('GET', '/mc-poc-ms/api/v1/proposta/getRiscoKYCByProposta')
   cy.obterIdProposta(cnpj).then((idProposta) => {
     cy.obterIdComite(idProposta).then((idComiteProposta) => {
       cy.pocComiteLimiteProduto(idComiteProposta)
