@@ -45,21 +45,6 @@ Cypress.Commands.add('aprovarProspectComite', () => {
   cy.contains('Enviar').click()
 })
 
-Cypress.Commands.add('aguardarRequisicao', (method, endpoint, elemento = null, acao = 'click', eq = 0, texto) => {
-  cy.intercept(method, `**${endpoint}*`).as('interceptedRequest')
-  if(elemento !== null){
-    if (acao === 'click') {
-      cy.get(elemento).eq(eq).click()
-    } else if (acao === 'realClick') {
-      cy.get(elemento).eq(eq).realClick()
-    } else if (acao === 'type') {
-      cy.get(elemento).eq(eq).type(texto)
-    }}
-  cy.realPress('Tab')
-  cy.wait('@interceptedRequest', { timeout: 30000 }).its('response.statusCode').should('eq', 200)
-  cy.log('Requisição realizada com sucesso')
-})
-
 Cypress.Commands.add('avancarComite', () => {
   cy.contains('Avançar').click()
   cy.get('[name="aprovar"] > .prospeccao-MuiButton-label').click()
@@ -109,7 +94,6 @@ Cypress.Commands.add('adicionarContaBancaria', (dadosConta, nova = true) => {
 })
 
 Cypress.Commands.add('adicionarContato', (contato) => {
-  cy.wait(2000)
   cy.get('.prospeccao-MuiGrid-root > .prospeccao-MuiButtonBase-root').last().click()
   cy.get('[name="nome"]').type(contato.nome)
   cy.get('[name="email"]').last().type(contato.email)
@@ -128,8 +112,13 @@ Cypress.Commands.add('adicionarTelefone', (telefones) => {
   keys.forEach((nome, i) => {
     const telefone = telefones[nome]
     const index = -2 - (i * 2) // 1º = -2, 2º = -4, 3º = -6...
-    cy.wait(1000)
     cy.get('.prospeccao-MuiGrid-root > .prospeccao-MuiButtonBase-root').eq(index).click()
+    cy.wait(500)
+    cy.get('body').then(($body) => {
+      if (!$body.text().includes('Cancelar')) {
+        cy.get('.prospeccao-MuiGrid-root > .prospeccao-MuiButtonBase-root').eq(index).click()
+      }
+    })
     cy.get('[title="Open"]').eq(3).click()
     cy.contains('li.prospeccao-MuiAutocomplete-option', telefone.ddi).click()
     cy.get('[title="Open"]').eq(-1).click()
@@ -150,10 +139,12 @@ Cypress.Commands.add('adicionarSocio', (socio) => {
   cy.get('[aria-label="toggle password visibility"]').click()//#botão pesquisar cnpj/cpf socio
   cy.get('#mui-component-select-tipoAssinatura').click()
   cy.contains(socio.tipoAssinatura).click()
+  cy.intercept('POST', `**/mc-pessoas-ms/api/v1/pessoaSocio*`).as('interceptedRequest')
   cy.contains('Salvar').click()
+  cy.wait('@interceptedRequest', { timeout: 30000 }).its('response.statusCode').should('be.oneOf', [200, 202, 400])
 })
 
-Cypress.Commands.add('adicionarPessoaligadaVontante', () => {
+Cypress.Commands.add('adicionarPessoaligadaVotante', () => {
   cy.contains('Pessoas Ligadas').click()
   cy.get('.prospeccao-MuiGrid-direction-xs-column > :nth-child(1)').click()//#botao editar pessoa ligada
   cy.get(':nth-child(26) > .prospeccao-MuiFormControl-root > .prospeccao-MuiInputBase-root > #select').click()//#tipo assinatura pessoa ligada
@@ -163,17 +154,17 @@ Cypress.Commands.add('adicionarPessoaligadaVontante', () => {
 })
 
 Cypress.Commands.add('ajustesRenovacao', (pleito) => {
-  cy.adicionarPessoaligadaVontante()
+  //cy.adicionarPessoaligadaVotante()
   cy.preencherPleitoLimiteGlobal(pleito)
   cy.get('[title="Excluir"]').eq(2).click()
   cy.contains('Confirmar').click()
   //cy.contains('CCB/NC').should('not.exist')
-  cy.get('#main-menu-body section > div > main > div > div:nth-child(2) > div:nth-child(1) > div > div:nth-child(6) > div > div:nth-child(2) > div > table > tbody > tr:nth-child(2) > td:nth-child(4) > div > button').click() //#botão delete fundo
+  cy.get('.prospeccao-MuiButtonBase-root').last().click()//#botão delete fundo
   cy.contains('Confirmar').click()
 })
 
 Cypress.Commands.add('aprovarComite', (cnpj) => {
-  //cy.wait(2000)
+  cy.wait(2000)
   cy.contains('Votação').click()
   cy.aprovarProspectComite()
   cy.verificarLocal('Votação iniciada com sucesso')

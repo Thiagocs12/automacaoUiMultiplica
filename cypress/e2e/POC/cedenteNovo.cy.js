@@ -128,5 +128,6 @@ describe('Criação de uma POC para um cedente novo na casa', () => {
     cy.buscarEntidadeMonitor(empresa.cnpj, 'Administradora', 'Realizar Administração')
     cy.habilitarFundo(2)
     cy.avancarEsteira('TESTE AUTOMACAO - FINALIZAR A ESTEIRA', 'Finalizar')
+    cy.verificarLocal()
   })
 })

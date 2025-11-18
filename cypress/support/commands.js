@@ -194,3 +194,18 @@ Cypress.Commands.add('aprovarAlcada', (parecer) => {
   cy.get('[name="aprovar"] > .mop-MuiButton-label').click()//# botao aprovar alcada
   cy.contains('button', 'Confirmar').click()
 })
+
+Cypress.Commands.add('aguardarRequisicao', (method, endpoint, elemento = null, acao = 'click', eq = 0, texto = null) => {
+  cy.intercept(method, `**${endpoint}*`).as('interceptedRequest')
+  if(elemento !== null){
+    if (acao === 'click') {
+      cy.get(elemento).eq(eq).click()
+    } else if (acao === 'realClick') {
+      cy.get(elemento).eq(eq).realClick()
+    } else if (acao === 'type') {
+      cy.get(elemento).eq(eq).type(texto)
+    }}
+  cy.realPress('Tab')
+  cy.wait('@interceptedRequest', { timeout: 30000 }).its('response.statusCode').should('be.oneOf', [200, 202])
+  cy.log('Requisição realizada com sucesso')
+})

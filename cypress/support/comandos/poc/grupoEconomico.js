@@ -16,5 +16,5 @@ Cypress.Commands.add('cadastrarEmpresasGrupo', (cnpj, razaoSocial) => {
   .type(cnpj)
   cy.realPress('Tab')
   cy.get('[name="pessoa.nomeFantasia"]').type(razaoSocial)
-  cy.contains('Salvar').click()
+  cy.tikCon('Salvar')
 })
