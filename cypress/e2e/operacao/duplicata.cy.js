@@ -99,6 +99,14 @@ describe('Operação - Duplicata', () => {
     cy.avancarEsteira('TESTE AUTOMAÇÃO - AVANÇAR ETAPA DE TESOURARIA PAG', 'Avançar', 'Operação')
     cy.verificarLocal()
   })
+
+  it('Aguardando Assinatura', () => {
+    cy.loginKeycloak(user.usuario, user.senha)
+    cy.menu('Beyond BackOffice', 'Comercial', 'Operação')
+    cy.buscarEntidadeMonitor(empresa.cnpj, 'Monitor Diário', 'Analisar Tesouraria OPE', 'Operação')
+    cy.avancarEsteira('TESTE AUTOMAÇÃO - AVANÇAR ETAPA DE AGUARDANDO ASSINATURA', 'Avançar', 'Operação')
+    cy.verificarLocal()
+  })
   
   it('Pagamento OPE', () => {
     cy.loginKeycloak(user.usuario, user.senha)
