@@ -46,9 +46,6 @@ describe('Operação - Duplicata', () => {
     cy.menu('Beyond BackOffice', 'Comercial', 'Operação')
     cy.buscarEntidadeMonitor(empresa.cnpj, 'Monitor Diário', 'Analisar Operação', 'Operação')
     cy.adicionarFundoOpe('MULTIPLICA', empresa.contaBancaria.conta)
-    cy.tikGet(':nth-child(11) > .mop-MuiStepLabel-root').click()
-    cy.tikGet('[aria-label="Gerar Danfe"]').click()
-    cy.wait(500)
     cy.avancarEsteira('TESTE AUTOMAÇÃO - AVANÇAR ETAPA DE MIDDLE', 'Avançar', 'Operação')
     cy.verificarLocal()
   })
@@ -87,7 +84,7 @@ describe('Operação - Duplicata', () => {
     cy.verificarLocal()
   })
 
-  it.only('Gestora OPE', () => {
+  it('Gestora OPE', () => {
     cy.loginKeycloak(user.usuario, user.senha)
     cy.menu('Beyond BackOffice', 'Comercial', 'Operação')
     cy.buscarEntidadeMonitor(empresa.cnpj, 'Monitor Diário', 'Analisar Gestora OPE', 'Operação')
@@ -95,7 +92,7 @@ describe('Operação - Duplicata', () => {
     cy.verificarLocal()
   })
 
-  it.only('Tesouraria Pag', () => {
+  it('Tesouraria Pag', () => {
     cy.loginKeycloak(user.usuario, user.senha)
     cy.menu('Beyond BackOffice', 'Comercial', 'Operação')
     cy.buscarEntidadeMonitor(empresa.cnpj, 'Monitor Diário', 'Analisar Tesouraria OPE', 'Operação')
@@ -103,7 +100,7 @@ describe('Operação - Duplicata', () => {
     cy.verificarLocal()
   })
   
-  it.only('Pagamento OPE', () => {
+  it('Pagamento OPE', () => {
     cy.loginKeycloak(user.usuario, user.senha)
     cy.menu('Beyond BackOffice', 'Comercial', 'Operação')
     cy.buscarEntidadeMonitor(empresa.cnpj, 'Monitor Diário', 'Realizar Pagamento OPE', 'Operação')

@@ -91,8 +91,8 @@ describe('Criação de uma POC para um cedente novo na casa', () => {
   })
 
   it('Analise de Credito', () => {
-    cy.setarPOC(empresa.cnpj)
     cy.menu('Beyond BackOffice', 'Crédito', 'Prospect')
+    cy.setarPOC(empresa.cnpj)
     cy.buscarEntidadeMonitor(empresa.cnpj, 'Análise Crédito', 'Realizar POC')
     cy.avancarEsteira('TESTE AUTOMACAO - APROVAÇÃO PARA COMITÊ')
     cy.verificarLocal('Análise Crédito')

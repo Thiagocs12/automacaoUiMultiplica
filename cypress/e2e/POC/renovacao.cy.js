@@ -12,12 +12,12 @@ describe('Renovação de um cedente da casa', () => {
 
   it('Prospecção inicial', () => {
     cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')
-    //cy.cedenteVencido(empresa.cnpj)
-    //cy.criarProspect(empresa.cnpj, 'PROSPECT', false)
-    //cy.verificarLocal()
+    cy.cedenteVencido(empresa.cnpj)
+    cy.criarProspect(empresa.cnpj, 'PROSPECT', false)
+    cy.verificarLocal()
     cy.buscarEntidadeMonitor(empresa.cnpj, 'Monitor', 'Cadastrar Prospect')
-    //cy.adicionarTelefone(empresa.telefones)
-    //cy.adicionarContato(empresa.contato)
+    cy.adicionarTelefone(empresa.telefones)
+    cy.adicionarContato(empresa.contato)
     //cy.adicionarSocio(empresa.socio)
     cy.ajustesRenovacao('600000000')
     cy.avancarEsteira('TESTE AUTOMACAO - AVANÇAR ETAPA PARA DADOS COMPLEMENTARES')
@@ -53,9 +53,9 @@ describe('Renovação de um cedente da casa', () => {
 
   it('Comitê de crédito', () => {
     cy.menu('Beyond BackOffice', 'Comitê', 'Comitê de Crédito', 'Comitê de Crédito')
-    cy.buscarEntidadeMonitor(cnpj, 'Comitê de Crédito', 'Votar')
-    cy.setarComite(cnpj)
-    cy.aprovarComite(cnpj)
+    cy.buscarEntidadeMonitor(empresa.cnpj, 'Comitê de Crédito', 'Votar')
+    cy.setarComite(empresa.cnpj)
+    cy.aprovarComite(empresa.cnpj)
     cy.avancarComite()
     cy.verificarLocal()
   })
