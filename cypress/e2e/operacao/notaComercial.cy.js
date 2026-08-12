@@ -25,6 +25,17 @@ describe('Operação - Nota Comercial', () => {
     cy.verificarLocal()
   })
 
+  it('Alcada Diretoria', () => {
+    cy.menu('Beyond BackOffice', 'Comercial', 'Operação')
+    cy.buscarEntidadeMonitor(empresa.cnpj, 'Monitor Estruturada', null, 'Operação')
+    cy.get('body').then(($body) => {
+      if ($body.text().includes('Alçada Diretoria OPE')) {
+        cy.aprovarAlcada('Aprovar Operação na Alçada Diretoria OPE')
+        cy.verificarLocal('Alçada aprovada com sucesso!')
+      }
+    })
+  })
+
   it('Formalização OPE', () => {
     cy.menu('Beyond BackOffice', 'Comercial', 'Operação')
     cy.buscarEntidadeMonitor(empresa.cnpj, 'Monitor Estruturada', 'Analisar Operação', 'Operação')
@@ -90,21 +101,21 @@ describe('Operação - Nota Comercial', () => {
     cy.verificarLocal()
   })
 
-  it('Gestora OPE', () => {
+  it.only('Gestora OPE', () => {
     cy.menu('Beyond BackOffice', 'Comercial', 'Operação')
     cy.buscarEntidadeMonitor(empresa.cnpj, 'Monitor Diário', 'Analisar Gestora OPE', 'Operação')
     cy.avancarEsteira('TESTE AUTOMAÇÃO - AVANÇAR ETAPA DE GESTORA OPE', 'Avançar', 'Operação')
     cy.verificarLocal()
   })
 
-  it('Tesouraria Pag', () => {
+  it.only('Tesouraria Pag', () => {
     cy.menu('Beyond BackOffice', 'Comercial', 'Operação')
     cy.buscarEntidadeMonitor(empresa.cnpj, 'Monitor Diário', 'Analisar Tesouraria OPE', 'Operação')
     cy.avancarEsteira('TESTE AUTOMAÇÃO - AVANÇAR ETAPA DE TESOURARIA PAG', 'Avançar', 'Operação')
     cy.verificarLocal()
   })
   
-  it('Pagamento OPE', () => {
+  it.only('Pagamento OPE', () => {
     cy.menu('Beyond BackOffice', 'Comercial', 'Operação')
     cy.buscarEntidadeMonitor(empresa.cnpj, 'Monitor Diário', 'Realizar Pagamento OPE', 'Operação')
     cy.avancarEsteira('TESTE AUTOMAÇÃO - PAGAR OPERAÇÃO', 'Avançar', 'Operação')

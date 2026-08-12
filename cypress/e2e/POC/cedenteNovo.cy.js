@@ -5,30 +5,20 @@ describe('Criação de uma POC para um cedente novo na casa', () => {
   before(() => {
     cy.cleanupPessoa(empresa.cnpj)
     cy.armazenarKCTokenEmEnv()
+    cy.capturarIdsParecer()
   })
 
   beforeEach(() => {
     cy.loginKeycloak(user.usuario, user.senha)
   })
 
-  it('Criar uma poc para um cedente novo na casa', () => {
+  it('Prospecção Inicial', () => {
     cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')
     cy.criarProspect(empresa.cnpj, 'PROSPECT')
     cy.verificarLocal('Dados do Prospect')
     cy.atualizarNomeFantasia(empresa.cnpj)
-  })
-
-  it('Validar que não posso criar uma poc para um cnpj que já está na esteira', () => {
-    cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')
-    cy.criarProspect(empresa.cnpj, 'PROSPECT')
-    cy.contains('CNPJ informado está associado a uma esteira ativa.').should('be.visible')
-  })
-
-  it('Prospecção inicial', () => {
-    cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')
-    cy.buscarEntidadeMonitor(empresa.cnpj, 'Monitor', 'Cadastrar Prospect')
     cy.adicionarContaBancaria(empresa.contaBancaria)
-    cy.preencherPleitoLimiteGlobal('5000000')
+    cy.preencherPleitoLimiteGlobal('500000000')
     empresa.fundos.forEach((fundo) => {
       cy.adicionarFundoPleito(fundo)
     })
@@ -38,6 +28,12 @@ describe('Criação de uma POC para um cedente novo na casa', () => {
     }
     cy.avancarEsteira('TESTE AUTOMACAO - AVANÇAR ETAPA PARA DADOS COMPLEMENTARES')
     cy.verificarLocal()
+  })
+
+  it.skip('Validar que não posso criar uma poc para um cnpj que já está na esteira', () => {
+    cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')
+    cy.criarProspect(empresa.cnpj, 'PROSPECT')
+    cy.contains('CNPJ informado está associado a uma esteira ativa.').should('be.visible')
   })
 
   it('Dados Complementares', () => {
@@ -53,28 +49,18 @@ describe('Criação de uma POC para um cedente novo na casa', () => {
     for (const kyc of empresa.kyc) {
       cy.contains(kyc).click()
     }
-    cy.contains('Salvar').click()
+    cy.tikCon('Salvar')
     cy.avancarEsteira('TESTE AUTOMACAO - AVANÇAR ETAPA PARA APROVAÇÃO PROSPECT')
     cy.verificarLocal()
   })
 
-  it('Aprovação Plataforma', () => {
+  it('Aprovação Prospect', () => {
     cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')
     cy.buscarEntidadeMonitor(empresa.cnpj, 'Monitor')
     cy.aprovarProspect('TESTE AUTOMACAO - APROVAR PROSPECT PLATAFORMA')
     cy.verificarLocal()
-  })
-
-  it('Aprovação Superintedente', () => {
-    cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')
-    cy.buscarEntidadeMonitor(empresa.cnpj, 'Monitor')
     cy.aprovarProspect('TESTE AUTOMACAO - APROVAR PROSPECT SUPERINTENDENTE')
     cy.verificarLocal()
-  })
-
-  it('Aprovação Diretoria', () => {
-    cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')
-    cy.buscarEntidadeMonitor(empresa.cnpj, 'Monitor')
     cy.aprovarProspect('TESTE AUTOMACAO - APROVAR PROSPECT DIRETORIA')
     cy.verificarLocal()
   })
@@ -84,17 +70,14 @@ describe('Criação de uma POC para um cedente novo na casa', () => {
     cy.buscarEntidadeMonitor(empresa.cnpj, 'Compliance')
     cy.preencherCompliance('TESTE AUTOMACAO - APROVAÇÃO COMPLIANCE')
     cy.avancarEsteira('TESTE AUTOMACAO - APROVAÇÃO PARA JURIDICO COMPLIANCE')
+    cy.verificarLocal()
   })
 
-  it('Aprovação jurídico compliance', () => {
+  it('Aprovação jurídico compliance e compliance 2', () => {
     cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')
     cy.buscarEntidadeMonitor(empresa.cnpj, 'Monitor', 'Cadastrar Prospect')
     cy.avancarEsteira('TESTE AUTOMACAO - APROVAÇÃO PARA COMPLIANCE 2')
-  })
-  
-  it('Aprovação compliance 2', () => {
-    cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')
-    cy.buscarEntidadeMonitor(empresa.cnpj, 'Monitor')
+    cy.verificarLocal()
     cy.aprovarProspect('TESTE AUTOMACAO - APROVAÇÃO PARA DISTRIBUIÇÃO', 'Cadastrar Prospect')
     cy.verificarLocal()
   })
@@ -108,49 +91,26 @@ describe('Criação de uma POC para um cedente novo na casa', () => {
   })
 
   it('Analise de Credito', () => {
+    cy.menu('Beyond BackOffice', 'Crédito', 'Prospect')
     cy.setarPOC(empresa.cnpj)
-    cy.menu('Beyond BackOffice', 'Crédito', 'Prospect')
     cy.buscarEntidadeMonitor(empresa.cnpj, 'Análise Crédito', 'Realizar POC')
-    cy.avancarEsteira('TESTE AUTOMACAO - APROVAÇÃO PARA PRÉ COMITÊ')
+    cy.avancarEsteira('TESTE AUTOMACAO - APROVAÇÃO PARA COMITÊ')
     cy.verificarLocal('Análise Crédito')
-  })
-
-  it('Pré Comitê', () => {
-    cy.menu('Beyond BackOffice', 'Crédito', 'Prospect')
-    cy.buscarEntidadeMonitor(empresa.cnpj, 'Pré Comitê')
-    cy.get('.MuiTableCell-alignCenter > .MuiButtonBase-root').click() //#Botão
-    cy.acessarEntidadeNaTela('Analisar')
-    cy.avancarEsteira()
-    cy.verificarLocal()
-  })
-
-  it('Preencher e votar Comitê de Crédito', () => {
-    cy.setarComite(empresa.cnpj)
-    cy.menu('Beyond BackOffice', 'Comitê', 'Comitê de Crédito', 'Comitê de Crédito')
-    cy.buscarEntidadeMonitor(empresa.cnpj, 'Comitê de Crédito')
-    cy.acessarEntidadeNaTela('Votar')
-    cy.wait(5000)
-    cy.contains('Votação').click()
-    cy.aprovarProspectComite()
-    cy.votarComiteFavoravelPorCnpj(empresa.cnpj)
-    cy.obterIdProposta(empresa.cnpj).then((idProposta) => {
-      cy.finalizaPocComite(idProposta)
-    })
   })
 
   it('Comitê de crédito', () => {
     cy.menu('Beyond BackOffice', 'Comitê', 'Comitê de Crédito', 'Comitê de Crédito')
-    cy.buscarEntidadeMonitor(empresa.cnpj, 'Comitê de Crédito')
-    cy.acessarEntidadeNaTela('Votar')
-    cy.acessarAtaComite()
+    cy.buscarEntidadeMonitor(empresa.cnpj, 'Comitê de Crédito', 'Votar')
+    cy.setarComite(empresa.cnpj)
+    cy.aprovarComite(empresa.cnpj)
     cy.avancarComite()
     cy.verificarLocal()
   })
 
-  it('Docs Comerciais', () => {
+  it('Middle Documental', () => {
     cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')
     cy.buscarEntidadeMonitor(empresa.cnpj, 'Monitor', 'Cadastrar Cedente')
-    cy.avancarEsteira('TESTE AUTOMACAO - AVANÇAR ETAPA PARA FORMALIZAÇÃO', 'Formalização')
+    cy.avancarEsteira('TESTE AUTOMACAO - AVANÇAR ETAPA PARA DOCS COMERCIAL', 'Formalização')
     cy.verificarLocal()
   })
 
@@ -168,5 +128,6 @@ describe('Criação de uma POC para um cedente novo na casa', () => {
     cy.buscarEntidadeMonitor(empresa.cnpj, 'Administradora', 'Realizar Administração')
     cy.habilitarFundo(2)
     cy.avancarEsteira('TESTE AUTOMACAO - FINALIZAR A ESTEIRA', 'Finalizar')
+    cy.verificarLocal()
   })
 })

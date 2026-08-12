@@ -56,11 +56,11 @@ Cypress.Commands.add('setarPOC', (cnpj) => {
 })
 
 Cypress.Commands.add('setarComite', (cnpj) => {
-    cy.obterIdProposta(cnpj).then((idProposta) => {
-      cy.obterIdComite(idProposta).then((idComiteProposta) => {
-        cy.pocComiteLimiteProduto(idComiteProposta)
-        cy.pocComiteLimiteBoleto(idComiteProposta)
-        cy.pocVotacao(idComiteProposta)
-      })
+  cy.obterIdProposta(cnpj).then((idProposta) => {
+    cy.obterIdComite(idProposta).then((idComiteProposta) => {
+      cy.pocComiteLimiteProduto(idComiteProposta)
+      cy.pocComiteLimiteBoleto(idComiteProposta)
+      cy.pocVotacao(idComiteProposta)
+    })
   })
 })

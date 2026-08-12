@@ -2,32 +2,30 @@
 Cypress.Commands.add('adicionarProdutosPleito', (produto, limite, prazo, taxa, concetracao) => {
   cy.get('.prospeccao-MuiGrid-root > :nth-child(2)').click() //# adicionar produto pleito
   cy.contains(produto).click()
-  cy.wait(100)
   cy.contains('span', produto).click()
+  cy.get('.MuiOutlinedInput-input').eq(0).clear().type(limite) //# adição de grupo de produto limite
   cy.wait(500)
-  cy.get('.css-1c6kgto > .MuiOutlinedInput-root > .MuiOutlinedInput-input').clear().type(limite) //# adição de grupo de produto limite
-  cy.wait(100)
-  cy.get(':nth-child(3) > .MuiOutlinedInput-root > .MuiOutlinedInput-input').clear().type(prazo) //# adição de grupo de produto prazo
-  cy.wait(100)
-  cy.get('.css-1yp82fk > .MuiOutlinedInput-root > .MuiOutlinedInput-input').clear().type(taxa) //# adição de grupo de produto taxa
-  cy.wait(100)
-  cy.get('.css-2cy7sg > .MuiFormControl-root > .MuiOutlinedInput-root > .MuiOutlinedInput-input').clear().type(concetracao) //# adição de grupo de produto concetracao
-  cy.wait(100)
-  cy.get('.css-1bvc4cc > .MuiButton-root').click()
+  cy.get('.MuiOutlinedInput-input').eq(2).clear().type(prazo) //# adição de grupo de produto prazo
+  cy.get('.MuiOutlinedInput-input').eq(3).clear().type(taxa) //# adição de grupo de produto taxa
+  cy.get('.MuiOutlinedInput-input').eq(4).clear().type(concetracao) //# adição de grupo de produto concetracao
+    cy.aguardarRequisicao(
+    'POST',
+    '/mc-prospect-ms/api/v1/pleitoProduto/registerPleitoProdutoLote',
+    '.css-1bvc4cc > .MuiButton-root',
+  )
 })
 
 // Adiciona produtos ao pleito pelo grupo
 Cypress.Commands.add('adicionarFundoPleito', (fundo) => {
-  cy.get('#main-menu-body > section > div > main > div > div:nth-child(2) > div:nth-child(1) > div > div:nth-child(6) > div > div:nth-child(1) > button').click()
-  cy.wait(500)
-  cy.get('#main-menu-body > section > div > main > div > div:nth-child(2) > div:nth-child(1) > div > div:nth-child(6) > div > div:nth-child(2) > div > form > div:nth-child(1) > div > div > div > div > div > button:nth-child(2) > span:nth-child(1) > svg').click()
+  cy.get('.prospeccao-MuiBox-root > .prospeccao-MuiButtonBase-root').first().click() //# adicionar fundo pleito
+  cy.get('.prospeccao-MuiInputBase-input').last().click()
   cy.contains(fundo).click()
-  cy.get('.prospeccao-MuiGrid-grid-md-4 > div > .prospeccao-MuiButton-contained').click()
+  cy.tikGet('.prospeccao-MuiGrid-grid-md-4 > div > .prospeccao-MuiButton-contained')
 })
 
 // Avança as etapas de aprovação do prospect
 Cypress.Commands.add('aprovarProspect', (parecer, acao = 'Analisar Prospect') => {
-  cy.wait(500)
+  cy.wait(2000)
   cy.acessarEntidadeNaTela(acao)
   cy.avancarEsteira(parecer)
 })
@@ -42,7 +40,7 @@ Cypress.Commands.add('preencherCompliance', (parecer) => {
   cy.contains('ANALISTA AUTOMAÇÃO').click()
   cy.get('[name="parecer"]').type(parecer)
   cy.get('[name="observacao"]').type(parecer)
-  cy.contains('Salvar').click()
+  cy.tikCon('Salvar')
 })
 
 Cypress.Commands.add('distribuirProposta', (cnpj) => {

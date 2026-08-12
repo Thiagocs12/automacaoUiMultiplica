@@ -10,41 +10,27 @@ describe('Renovação de um cedente da casa', () => {
     cy.loginKeycloak(user.usuario, user.senha)
   })
 
-  it('Criar uma renovação para um cedente da casa', () => {
+  it('Prospecção inicial', () => {
     cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')
     cy.cedenteVencido(empresa.cnpj)
     cy.criarProspect(empresa.cnpj, 'PROSPECT', false)
     cy.verificarLocal()
-  })
-
-  it('Prospecção inicial', () => {
-    cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')
     cy.buscarEntidadeMonitor(empresa.cnpj, 'Monitor', 'Cadastrar Prospect')
     cy.adicionarTelefone(empresa.telefones)
     cy.adicionarContato(empresa.contato)
-    cy.adicionarSocio(empresa.socio)
-    cy.ajustesRenovacao('6000000')
+    //cy.adicionarSocio(empresa.socio)
+    cy.ajustesRenovacao('600000000')
     cy.avancarEsteira('TESTE AUTOMACAO - AVANÇAR ETAPA PARA DADOS COMPLEMENTARES')
     cy.verificarLocal()
   })
 
-  it('Aprovação Plataforma', () => {
+  it('Aprovação Prospect', () => {
     cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')
     cy.buscarEntidadeMonitor(empresa.cnpj, 'Monitor')
     cy.aprovarProspect('TESTE AUTOMACAO - APROVAR PROSPECT PLATAFORMA')
     cy.verificarLocal()
-  })
-
-  it('Aprovação Superintedente', () => {
-    cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')
-    cy.buscarEntidadeMonitor(empresa.cnpj, 'Monitor')
     cy.aprovarProspect('TESTE AUTOMACAO - APROVAR PROSPECT SUPERINTENDENTE')
     cy.verificarLocal()
-  })
-
-  it('Aprovação Diretoria', () => {
-    cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')
-    cy.buscarEntidadeMonitor(empresa.cnpj, 'Monitor')
     cy.aprovarProspect('TESTE AUTOMACAO - APROVAR PROSPECT DIRETORIA')
     cy.verificarLocal()
   })
@@ -61,46 +47,23 @@ describe('Renovação de um cedente da casa', () => {
     cy.setarPOC(empresa.cnpj)
     cy.menu('Beyond BackOffice', 'Crédito', 'Prospect')
     cy.buscarEntidadeMonitor(empresa.cnpj, 'Análise Crédito', 'Realizar POC')
-    cy.avancarEsteira('TESTE AUTOMACAO - APROVAÇÃO PARA PRÉ COMITÊ')
+    cy.avancarEsteira('TESTE AUTOMACAO - APROVAÇÃO PARA COMITÊ')
     cy.verificarLocal('Análise Crédito')
-  })
-
-  it('Pré Comitê', () => {
-    cy.menu('Beyond BackOffice', 'Crédito', 'Prospect')
-    cy.buscarEntidadeMonitor(empresa.cnpj, 'Pré Comitê')
-    cy.get('.MuiTableCell-alignCenter > .MuiButtonBase-root').click() //#Botão
-    cy.acessarEntidadeNaTela('Analisar')
-    cy.avancarEsteira()
-    cy.verificarLocal()
-  })
-
-  it('Preencher e votar Comitê de Crédito', () => {
-    cy.setarComite(empresa.cnpj)
-    cy.menu('Beyond BackOffice', 'Comitê', 'Comitê de Crédito', 'Comitê de Crédito')
-    cy.buscarEntidadeMonitor(empresa.cnpj, 'Comitê de Crédito')
-    cy.acessarEntidadeNaTela('Votar')
-    cy.wait(5000)
-    cy.contains('Votação').click()
-    cy.aprovarProspectComite()
-    cy.votarComiteFavoravelPorCnpj(empresa.cnpj)
-    cy.obterIdProposta(empresa.cnpj).then((idProposta) => {
-      cy.finalizaPocComite(idProposta)
-    })
   })
 
   it('Comitê de crédito', () => {
     cy.menu('Beyond BackOffice', 'Comitê', 'Comitê de Crédito', 'Comitê de Crédito')
-    cy.buscarEntidadeMonitor(empresa.cnpj, 'Comitê de Crédito')
-    cy.acessarEntidadeNaTela('Votar')
-    cy.acessarAtaComite()
+    cy.buscarEntidadeMonitor(empresa.cnpj, 'Comitê de Crédito', 'Votar')
+    cy.setarComite(empresa.cnpj)
+    cy.aprovarComite(empresa.cnpj)
     cy.avancarComite()
     cy.verificarLocal()
   })
 
-  it('Docs Comerciais', () => {
+  it('Middle Documental', () => {
     cy.menu('Beyond BackOffice', 'Comercial', 'Prospect')
     cy.buscarEntidadeMonitor(empresa.cnpj, 'Monitor', 'Cadastrar Cedente')
-    cy.avancarEsteira('TESTE AUTOMACAO - AVANÇAR ETAPA PARA FORMALIZAÇÃO', 'Formalização')
+    cy.avancarEsteira('TESTE AUTOMACAO - AVANÇAR ETAPA PARA DOCS COMERCIAL', 'Formalização')
     cy.verificarLocal()
   })
 
@@ -116,7 +79,6 @@ describe('Renovação de um cedente da casa', () => {
   it('Administradora', () => {
     cy.menu('Beyond BackOffice', 'Formalização', 'Administradora', 'Monitor')
     cy.buscarEntidadeMonitor(empresa.cnpj, 'Administradora', 'Realizar Administração')
-    //cy.habilitarFundo(1)
     cy.avancarEsteira('TESTE AUTOMACAO - FINALIZAR A ESTEIRA', 'Finalizar')
   })
 })
