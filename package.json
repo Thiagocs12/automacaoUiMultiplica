@@ -1,5 +1,5 @@
 {
-  "name": "automacaomultiplica",
+  "name": "cypress_e2e",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -13,16 +13,13 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "type": "commonjs",
   "bugs": {
     "url": "https://github.com/Thiagocs12/automacaoMultiplica/issues"
   },
   "homepage": "https://github.com/Thiagocs12/automacaoMultiplica#readme",
   "devDependencies": {
-    "cypress": "^15.2.0",
-    "cypress-file-upload": "^5.0.8",
-    "cypress-real-events": "^1.15.0",
-    "dayjs": "^1.11.18",
-    "dotenv": "^17.2.2",
-    "mssql": "^11.0.1"
+    "@badeball/cypress-cucumber-preprocessor": "^26.0.0",
+    "cypress": "^15.20.1"
   }
 }
