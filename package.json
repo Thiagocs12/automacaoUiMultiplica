@@ -20,6 +20,12 @@
   "homepage": "https://github.com/Thiagocs12/automacaoMultiplica#readme",
   "devDependencies": {
     "@badeball/cypress-cucumber-preprocessor": "^26.0.0",
-    "cypress": "^15.20.1"
+    "@bahmutov/cypress-esbuild-preprocessor": "^2.2.8",
+    "cypress": "^15.14.2"
+  },
+  "dependencies": {
+    "bahmutov": "^1.0.1",
+    "cypress-esbuild-preprocessor": "^1.0.2",
+    "dotenv": "^17.4.2"
   }
 }
