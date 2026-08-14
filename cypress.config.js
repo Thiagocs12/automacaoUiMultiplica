@@ -1,22 +1,39 @@
-import { defineConfig } from 'cypress'
-import dotenv from 'dotenv'
-import fs from 'fs'
+const { defineConfig } = require('cypress')
 const path = require('path')
+const dotenv = require('dotenv')
 
-import createBundler from "@bahmutov/cypress-esbuild-preprocessor"
-import { addCucumberPreprocessorPlugin } from "@badeball/cypress-cucumber-preprocessor"
-import { createEsbuildPlugin } from "@badeball/cypress-cucumber-preprocessor/esbuild"
+// ✅ IMPORTANTE: Carregar .env da raiz do projeto
+const envPath = path.resolve(__dirname, '.env')
+console.log(`📁 Carregando .env de: ${envPath}`)
 
-dotenv.config()
+const result = dotenv.config({ path: envPath })
 
-export default defineConfig({
+if (result.error) {
+  console.error('❌ Erro ao carregar .env:', result.error)
+} else {
+  console.log('✅ .env carregado com sucesso')
+  console.log('Variáveis carregadas:', Object.keys(result.parsed || {}).length)
+}
+
+// ✅ Agora sim, importar environments
+const { validateEnvironment } = require('./cypress/config/environments')
+
+const createBundler = require('@bahmutov/cypress-esbuild-preprocessor')
+const { addCucumberPreprocessorPlugin } = require('@badeball/cypress-cucumber-preprocessor')
+const { createEsbuildPlugin } = require('@badeball/cypress-cucumber-preprocessor/esbuild')
+
+const environment = process.env.CYPRESS_ENV || 'hml'
+
+const envConfig = validateEnvironment(environment)
+
+module.exports = defineConfig({
   e2e: {
-    specPattern: "**/*.feature",
+    specPattern: 'cypress/e2e/features/**/*.feature',
     async setupNodeEvents(on, config) {
       await addCucumberPreprocessorPlugin(on, config)
 
       on(
-        "file:preprocessor",
+        'file:preprocessor',
         createBundler({
           plugins: [createEsbuildPlugin(config)],
         })
@@ -25,11 +42,14 @@ export default defineConfig({
       config.env = {
         ...config.env,
         ...process.env,
+        environment,
+        envConfig,
       }
 
       return config
     },
     pageLoadTimeout: 20000,
     defaultCommandTimeout: 20000,
-  }
-});
+    baseUrl: envConfig.api.baseUrl,
+  },
+})

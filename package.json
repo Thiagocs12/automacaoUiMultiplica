@@ -4,7 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "cypress run",
+    "test:open": "cypress open",
+    "test:hml": "CYPRESS_ENV=hml cypress run",
+    "test:prod": "CYPRESS_ENV=prod cypress run",
+    "test:bhml": "CYPRESS_ENV=bhml cypress run",
+    "test:hml:open": "CYPRESS_ENV=hml cypress open",
+    "test:prod:open": "CYPRESS_ENV=prod cypress open",
+    "test:bhml:open": "CYPRESS_ENV=bhml cypress open"
   },
   "repository": {
     "type": "git",
