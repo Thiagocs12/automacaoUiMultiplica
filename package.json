@@ -5,13 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "cypress run",
-    "test:open": "cypress open",
-    "test:hml": "CYPRESS_ENV=hml cypress run",
-    "test:prod": "CYPRESS_ENV=prod cypress run",
-    "test:bhml": "CYPRESS_ENV=bhml cypress run",
-    "test:hml:open": "CYPRESS_ENV=hml cypress open",
-    "test:prod:open": "CYPRESS_ENV=prod cypress open",
-    "test:bhml:open": "CYPRESS_ENV=bhml cypress open"
+    "test:open": "cypress open"
   },
   "repository": {
     "type": "git",
@@ -26,13 +20,6 @@
   },
   "homepage": "https://github.com/Thiagocs12/automacaoMultiplica#readme",
   "devDependencies": {
-    "@badeball/cypress-cucumber-preprocessor": "^26.0.0",
-    "@bahmutov/cypress-esbuild-preprocessor": "^2.2.8",
     "cypress": "^15.14.2"
-  },
-  "dependencies": {
-    "bahmutov": "^1.0.1",
-    "cypress-esbuild-preprocessor": "^1.0.2",
-    "dotenv": "^17.4.2"
   }
 }
