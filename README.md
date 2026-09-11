@@ -10,6 +10,9 @@ O trabalho começa pelo módulo **POC** (uma empresa é validada — validadores
 npm install
 ```
 
+Copie `.env.example` para `.env` e preencha as URLs de ambiente e as credenciais dos usuários de
+teste por perfil (ver `cypress/config/environments.js`).
+
 ## Rodando os testes
 
 ```bash
@@ -54,7 +57,7 @@ Quando('o fluxo completo da esteira de cedente é executado', () => {
 
 Isso mantém a lógica de negócio (ordem das etapas, validações) testável e reaproveitável fora do Gherkin, e deixa o `.feature` livre para descrever o cenário em linguagem de negócio.
 
-> Status: `cypress-cucumber-preprocessor` (ou equivalente) ainda não está instalado neste projeto — é um pré-requisito da fundação da arquitetura, descrito em detalhe no [CLAUDE.md](CLAUDE.md).
+> Status: `@badeball/cypress-cucumber-preprocessor` já está instalado e configurado (`cypress.config.js` + `package.json`), como parte da fundação da arquitetura descrita em detalhe no [CLAUDE.md](CLAUDE.md).
 
 ### Estrutura de pastas alvo
 

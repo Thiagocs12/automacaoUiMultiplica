@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project overview
 
-Base Cypress E2E test scaffold for Multiplica's platform. Currently a clean slate (no specs yet) — feature branches add real test suites via PRs into `reviewAgents` (see Collaboration workflow below).
+Cypress E2E test suite for Multiplica's platform. The login foundation (Keycloak SSO) is implemented; feature branches add further test suites via PRs into `reviewAgents` (see Collaboration workflow below).
 
 ## Commands
 
@@ -17,12 +17,11 @@ To run a single spec: `npx cypress run --spec "cypress/e2e/<path-to-spec>"`.
 
 ## Architecture (current state)
 
-- `cypress.config.js` — minimal `e2e` config, default spec pattern (`cypress/e2e/**/*.cy.{js,jsx,ts,tsx}`), no custom plugins wired in yet.
+- `cypress.config.js` — `e2e` config with spec pattern `cypress/e2e/**/*.feature` and `@badeball/cypress-cucumber-preprocessor` + esbuild bundler wired in.
 - `cypress/support/e2e.js` — imports `commands.js`; add global setup here.
-- `cypress/support/commands.js` — empty; add custom commands here as the suite grows.
+- `cypress/support/commands.js` — `cy.loginComoPerfil(perfil)` and `cy.tentarLoginComCredenciais(username, password)` (see Login atual below); add further custom commands here as the suite grows.
+- `cypress/support/pages/shared/LoginPage.js`, `cypress/config/environments.js`, `cypress/e2e/features/shared/login.feature`, `cypress/support/step_definitions/shared/login.js` — login foundation (see Planned architecture below).
 - `cypress/fixtures/example.json` — default Cypress fixture.
-
-The repo was intentionally reset to this clean slate to restart the suite following the planned architecture below, rather than continuing the earlier incomplete login-only scaffold.
 
 ## Planned architecture (POC → MOP → demais módulos)
 
@@ -83,7 +82,7 @@ cypress/
     environments.js                # adicionar mapa `usuarios` por perfil, por ambiente
 ```
 
-> Nota: as `.feature` + `step_definitions` implicam Gherkin/Cucumber (`cypress-cucumber-preprocessor` ou equivalente), que ainda não está instalado neste projeto — é um pré-requisito da fundação, não algo já configurado.
+> Nota: as `.feature` + `step_definitions` implicam Gherkin/Cucumber — `@badeball/cypress-cucumber-preprocessor` já está instalado e configurado (`cypress.config.js`, `package.json`).
 
 ### Contrato de Etapa (`EtapaBase`)
 
@@ -160,11 +159,25 @@ Ou seja: o step definition não sabe nada sobre a sequência das etapas — ele 
 
 ### Login atual
 
-O antigo `fluxoLogin.feature` / `fluxoLogin.js` / `cy.ambienteLogin` viram a base do `LoginPage` + `cy.loginComoPerfil`: a lógica de preencher usuário/senha e clicar em `#kc-login` é reaproveitada, mas o Then hoje é um `cy.pause()` sem assertiva — isso é corrigido como parte da fundação (assertiva real de login bem-sucedido/erro).
+Implementado: `cypress/support/pages/shared/LoginPage.js` (seletores/ações puras da tela do
+Keycloak) + `cy.loginComoPerfil(perfil)` em `commands.js` (usa `cy.session` para cache por perfil
+e `cy.origin` para navegar ao Keycloak). Cenários em
+`cypress/e2e/features/shared/login.feature` + `cypress/support/step_definitions/shared/login.js`,
+com assertivas reais de sucesso/erro (substituindo o antigo `cy.pause()` sem assertiva da branch
+`fluxoLogin`, já removida).
+
+**Gotcha de `cy.session`**: o setup/validate do `cy.session` só restaura cookies/localStorage —
+ele não deixa a página navegada na app depois de rodar. `cy.loginComoPerfil` faz um `cy.visit`
+extra logo após o `cy.session` para garantir que o teste continue na aplicação autenticada (sem
+isso, a URL fica em `about:blank` e a assertiva de login bem-sucedido falha mesmo com a sessão
+válida).
 
 ### Ordem de execução
 
-1. **Fundação**: `EtapaBase`, `LoginPage`, `cy.loginComoPerfil` (com `cy.session`), estrutura de pastas `pages/etapas/esteiras`, extensão de `environments.js`/`.env.example` com mapa de usuários por perfil (placeholders, mesmo sem credenciais reais ainda). Corrigir a assertiva pendente do login.
+1. **Fundação**: `LoginPage`, `cy.loginComoPerfil` (com `cy.session`) e `environments.js`/`.env.example`
+   com mapa de usuários por perfil já implementados e validados em HML (perfil `master`). Assertiva
+   real de login bem-sucedido/erro já corrigida. `EtapaBase`/`etapas`/`esteiras` ainda não criados —
+   entram na fase POC.
 2. **POC — etapas isoladas**: implementar `EtapaCadastroFundo`, `EtapaCadastroProduto`, `EtapaValidacaoAlcada` (e outros validadores citados) com suas Pages, cada uma com cenário próprio em `poc-validadores.feature`.
 3. **POC — fluxo completo**: `EsteiraCedente` completa + cenário `poc-fluxo-completo.feature`.
 4. **MOP**: repetir o mesmo padrão (etapas de validação de operação + `EsteiraOperacao` completa), reaproveitando `EtapaBase`, `LoginPage` e o comando de login — sem reaproveitar etapas específicas do POC.
@@ -174,15 +187,15 @@ Fora de escopo por enquanto (não pedido nesta fase): seed via API/DB, CI/CD, re
 
 ### Arquivos-chave a criar/alterar
 
+- ~~Criar: `cypress/support/pages/shared/LoginPage.js`~~ — feito.
+- ~~Alterar: `cypress/support/commands.js` (novo `cy.loginComoPerfil`, substituindo/evoluindo `ambienteLogin`)~~ — feito.
+- ~~Alterar: `cypress/config/environments.js` (mapa `usuarios` por ambiente)~~ — feito (perfil `master` em `hml`).
+- ~~Alterar: `.env.example` (novas variáveis de usuários por perfil)~~ — feito.
+- ~~Alterar/mover: `cypress/e2e/features/fluxoLogin.feature`~~ — substituído por `cypress/e2e/features/shared/login.feature` + `step_definitions/shared/login.js`, com assertivas reais.
 - Criar: `cypress/support/etapas/EtapaBase.js`
-- Criar: `cypress/support/pages/shared/LoginPage.js`
-- Alterar: `cypress/support/commands.js` (novo `cy.loginComoPerfil`, substituindo/evoluindo `ambienteLogin`)
-- Alterar: `cypress/config/environments.js` (mapa `usuarios` por ambiente)
-- Alterar: `.env.example` (novas variáveis de usuários por perfil)
 - Criar: `cypress/support/etapas/poc/EtapaCadastroFundo.js`, `EtapaCadastroProduto.js`, `EtapaValidacaoAlcada.js` (+ Pages correspondentes em `pages/poc/`)
 - Criar: `cypress/support/esteiras/poc/EsteiraCedente.js`
 - Criar: `cypress/e2e/features/poc/poc-validadores.feature`, `poc-fluxo-completo.feature` + step definitions em `cypress/support/step_definitions/poc/`
-- Alterar/mover: `cypress/e2e/features/fluxoLogin.feature` e `cypress/support/step_definitions/fluxoLogin.js` (corrigir assertiva, alinhar ao novo `LoginPage`)
 
 ### Verificação
 
