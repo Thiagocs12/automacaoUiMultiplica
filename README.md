@@ -82,6 +82,10 @@ cypress/
 
 Detalhamento completo (contrato de `EtapaBase`, orquestrador `EsteiraCedente`, estratégia de multi-perfil/login, ordem de execução do trabalho e checklist de verificação) está em [CLAUDE.md](CLAUDE.md).
 
-## Contribuindo
+## Fluxo de trabalho
 
-Este repositório é colaborativo: branches, PRs contra `reviewAgents`, CI e resolução de conflitos seguem as regras descritas em [CONTRIBUTING.md](CONTRIBUTING.md).
+Este repositório é mantido por agentes de automação (Claude Code), não por PRs humanos: cada
+tarefa é implementada numa branch nova a partir de `reviewAgents` por um subAgent, que commita e
+dá push ao concluir; um Agent Master integra essa branch diretamente na `reviewAgents` (sem
+abertura de PR), resolvendo conflitos e rerodando os testes quando necessário. Detalhes completos
+do fluxo estão em [CLAUDE.md](CLAUDE.md).

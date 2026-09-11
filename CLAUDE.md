@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project overview
 
-Cypress E2E test suite for Multiplica's platform. The login foundation (Keycloak SSO) is implemented; feature branches add further test suites via PRs into `reviewAgents` (see Collaboration workflow below).
+Cypress E2E test suite for Multiplica's platform. The login foundation (Keycloak SSO) is implemented; feature branches add further test suites and are merged directly into `reviewAgents` by an automated Agent Master (see Collaboration workflow below).
 
 ## Commands
 
@@ -206,11 +206,18 @@ Fora de escopo por enquanto (não pedido nesta fase): seed via API/DB, CI/CD, re
 
 ## Collaboration workflow
 
-This repo is worked on by multiple people. Full details in `CONTRIBUTING.md`, summary here:
+This repo is maintained by automated agents (Claude Code), not by human PRs:
 
-- Never commit directly to `reviewAgents` (the shared integration branch) or `main`. Always create a new branch off `reviewAgents` for any change.
-- Open pull requests **against `reviewAgents`**, not `main`.
-- A project-level hook (`.claude/settings.json`, `SessionStart`) fetches `origin/reviewAgents` when a session starts and auto-pulls it only if the current branch is `reviewAgents` with a clean working tree; otherwise it just warns instead of switching branches or overwriting local work.
-- Merge conflicts: use the `/resolve-conflicts` skill (`.claude/skills/resolve-conflicts/`) instead of resolving blindly.
-- CI (`.github/workflows/cypress.yml`) runs `npm test` on every PR into `reviewAgents`/`main`.
-- `claude-start.ps1` (git-ignored, personal) pins a given local clone of this repo to a specific Claude Code account via `CLAUDE_CONFIG_DIR` — see `CONTRIBUTING.md` if running multiple accounts in parallel clones.
+- Each task is implemented by a subAgent on a new branch off `reviewAgents`; the subAgent commits
+  and pushes that branch when the task is done and its self-test passes.
+- An Agent Master integrates the branch **directly into `reviewAgents`** (no pull request),
+  resolving conflicts with the `/resolve-conflicts` skill (`.claude/skills/resolve-conflicts/`)
+  instead of resolving blindly, and rerunning `npm test` after merging.
+- `main` only ever receives merges from `reviewAgents`, at release time — never a direct commit.
+- A project-level hook (`.claude/settings.json`, `SessionStart`) fetches `origin/reviewAgents` when
+  a session starts and auto-pulls it only if the current branch is `reviewAgents` with a clean
+  working tree; otherwise it just warns instead of switching branches or overwriting local work.
+- CI (`.github/workflows/cypress.yml`) runs `npm test` on every push to `reviewAgents`/`main`.
+- Each agent instance (subAgent or Agent Master) pins its own Claude Code account via
+  `CLAUDE_CONFIG_DIR`, set before `claude` starts — this is configured centrally in the
+  Supervisor's automation folder (outside this repo), not per-clone here.
