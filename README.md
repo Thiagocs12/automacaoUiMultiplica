@@ -84,8 +84,9 @@ Detalhamento completo (contrato de `EtapaBase`, orquestrador `EsteiraCedente`, e
 
 ## Fluxo de trabalho
 
-Este repositório é mantido por agentes de automação (Claude Code), não por PRs humanos: cada
-tarefa é implementada numa branch nova a partir de `reviewAgents` por um subAgent, que commita e
-dá push ao concluir; um Agent Master integra essa branch diretamente na `reviewAgents` (sem
-abertura de PR), resolvendo conflitos e rerodando os testes quando necessário. Detalhes completos
-do fluxo estão em [CLAUDE.md](CLAUDE.md).
+Este repositório é mantido por agentes de automação (Claude Code): cada tarefa é implementada numa
+branch nova a partir de `reviewAgents` por um subAgent, que commita e dá push ao concluir; um
+Agent Master valida essa branch (resolve conflitos, roda os testes) e abre um **Pull Request**
+contra `reviewAgents` — a aprovação e o merge de cada PR são sempre manuais, feitos por um humano
+responsável à medida que valida cada tarefa. Detalhes completos do fluxo estão em
+[CLAUDE.md](CLAUDE.md).

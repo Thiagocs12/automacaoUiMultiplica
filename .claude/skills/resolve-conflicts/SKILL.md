@@ -5,7 +5,7 @@ description: Resolve git merge/rebase conflicts in this repo semantically instea
 
 # Resolve conflicts
 
-This project is maintained by automated agents: subAgents branch off `reviewAgents` and an Agent Master merges each branch directly back into it (see `CLAUDE.md`, section "Collaboration workflow"). Conflicts here are not just generic text conflicts — a spec file (`cypress/e2e/**`) and any shared support code it relies on (`cypress/support/commands.js`, `cypress/support/e2e.js`, fixtures) must stay semantically consistent, and shared config (`cypress.config.js`, `package.json`) must not silently drop one side's changes.
+This project is maintained by automated agents: subAgents branch off `reviewAgents` and an Agent Master validates each branch (test-merge + tests) and opens a Pull Request back into `reviewAgents` — a human approves and merges every PR manually (see `CLAUDE.md`, section "Collaboration workflow"). When resolving a conflict here, commit the resolution onto the feature branch itself (never onto `reviewAgents`), since that branch is what goes into the PR. Conflicts here are not just generic text conflicts — a spec file (`cypress/e2e/**`) and any shared support code it relies on (`cypress/support/commands.js`, `cypress/support/e2e.js`, fixtures) must stay semantically consistent, and shared config (`cypress.config.js`, `package.json`) must not silently drop one side's changes.
 
 ## Workflow
 
