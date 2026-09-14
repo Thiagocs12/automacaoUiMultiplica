@@ -26,6 +26,10 @@ Rodar uma spec específica:
 npx cypress run --spec "cypress/e2e/<caminho-da-spec>"
 ```
 
+Toda execução (`npm test`/`cypress run`) grava um vídeo em `cypress/videos/` (resolução
+1920x1080, não versionado) — útil para acompanhar o resultado sem precisar rodar `cypress open`
+interativamente.
+
 ## Arquitetura da automação
 
 A suíte é organizada em três camadas, para que uma etapa de negócio possa ser reaproveitada em várias esteiras sem duplicar código de tela:

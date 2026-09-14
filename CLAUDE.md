@@ -15,6 +15,9 @@ npm run test:open  # cypress open (interactive runner)
 
 To run a single spec: `npx cypress run --spec "cypress/e2e/<path-to-spec>"`.
 
+Every run records a video to `cypress/videos/` (1920x1080, gitignored) — check it instead of
+running `cypress open` interactively when you just need to watch a past run.
+
 ## Architecture (current state)
 
 - `cypress.config.js` — `e2e` config with spec pattern `cypress/e2e/**/*.feature` and `@badeball/cypress-cucumber-preprocessor` + esbuild bundler wired in.
