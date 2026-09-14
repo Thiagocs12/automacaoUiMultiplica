@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project overview
 
-Cypress E2E test suite for Multiplica's platform. The login foundation (Keycloak SSO) is implemented; feature branches add further test suites and are merged into `reviewAgents` via a human-approved Pull Request opened by an automated Agent Master (see Collaboration workflow below).
+Cypress E2E test suite for Multiplica's platform. The login foundation (Keycloak SSO) is implemented; feature branches add further test suites and are merged directly into `reviewAgents` by an automated Agent Master once they pass validation, with a single continuous Pull Request `reviewAgents → main` as the only human review point (see Collaboration workflow below).
 
 ## Commands
 
@@ -216,20 +216,24 @@ validar que o nome de empresa exibido na tela de análise é igual ao cedente ca
 
 ## Collaboration workflow
 
-This repo is maintained by automated agents (Claude Code), with every integration gated by a
-human-approved Pull Request:
+This repo is maintained by automated agents (Claude Code). Integration into `reviewAgents` is
+automatic once a task passes validation; the only human review point is a single, continuous Pull
+Request from `reviewAgents` into `main`:
 
 - Each task is implemented by a subAgent on a new branch off `reviewAgents`; the subAgent commits
   and pushes that branch when the task is done and its self-test passes.
 - An Agent Master validates the branch — a local test-merge against `reviewAgents` to catch
   conflicts (resolved with the `/resolve-conflicts` skill,
   `.claude/skills/resolve-conflicts/`, committed onto the feature branch itself) and a test run —
-  then opens a **Pull Request** (`gh pr create --base reviewAgents --head <branch>`). The Agent
-  Master **never merges or pushes directly** to `reviewAgents` or `main`.
-- A human reviews and merges each PR manually on GitHub, one task at a time, as they validate it
-  (typically by running the suite against that branch first). The Agent Master picks up the merge
-  afterward (`git pull origin reviewAgents`) — it never merges the PR itself.
-- `main` only ever receives merges from `reviewAgents`, at release time — never a direct commit.
+  then, if it passes, **merges the branch and pushes directly to `reviewAgents`**. No Pull Request
+  is opened per task, and no per-task human approval is required.
+- The Agent Master also ensures a single, continuous Pull Request `reviewAgents → main` exists
+  (`gh pr create --base main --head reviewAgents` if none is open yet). GitHub updates that PR's
+  diff automatically as new commits land on `reviewAgents`, so the Agent Master never recreates or
+  closes it — it just checks it still exists each cycle. This PR is the one and only point where a
+  human (the project owner) reviews and merges into `main`.
+- `main` only ever receives merges from `reviewAgents`, via that single PR — never a direct commit,
+  and never merged/pushed directly by the Agent Master.
 - A project-level hook (`.claude/settings.json`, `SessionStart`) fetches `origin/reviewAgents` when
   a session starts and auto-pulls it only if the current branch is `reviewAgents` with a clean
   working tree; otherwise it just warns instead of switching branches or overwriting local work.
