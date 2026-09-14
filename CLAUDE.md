@@ -197,6 +197,16 @@ Fora de escopo por enquanto (não pedido nesta fase): seed via API/DB, CI/CD, re
 - Criar: `cypress/support/esteiras/poc/EsteiraCedente.js`
 - Criar: `cypress/e2e/features/poc/poc-validadores.feature`, `poc-fluxo-completo.feature` + step definitions em `cypress/support/step_definitions/poc/`
 
+**MOP — feito** (módulo `mop`, tarefa `20260911214610-monitor-diario-analisar-operacao`): `EtapaBase`
+(`cypress/support/etapas/EtapaBase.js`) + `MonitorDiarioPage.js`/`AnaliseOperacaoPage.js`
+(`pages/mop/`) + `EtapaAnalisarOperacaoMonitorDiario.js` (`etapas/mop/`) +
+`EsteiraAnalisarOperacaoMonitorDiario.js` (`esteiras/mop/`) + `mop-monitor-diario.feature` +
+`step_definitions/mop/mopMonitorDiario.js`. Cobre o fluxo: login `master` → Beyond BackOffice →
+Comercial → Monitor Diário (drawer só com ícones; expandir via ícone `LoopIcon` revela o texto dos
+itens) → localizar operação fora de "Inclusão OPE" (ampliando a busca para a janela de 29 dias
+quando a data padrão não tem nenhuma) → capturar cedente na listagem → "Analisar Operação" →
+validar que o nome de empresa exibido na tela de análise é igual ao cedente capturado.
+
 ### Verificação
 
 - Cada cenário de `poc-validadores.feature` roda via UI do início e valida a regra correspondente corretamente (casos positivo e negativo).

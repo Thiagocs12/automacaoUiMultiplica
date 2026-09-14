@@ -4,3 +4,6 @@ cypress/screenshots/
 cypress/downloads/
 .env
 claude-start.ps1
+cypress/_discovery/
+cypress/e2e/features/_scratch/
+cypress/support/step_definitions/_scratch/
