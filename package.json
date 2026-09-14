@@ -19,7 +19,16 @@
     "url": "https://github.com/Thiagocs12/automacaoMultiplica/issues"
   },
   "homepage": "https://github.com/Thiagocs12/automacaoMultiplica#readme",
+  "cypress-cucumber-preprocessor": {
+    "stepDefinitions": [
+      "cypress/support/step_definitions/**/*.js"
+    ]
+  },
   "devDependencies": {
-    "cypress": "^15.14.2"
+    "@badeball/cypress-cucumber-preprocessor": "^28.0.0",
+    "@bahmutov/cypress-esbuild-preprocessor": "^2.2.8",
+    "cypress": "15.20.1",
+    "dotenv": "^17.4.2",
+    "esbuild": "^0.28.2"
   }
 }

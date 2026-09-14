@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project overview
 
-Base Cypress E2E test scaffold for Multiplica's platform. Currently a clean slate (no specs yet) — feature branches add real test suites via PRs into `reviewAgents` (see Collaboration workflow below).
+Cypress E2E test suite for Multiplica's platform. The login foundation (Keycloak SSO) is implemented; feature branches add further test suites and are merged into `reviewAgents` via a human-approved Pull Request opened by an automated Agent Master (see Collaboration workflow below).
 
 ## Commands
 
@@ -17,12 +17,11 @@ To run a single spec: `npx cypress run --spec "cypress/e2e/<path-to-spec>"`.
 
 ## Architecture (current state)
 
-- `cypress.config.js` — minimal `e2e` config, default spec pattern (`cypress/e2e/**/*.cy.{js,jsx,ts,tsx}`), no custom plugins wired in yet.
+- `cypress.config.js` — `e2e` config with spec pattern `cypress/e2e/**/*.feature` and `@badeball/cypress-cucumber-preprocessor` + esbuild bundler wired in.
 - `cypress/support/e2e.js` — imports `commands.js`; add global setup here.
-- `cypress/support/commands.js` — empty; add custom commands here as the suite grows.
+- `cypress/support/commands.js` — `cy.loginComoPerfil(perfil)` and `cy.tentarLoginComCredenciais(username, password)` (see Login atual below); add further custom commands here as the suite grows.
+- `cypress/support/pages/shared/LoginPage.js`, `cypress/config/environments.js`, `cypress/e2e/features/shared/login.feature`, `cypress/support/step_definitions/shared/login.js` — login foundation (see Planned architecture below).
 - `cypress/fixtures/example.json` — default Cypress fixture.
-
-The repo was intentionally reset to this clean slate to restart the suite following the planned architecture below, rather than continuing the earlier incomplete login-only scaffold.
 
 ## Planned architecture (POC → MOP → demais módulos)
 
@@ -83,7 +82,7 @@ cypress/
     environments.js                # adicionar mapa `usuarios` por perfil, por ambiente
 ```
 
-> Nota: as `.feature` + `step_definitions` implicam Gherkin/Cucumber (`cypress-cucumber-preprocessor` ou equivalente), que ainda não está instalado neste projeto — é um pré-requisito da fundação, não algo já configurado.
+> Nota: as `.feature` + `step_definitions` implicam Gherkin/Cucumber — `@badeball/cypress-cucumber-preprocessor` já está instalado e configurado (`cypress.config.js`, `package.json`).
 
 ### Contrato de Etapa (`EtapaBase`)
 
@@ -160,11 +159,25 @@ Ou seja: o step definition não sabe nada sobre a sequência das etapas — ele 
 
 ### Login atual
 
-O antigo `fluxoLogin.feature` / `fluxoLogin.js` / `cy.ambienteLogin` viram a base do `LoginPage` + `cy.loginComoPerfil`: a lógica de preencher usuário/senha e clicar em `#kc-login` é reaproveitada, mas o Then hoje é um `cy.pause()` sem assertiva — isso é corrigido como parte da fundação (assertiva real de login bem-sucedido/erro).
+Implementado: `cypress/support/pages/shared/LoginPage.js` (seletores/ações puras da tela do
+Keycloak) + `cy.loginComoPerfil(perfil)` em `commands.js` (usa `cy.session` para cache por perfil
+e `cy.origin` para navegar ao Keycloak). Cenários em
+`cypress/e2e/features/shared/login.feature` + `cypress/support/step_definitions/shared/login.js`,
+com assertivas reais de sucesso/erro (substituindo o antigo `cy.pause()` sem assertiva da branch
+`fluxoLogin`, já removida).
+
+**Gotcha de `cy.session`**: o setup/validate do `cy.session` só restaura cookies/localStorage —
+ele não deixa a página navegada na app depois de rodar. `cy.loginComoPerfil` faz um `cy.visit`
+extra logo após o `cy.session` para garantir que o teste continue na aplicação autenticada (sem
+isso, a URL fica em `about:blank` e a assertiva de login bem-sucedido falha mesmo com a sessão
+válida).
 
 ### Ordem de execução
 
-1. **Fundação**: `EtapaBase`, `LoginPage`, `cy.loginComoPerfil` (com `cy.session`), estrutura de pastas `pages/etapas/esteiras`, extensão de `environments.js`/`.env.example` com mapa de usuários por perfil (placeholders, mesmo sem credenciais reais ainda). Corrigir a assertiva pendente do login.
+1. **Fundação**: `LoginPage`, `cy.loginComoPerfil` (com `cy.session`) e `environments.js`/`.env.example`
+   com mapa de usuários por perfil já implementados e validados em HML (perfil `master`). Assertiva
+   real de login bem-sucedido/erro já corrigida. `EtapaBase`/`etapas`/`esteiras` ainda não criados —
+   entram na fase POC.
 2. **POC — etapas isoladas**: implementar `EtapaCadastroFundo`, `EtapaCadastroProduto`, `EtapaValidacaoAlcada` (e outros validadores citados) com suas Pages, cada uma com cenário próprio em `poc-validadores.feature`.
 3. **POC — fluxo completo**: `EsteiraCedente` completa + cenário `poc-fluxo-completo.feature`.
 4. **MOP**: repetir o mesmo padrão (etapas de validação de operação + `EsteiraOperacao` completa), reaproveitando `EtapaBase`, `LoginPage` e o comando de login — sem reaproveitar etapas específicas do POC.
@@ -174,15 +187,25 @@ Fora de escopo por enquanto (não pedido nesta fase): seed via API/DB, CI/CD, re
 
 ### Arquivos-chave a criar/alterar
 
+- ~~Criar: `cypress/support/pages/shared/LoginPage.js`~~ — feito.
+- ~~Alterar: `cypress/support/commands.js` (novo `cy.loginComoPerfil`, substituindo/evoluindo `ambienteLogin`)~~ — feito.
+- ~~Alterar: `cypress/config/environments.js` (mapa `usuarios` por ambiente)~~ — feito (perfil `master` em `hml`).
+- ~~Alterar: `.env.example` (novas variáveis de usuários por perfil)~~ — feito.
+- ~~Alterar/mover: `cypress/e2e/features/fluxoLogin.feature`~~ — substituído por `cypress/e2e/features/shared/login.feature` + `step_definitions/shared/login.js`, com assertivas reais.
 - Criar: `cypress/support/etapas/EtapaBase.js`
-- Criar: `cypress/support/pages/shared/LoginPage.js`
-- Alterar: `cypress/support/commands.js` (novo `cy.loginComoPerfil`, substituindo/evoluindo `ambienteLogin`)
-- Alterar: `cypress/config/environments.js` (mapa `usuarios` por ambiente)
-- Alterar: `.env.example` (novas variáveis de usuários por perfil)
 - Criar: `cypress/support/etapas/poc/EtapaCadastroFundo.js`, `EtapaCadastroProduto.js`, `EtapaValidacaoAlcada.js` (+ Pages correspondentes em `pages/poc/`)
 - Criar: `cypress/support/esteiras/poc/EsteiraCedente.js`
 - Criar: `cypress/e2e/features/poc/poc-validadores.feature`, `poc-fluxo-completo.feature` + step definitions em `cypress/support/step_definitions/poc/`
-- Alterar/mover: `cypress/e2e/features/fluxoLogin.feature` e `cypress/support/step_definitions/fluxoLogin.js` (corrigir assertiva, alinhar ao novo `LoginPage`)
+
+**MOP — feito** (módulo `mop`, tarefa `20260911214610-monitor-diario-analisar-operacao`): `EtapaBase`
+(`cypress/support/etapas/EtapaBase.js`) + `MonitorDiarioPage.js`/`AnaliseOperacaoPage.js`
+(`pages/mop/`) + `EtapaAnalisarOperacaoMonitorDiario.js` (`etapas/mop/`) +
+`EsteiraAnalisarOperacaoMonitorDiario.js` (`esteiras/mop/`) + `mop-monitor-diario.feature` +
+`step_definitions/mop/mopMonitorDiario.js`. Cobre o fluxo: login `master` → Beyond BackOffice →
+Comercial → Monitor Diário (drawer só com ícones; expandir via ícone `LoopIcon` revela o texto dos
+itens) → localizar operação fora de "Inclusão OPE" (ampliando a busca para a janela de 29 dias
+quando a data padrão não tem nenhuma) → capturar cedente na listagem → "Analisar Operação" →
+validar que o nome de empresa exibido na tela de análise é igual ao cedente capturado.
 
 ### Verificação
 
@@ -193,11 +216,26 @@ Fora de escopo por enquanto (não pedido nesta fase): seed via API/DB, CI/CD, re
 
 ## Collaboration workflow
 
-This repo is worked on by multiple people. Full details in `CONTRIBUTING.md`, summary here:
+This repo is maintained by automated agents (Claude Code), with every integration gated by a
+human-approved Pull Request:
 
-- Never commit directly to `reviewAgents` (the shared integration branch) or `main`. Always create a new branch off `reviewAgents` for any change.
-- Open pull requests **against `reviewAgents`**, not `main`.
-- A project-level hook (`.claude/settings.json`, `SessionStart`) fetches `origin/reviewAgents` when a session starts and auto-pulls it only if the current branch is `reviewAgents` with a clean working tree; otherwise it just warns instead of switching branches or overwriting local work.
-- Merge conflicts: use the `/resolve-conflicts` skill (`.claude/skills/resolve-conflicts/`) instead of resolving blindly.
-- CI (`.github/workflows/cypress.yml`) runs `npm test` on every PR into `reviewAgents`/`main`.
-- `claude-start.ps1` (git-ignored, personal) pins a given local clone of this repo to a specific Claude Code account via `CLAUDE_CONFIG_DIR` — see `CONTRIBUTING.md` if running multiple accounts in parallel clones.
+- Each task is implemented by a subAgent on a new branch off `reviewAgents`; the subAgent commits
+  and pushes that branch when the task is done and its self-test passes.
+- An Agent Master validates the branch — a local test-merge against `reviewAgents` to catch
+  conflicts (resolved with the `/resolve-conflicts` skill,
+  `.claude/skills/resolve-conflicts/`, committed onto the feature branch itself) and a test run —
+  then opens a **Pull Request** (`gh pr create --base reviewAgents --head <branch>`). The Agent
+  Master **never merges or pushes directly** to `reviewAgents` or `main`.
+- A human reviews and merges each PR manually on GitHub, one task at a time, as they validate it
+  (typically by running the suite against that branch first). The Agent Master picks up the merge
+  afterward (`git pull origin reviewAgents`) — it never merges the PR itself.
+- `main` only ever receives merges from `reviewAgents`, at release time — never a direct commit.
+- A project-level hook (`.claude/settings.json`, `SessionStart`) fetches `origin/reviewAgents` when
+  a session starts and auto-pulls it only if the current branch is `reviewAgents` with a clean
+  working tree; otherwise it just warns instead of switching branches or overwriting local work.
+- CI (`.github/workflows/cypress.yml`) runs `npm test` on every PR into `reviewAgents`/`main` and
+  on every push to `reviewAgents`.
+- Each agent instance (subAgent or Agent Master) pins its own Claude Code account via
+  `CLAUDE_CONFIG_DIR`, set before `claude` starts — this is configured centrally in the
+  Supervisor's automation folder (outside this repo), not per-clone here. The Agent Master also
+  authenticates the `gh` CLI via a `GH_TOKEN` environment variable, set the same way.
