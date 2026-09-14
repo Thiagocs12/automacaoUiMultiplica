@@ -15,6 +15,15 @@ npm run test:open  # cypress open (interactive runner)
 
 To run a single spec: `npx cypress run --spec "cypress/e2e/<path-to-spec>"`.
 
+Every run records a video to `cypress/videos/` (gitignored) — check it instead of running
+`cypress open` interactively when you just need to watch a past run. `viewportWidth`/
+`viewportHeight` (1920x1080, set in `cypress.config.js`) control the app's rendered size during
+the test, but **not** the recorded `.mp4` resolution — Cypress exposes no config for that; video
+capture is a separate internal pipeline. Measured real resolution (reading the `.mp4`'s `tkhd`
+box) by mode: Electron headless (default `npm test`/`cypress run`, what automation uses) →
+1280x720; Chrome headless (`--browser chrome --headless`) → 1264x624; Electron `--headed` (manual
+use only) → 1920x982 (width matches, height varies by window chrome/DPI).
+
 ## Architecture (current state)
 
 - `cypress.config.js` — `e2e` config with spec pattern `cypress/e2e/**/*.feature` and `@badeball/cypress-cucumber-preprocessor` + esbuild bundler wired in.
