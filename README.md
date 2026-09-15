@@ -26,6 +26,19 @@ Rodar uma spec específica:
 npx cypress run --spec "cypress/e2e/<caminho-da-spec>"
 ```
 
+Toda execução (`npm test`/`cypress run`) grava um vídeo em `cypress/videos/` (não versionado) —
+útil para acompanhar o resultado sem precisar rodar `cypress open` interativamente. O
+`viewportWidth`/`viewportHeight` (1920x1080) controla o tamanho em que a aplicação é renderizada
+durante o teste, mas **não** a resolução do `.mp4` gravado — o Cypress não expõe configuração para
+isso, é um pipeline de captura separado da renderização do viewport. Resolução real do vídeo por
+modo/browser (medida lendo o box `tkhd` do `.mp4`):
+
+| Modo                                  | Resolução do vídeo |
+| -------------------------------------- | ------------------- |
+| Electron headless (`npm test`/`cypress run`, padrão usado pelas automações) | 1280x720 |
+| Chrome headless (`--browser chrome --headless`) | 1264x624 |
+| Electron `--headed` (só uso manual)    | 1920x982 (largura bate, altura varia por decoração de janela/DPI) |
+
 ## Arquitetura da automação
 
 A suíte é organizada em três camadas, para que uma etapa de negócio possa ser reaproveitada em várias esteiras sem duplicar código de tela:
