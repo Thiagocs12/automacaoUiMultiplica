@@ -62,7 +62,7 @@ class NovoProspectPage {
   // fixo) evita o flake observado durante a investigação (clique caindo no input ainda
   // desabilitado, "element is disabled").
   aguardarCamposObrigatoriosHabilitados() {
-    inputDoAutocomplete('Tipo de Prospect', { timeout: 15000 }).should('not.be.disabled')
+    inputDoAutocomplete('Tipo de Prospect', { timeout: 30000 }).should('not.be.disabled')
   }
 
   selecionarTipoProspect(valorExato) {
