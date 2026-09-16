@@ -57,6 +57,14 @@ class NovoProspectPage {
     cy.contains(SELECTORS.botaoSalvar, 'Salvar').click()
   }
 
+  // Os 3 campos obrigatórios ficam com a classe `Mui-disabled` até a primeira tentativa de
+  // salvar; habilitar não é instantâneo, então esperar por essa condição (em vez de um cy.wait
+  // fixo) evita o flake observado durante a investigação (clique caindo no input ainda
+  // desabilitado, "element is disabled").
+  aguardarCamposObrigatoriosHabilitados() {
+    inputDoAutocomplete('Tipo de Prospect').should('not.be.disabled')
+  }
+
   selecionarTipoProspect(valorExato) {
     this._selecionarOpcaoAutocomplete('Tipo de Prospect', valorExato)
   }
