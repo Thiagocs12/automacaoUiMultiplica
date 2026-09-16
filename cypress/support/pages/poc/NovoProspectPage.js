@@ -11,8 +11,8 @@ const SELECTORS = {
   opcaoMenu: '[role="listbox"] li, .MuiAutocomplete-listbox li, .MuiMenu-list li',
 }
 
-function inputDoAutocomplete(labelTexto) {
-  return cy.contains('label', labelTexto).parents('[role="combobox"]').first().find('input')
+function inputDoAutocomplete(labelTexto, options = {}) {
+  return cy.contains('label', labelTexto).parents('[role="combobox"]').first().find('input', options)
 }
 
 class NovoProspectPage {
@@ -62,7 +62,7 @@ class NovoProspectPage {
   // fixo) evita o flake observado durante a investigação (clique caindo no input ainda
   // desabilitado, "element is disabled").
   aguardarCamposObrigatoriosHabilitados() {
-    inputDoAutocomplete('Tipo de Prospect').should('not.be.disabled')
+    inputDoAutocomplete('Tipo de Prospect', { timeout: 15000 }).should('not.be.disabled')
   }
 
   selecionarTipoProspect(valorExato) {
