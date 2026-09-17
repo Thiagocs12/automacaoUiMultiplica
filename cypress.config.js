@@ -10,7 +10,7 @@ module.exports = defineConfig({
     specPattern: 'cypress/e2e/**/*.feature',
     viewportWidth: 1920,
     viewportHeight: 1080,
-    video: true,
+    video: false,
     async setupNodeEvents(on, config) {
       config.env = { ...config.env, ...process.env }
 
