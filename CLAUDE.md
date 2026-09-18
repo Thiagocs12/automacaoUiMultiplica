@@ -15,14 +15,46 @@ npm run test:open  # cypress open (interactive runner)
 
 To run a single spec: `npx cypress run --spec "cypress/e2e/<path-to-spec>"`.
 
-Every run records a video to `cypress/videos/` (gitignored) — check it instead of running
-`cypress open` interactively when you just need to watch a past run. `viewportWidth`/
-`viewportHeight` (1920x1080, set in `cypress.config.js`) control the app's rendered size during
-the test, but **not** the recorded `.mp4` resolution — Cypress exposes no config for that; video
-capture is a separate internal pipeline. Measured real resolution (reading the `.mp4`'s `tkhd`
-box) by mode: Electron headless (default `npm test`/`cypress run`, what automation uses) →
-1280x720; Chrome headless (`--browser chrome --headless`) → 1264x624; Electron `--headed` (manual
-use only) → 1920x982 (width matches, height varies by window chrome/DPI).
+**Video recording is disabled** (`video: false` in `cypress.config.js`, changed 2026-09-17) — every
+run now produces a **PDF report per scenario** instead (see "PDF execution report" below).
+`viewportWidth`/`viewportHeight` (1920x1080, set in `cypress.config.js`) still control the app's
+rendered size during the test.
+
+## PDF execution report (replaces video, 2026-09-17)
+
+Every `npm test` run generates one PDF per Cucumber scenario in `relatorios/<cenario-slug>.pdf`,
+documenting what the scenario did with before/after screenshots around each relevant action —
+this replaces the old `cypress/videos/*.mp4` artifact (heavier, harder to review than a PDF).
+
+- **How it's captured**: `cypress/support/etapas/EtapaBase.js` exposes `this.passo(descricao, acao)`.
+  A concrete Etapa's `executar()` wraps each relevant action in `this.passo('...', () => Page.acao())`
+  instead of calling the Page directly; this takes a screenshot before and after running `acao()`.
+  Not every low-level Page action needs to go through `passo()` — only enough to demonstrate
+  visually what the Etapa did (see `cypress/support/etapas/mop/EtapaAnalisarOperacaoMonitorDiario.js`
+  for a full example).
+- Screenshot filenames follow `<cenario-slug>__<NN>-<passo-slug>-<antes|depois>.png`, where
+  `<cenario-slug>` comes from `Cypress.currentTest.title` (the Cucumber scenario name — reliable
+  because `@badeball/cypress-cucumber-preprocessor` runs each scenario as its own Mocha `it()`).
+  This is how `scripts/gerar-relatorio-pdf.cjs` groups screenshots back into one PDF per scenario
+  without needing any Cucumber hook to track scenario context.
+- **Generation**: `scripts/gerar-relatorio-pdf.cjs` (Node script, `pdfkit` dependency) runs after
+  `cypress run` (wired into `"test"` in `package.json` via `cypress run & node scripts/gerar-relatorio-pdf.cjs`
+  — `&`, not `&&`, so the report is still generated even when the suite has failures, since the
+  screenshots taken before a failure are still useful to see what happened). It scans
+  `cypress/screenshots/**/*.png` for that naming pattern, groups by scenario, sorts steps
+  numerically, and renders one PDF page per screenshot (title + step caption + image). Can also be
+  run standalone via `npm run relatorio`.
+- **Evaluated `cypress-mochawesome-reporter` first** (previously listed as out of scope, see below)
+  before building this: it produces an HTML report with embedded screenshots, not a PDF — turning
+  that into a PDF would need an extra conversion step (e.g. Puppeteer print-to-PDF), which is a
+  heavier dependency than just generating the PDF directly with `pdfkit` and doesn't map cleanly
+  onto the "antes/depois" pairing this task asked for. Went with a small custom script instead.
+- **`relatorios/*.pdf` is versioned, not gitignored** (unlike `cypress/screenshots/`, which stays
+  gitignored, same as `cypress/videos/` before it) — a PDF report is lightweight execution
+  documentation worth keeping in history, unlike the old `.mp4` which was heavy and only useful
+  locally.
+- Only `EtapaAnalisarOperacaoMonitorDiario` (module `mop`) has been migrated to `passo()` so far;
+  any new/existing Etapa in any module should adopt the same pattern for its relevant actions.
 
 ## Architecture (current state)
 
@@ -192,7 +224,9 @@ válida).
 4. **MOP**: repetir o mesmo padrão (etapas de validação de operação + `EsteiraOperacao` completa), reaproveitando `EtapaBase`, `LoginPage` e o comando de login — sem reaproveitar etapas específicas do POC.
 5. **Módulos seguintes**: mesmo padrão, módulo a módulo.
 
-Fora de escopo por enquanto (não pedido nesta fase): seed via API/DB, CI/CD, relatórios (mochawesome/Allure) — podem ser propostos depois que a POC estiver estável.
+Fora de escopo por enquanto (não pedido nesta fase): seed via API/DB, CI/CD — podem ser propostos
+depois que a POC estiver estável. (Relatório em PDF por cenário deixou de estar fora de escopo —
+ver "PDF execution report" acima, implementado 2026-09-17.)
 
 ### Arquivos-chave a criar/alterar
 
