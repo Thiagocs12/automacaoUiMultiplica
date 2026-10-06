@@ -9,8 +9,8 @@ class EtapaAnalisarOperacaoMonitorDiario extends EtapaBase {
   }
 
   executar() {
-    MonitorDiarioPage.navegarAte()
-    MonitorDiarioPage.buscar()
+    this.passo('Navegar até o Monitor Diário', () => MonitorDiarioPage.navegarAte())
+    this.passo('Buscar operações na data padrão', () => MonitorDiarioPage.buscar())
 
     // A data padrão do Monitor Diário pode não trazer nenhuma operação (ou nenhuma fora de
     // "Inclusão OPE"); nesse caso, amplia a busca para a janela máxima de 29 dias antes de
@@ -24,13 +24,17 @@ class EtapaAnalisarOperacaoMonitorDiario extends EtapaBase {
       })
 
       if (!temOperacaoElegivel) {
-        MonitorDiarioPage.ampliarJanelaBusca()
-        MonitorDiarioPage.buscar()
+        this.passo('Ampliar janela de busca para 29 dias', () => {
+          MonitorDiarioPage.ampliarJanelaBusca()
+          MonitorDiarioPage.buscar()
+        })
       }
     })
 
-    MonitorDiarioPage.selecionarOperacaoForaDeInclusaoOpe().then((cedente) => {
-      this.cedenteCapturado = cedente
+    this.passo('Selecionar operação fora de Inclusão OPE', () => {
+      MonitorDiarioPage.selecionarOperacaoForaDeInclusaoOpe().then((cedente) => {
+        this.cedenteCapturado = cedente
+      })
     })
   }
 

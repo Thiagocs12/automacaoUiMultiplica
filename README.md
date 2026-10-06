@@ -26,18 +26,12 @@ Rodar uma spec específica:
 npx cypress run --spec "cypress/e2e/<caminho-da-spec>"
 ```
 
-Toda execução (`npm test`/`cypress run`) grava um vídeo em `cypress/videos/` (não versionado) —
-útil para acompanhar o resultado sem precisar rodar `cypress open` interativamente. O
-`viewportWidth`/`viewportHeight` (1920x1080) controla o tamanho em que a aplicação é renderizada
-durante o teste, mas **não** a resolução do `.mp4` gravado — o Cypress não expõe configuração para
-isso, é um pipeline de captura separado da renderização do viewport. Resolução real do vídeo por
-modo/browser (medida lendo o box `tkhd` do `.mp4`):
-
-| Modo                                  | Resolução do vídeo |
-| -------------------------------------- | ------------------- |
-| Electron headless (`npm test`/`cypress run`, padrão usado pelas automações) | 1280x720 |
-| Chrome headless (`--browser chrome --headless`) | 1264x624 |
-| Electron `--headed` (só uso manual)    | 1920x982 (largura bate, altura varia por decoração de janela/DPI) |
+Toda execução (`npm test`/`cypress run`) gera um **relatório em PDF por cenário** em `relatorios/`
+(versionado), documentando o que foi feito com screenshots antes/depois de cada ação relevante —
+não grava mais vídeo (`video: false` em `cypress.config.js`, desde 2026-09-17). O
+`viewportWidth`/`viewportHeight` (1920x1080) continua controlando o tamanho em que a aplicação é
+renderizada durante o teste. Detalhe completo do mecanismo (`EtapaBase.passo()` +
+`scripts/gerar-relatorio-pdf.cjs`) está em [CLAUDE.md](CLAUDE.md), seção "PDF execution report".
 
 ## Arquitetura da automação
 
